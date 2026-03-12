@@ -26,6 +26,11 @@ $products = new WP_Query([
         <h2 class="text-xl font-semibold mb-6 text-slate-700">Создать новое предложение</h2>
         
         <form id="create-offer-form" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-600 mb-1">Название предложения (для менеджера)</label>
+            <input type="text" name="offer_title" placeholder="Напр. Скидка для Ивана" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-all">
+          </div>
+
           @if ($products->have_posts())
             <div>
               <label class="block text-sm font-medium text-slate-600 mb-1">Выберите товар</label>

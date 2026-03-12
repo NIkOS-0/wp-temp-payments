@@ -22,13 +22,14 @@ add_action('wp_ajax_create_personalized_offer', function () {
     $price = floatval($_POST['price'] ?? 0);
     $expiryHours = intval($_POST['expiry_hours'] ?? 24);
     $useCookieSecurity = ($_POST['use_cookie_security'] ?? 'false') === 'true';
+    $offerTitle = sanitize_text_field($_POST['offer_title'] ?? '');
 
     if (!$productId || !$price) {
         wp_send_json_error(['message' => 'Missing required parameters']);
     }
 
     $offerService = new OfferService();
-    $link = $offerService->createOffer($productId, $price, $expiryHours, $useCookieSecurity);
+    $link = $offerService->createOffer($productId, $price, $expiryHours, $useCookieSecurity, $offerTitle);
 
     if (is_wp_error($link)) {
         wp_send_json_error(['message' => $link->get_error_message()]);

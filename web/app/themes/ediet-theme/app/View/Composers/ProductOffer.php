@@ -32,6 +32,10 @@ class ProductOffer extends Composer
             'offer_id' => $offerId,
             'thumbnail' => get_the_post_thumbnail_url($productId, 'large'),
             'content' => apply_filters('the_content', get_post_field('post_content', $productId)),
+            'short_description' => get_field('short_description', $productId),
+            'gallery' => get_field('product_gallery', $productId),
+            'features' => get_field('product_features', $productId),
+            'specs' => get_field('specifications', $productId),
         ];
     }
 }

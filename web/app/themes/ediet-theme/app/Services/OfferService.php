@@ -7,14 +7,15 @@ class OfferService
     /**
      * Generate a unique personalized offer link.
      */
-    public function createOffer($productId, $price, $expiryHours, $useCookieSecurity)
+    public function createOffer($productId, $price, $expiryHours, $useCookieSecurity, $title = '')
     {
         $expiryTime = time() + ($expiryHours * HOUR_IN_SECONDS);
+        $displayTitle = !empty($title) ? $title : 'Offer for Product #' . $productId . ' - ' . date('Y-m-d H:i');
         
         $offerId = wp_insert_post([
             'post_type' => 'personal_offer',
             'post_status' => 'publish',
-            'post_title' => 'Offer for Product #' . $productId . ' - ' . date('Y-m-d H:i'),
+            'post_title' => $displayTitle,
         ]);
 
         if (is_wp_error($offerId)) {
@@ -25,11 +26,28 @@ class OfferService
         update_field('selected_price', $price, $offerId);
         update_field('expiry_hours', $expiryHours, $offerId);
         update_field('use_cookie_security', $useCookieSecurity, $offerId);
+        update_field('internal_title', $title, $offerId);
         
-        // We'll calculate expiration timestamp based on current time + hours
         update_post_meta($offerId, '_expiry_timestamp', $expiryTime);
 
         return get_permalink($offerId);
+    }
+
+    /**
+     * Get or create a stable persistent ID for the client.
+     */
+    public function getPersistentId()
+    {
+        $cookieName = 'ediet_persistent_client_id';
+        $persistentId = $_COOKIE[$cookieName] ?? null;
+
+        if (!$persistentId) {
+            $persistentId = wp_generate_password(32, false);
+            // Long lived cookie: 5 years
+            setcookie($cookieName, $persistentId, time() + (5 * YEAR_IN_SECONDS), COOKIEPATH, COOKIE_DOMAIN);
+        }
+
+        return $persistentId;
     }
 
     /**
@@ -45,16 +63,15 @@ class OfferService
         $useCookieSecurity = get_field('use_cookie_security', $offerId);
         if ($useCookieSecurity) {
             $savedHash = get_field('cookie_hash', $offerId);
-            $currentCookie = $_COOKIE['offer_client_id'] ?? null;
+            $currentPersistentId = $this->getPersistentId();
+            $currentHash = md5($currentPersistentId);
 
-            if (!$currentCookie) {
-                // First visit - bind it
-                $newHash = wp_generate_password(32, false);
-                setcookie('offer_client_id', $newHash, time() + (YEAR_IN_SECONDS), COOKIEPATH, COOKIE_DOMAIN);
-                update_field('cookie_hash', md5($newHash), $offerId);
+            if (empty($savedHash)) {
+                // First open: bind this offer to the current user's persistent ID
+                update_field('cookie_hash', $currentHash, $offerId);
             } else {
-                // Secondary visit - check hash
-                if (md5($currentCookie) !== $savedHash) {
+                // Subsequent opens: check if current ID matches the bound hash
+                if ($currentHash !== $savedHash) {
                     return ['valid' => false, 'reason' => 'security_violation'];
                 }
             }
