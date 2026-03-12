@@ -21,7 +21,7 @@ add_action('wp_ajax_create_personalized_offer', function () {
     $productId = intval($_POST['product_id'] ?? 0);
     $price = floatval($_POST['price'] ?? 0);
     $expiryHours = intval($_POST['expiry_hours'] ?? 24);
-    $useCookieSecurity = ($_POST['use_cookie_security'] ?? 'false') === 'true';
+    $useCookieSecurity = isset($_POST['use_cookie_security']);
     $offerTitle = sanitize_text_field($_POST['offer_title'] ?? '');
 
     if (!$productId || !$price) {

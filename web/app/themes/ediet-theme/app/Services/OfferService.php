@@ -12,10 +12,14 @@ class OfferService
         $expiryTime = time() + ($expiryHours * HOUR_IN_SECONDS);
         $displayTitle = !empty($title) ? $title : 'Offer for Product #' . $productId . ' - ' . date('Y-m-d H:i');
         
+        // Generate a random unique slug (token) for the URL
+        $slug = 'offer-' . wp_generate_password(16, false);
+
         $offerId = wp_insert_post([
             'post_type' => 'personal_offer',
             'post_status' => 'publish',
             'post_title' => $displayTitle,
+            'post_name'  => $slug,
         ]);
 
         if (is_wp_error($offerId)) {
@@ -43,8 +47,8 @@ class OfferService
 
         if (!$persistentId) {
             $persistentId = wp_generate_password(32, false);
-            // Long lived cookie: 5 years
-            setcookie($cookieName, $persistentId, time() + (5 * YEAR_IN_SECONDS), COOKIEPATH, COOKIE_DOMAIN);
+            // Long lived cookie: 1 year
+            setcookie($cookieName, $persistentId, time() + (1 * YEAR_IN_SECONDS), COOKIEPATH, COOKIE_DOMAIN);
         }
 
         return $persistentId;
