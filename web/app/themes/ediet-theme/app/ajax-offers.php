@@ -21,6 +21,7 @@ add_action('wp_ajax_create_personalized_offer', function () {
     $productId = intval($_POST['product_id'] ?? 0);
     $price = floatval($_POST['price'] ?? 0);
     $expiryHours = intval($_POST['expiry_hours'] ?? 24);
+    $expiryMinutes = intval($_POST['expiry_minutes'] ?? 0);
     $useCookieSecurity = isset($_POST['use_cookie_security']);
     $offerTitle = sanitize_text_field($_POST['offer_title'] ?? '');
 
@@ -29,7 +30,7 @@ add_action('wp_ajax_create_personalized_offer', function () {
     }
 
     $offerService = new OfferService();
-    $link = $offerService->createOffer($productId, $price, $expiryHours, $useCookieSecurity, $offerTitle);
+    $link = $offerService->createOffer($productId, $price, $expiryHours, $useCookieSecurity, $offerTitle, $expiryMinutes);
 
     if (is_wp_error($link)) {
         wp_send_json_error(['message' => $link->get_error_message()]);

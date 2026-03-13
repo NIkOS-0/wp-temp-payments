@@ -141,6 +141,13 @@ add_action('acf/init', function () {
                 'default_value' => 24,
             ],
             [
+                'key' => 'field_offer_expiry_minutes',
+                'label' => __('Expiry (Minutes)', 'sage'),
+                'name' => 'expiry_minutes',
+                'type' => 'number',
+                'default_value' => 0,
+            ],
+            [
                 'key' => 'field_offer_security',
                 'label' => __('Enable Cookie Binding', 'sage'),
                 'name' => 'use_cookie_security',

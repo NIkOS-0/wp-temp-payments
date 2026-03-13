@@ -125,7 +125,10 @@
         </div>
         <div class="flex items-center gap-3 text-slate-500 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
           <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          <span class="text-sm font-bold uppercase tracking-wider">Спеццена до {{ date('H:i', get_post_meta($offer_id, '_expiry_timestamp', true)) }}</span>
+          <span class="text-sm font-bold uppercase tracking-wider">
+            Спеццена истекает через: 
+            <span id="countdown" class="font-black text-orange-600 tabular-nums">--:--:--</span>
+          </span>
         </div>
         <div class="flex items-center gap-3 text-slate-500 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
           <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
@@ -152,5 +155,31 @@
         dot.classList.toggle('w-2.5', i !== index);
       });
     }
+
+    const expiryTimestamp = {{ $expiry_timestamp }} * 1000;
+    const countdownEl = document.getElementById('countdown');
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = expiryTimestamp - now;
+
+      if (distance < 0) {
+        countdownEl.innerHTML = "ИСТЕКЛО";
+        countdownEl.classList.replace('text-orange-600', 'text-red-600');
+        // Immediately reload the page to trigger server-side 404/expiry check
+        setTimeout(() => location.reload(), 1000);
+        return;
+      }
+
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      const pad = (num) => String(num).padStart(2, '0');
+      countdownEl.innerHTML = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
   </script>
 @endsection

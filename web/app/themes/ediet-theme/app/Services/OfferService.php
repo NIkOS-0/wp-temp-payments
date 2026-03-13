@@ -7,9 +7,9 @@ class OfferService
     /**
      * Generate a unique personalized offer link.
      */
-    public function createOffer($productId, $price, $expiryHours, $useCookieSecurity, $title = '')
+    public function createOffer($productId, $price, $expiryHours, $useCookieSecurity, $title = '', $expiryMinutes = 0)
     {
-        $expiryTime = time() + ($expiryHours * HOUR_IN_SECONDS);
+        $expiryTime = time() + ($expiryHours * HOUR_IN_SECONDS) + ($expiryMinutes * MINUTE_IN_SECONDS);
         $displayTitle = !empty($title) ? $title : 'Offer for Product #' . $productId . ' - ' . date('Y-m-d H:i');
         
         // Generate a random unique slug (token) for the URL

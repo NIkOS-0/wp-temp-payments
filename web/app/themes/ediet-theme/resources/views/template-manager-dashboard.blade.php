@@ -51,8 +51,17 @@ $products = new WP_Query([
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-slate-600 mb-1">Срок действия (часов)</label>
-            <input type="number" name="expiry_hours" value="24" class="w-full p-2 border border-slate-300 rounded-md" required>
+            <label class="block text-sm font-medium text-slate-600 mb-1">Срок действия</label>
+            <div class="flex items-center space-x-6">
+              <div class="flex items-center space-x-2">
+                <input type="number" name="expiry_hours" value="24" class="w-20 p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-all">
+                <span class="text-sm font-bold text-slate-400 uppercase tracking-tighter">час.</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <input type="number" name="expiry_minutes" value="0" class="w-20 p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-all">
+                <span class="text-sm font-bold text-slate-400 uppercase tracking-tighter">мин.</span>
+              </div>
+            </div>
           </div>
 
           <div class="flex items-center space-x-2 py-2">

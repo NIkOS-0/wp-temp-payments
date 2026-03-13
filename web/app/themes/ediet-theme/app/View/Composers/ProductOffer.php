@@ -36,6 +36,8 @@ class ProductOffer extends Composer
             'gallery' => get_field('product_gallery', $productId),
             'features' => get_field('product_features', $productId),
             'specs' => get_field('specifications', $productId),
+            'expiry_time' => date('H:i', (int) get_post_meta($offerId, '_expiry_timestamp', true)),
+            'expiry_timestamp' => (int) get_post_meta($offerId, '_expiry_timestamp', true),
         ];
     }
 }
