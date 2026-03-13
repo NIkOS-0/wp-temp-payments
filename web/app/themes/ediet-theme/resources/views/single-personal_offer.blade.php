@@ -52,11 +52,13 @@
             <h1 class="text-4xl lg:text-5xl font-black text-slate-900 leading-tight mb-4">
               {{ $product->post_title }}
             </h1>
-            @if($short_description)
-              <p class="text-lg text-slate-600 leading-relaxed font-medium italic border-l-4 border-blue-500 pl-4 py-1">
-                {{ $short_description }}
-              </p>
-            @endif
+            <div class="flex items-center gap-4 mb-6">
+              @if($short_description)
+                <p class="text-lg text-slate-600 leading-relaxed font-medium italic border-l-4 border-blue-500 pl-4 py-1">
+                  {{ $short_description }}
+                </p>
+              @endif
+            </div>
           </header>
 
           <div class="space-y-10 mb-12">

@@ -59,6 +59,11 @@ class OfferService
      */
     public function validateAccess($offerId)
     {
+        $status = get_post_status($offerId);
+        if ($status === 'paid') {
+            return ['valid' => false, 'reason' => 'already_paid'];
+        }
+
         $expiryTimestamp = get_post_meta($offerId, '_expiry_timestamp', true);
         if ($expiryTimestamp && time() > $expiryTimestamp) {
             return ['valid' => false, 'reason' => 'expired'];

@@ -12,29 +12,42 @@ $products = new WP_Query([
     'posts_per_page' => -1,
     'post_status' => 'publish',
 ]);
+
+if (!current_user_can('manage_offers')) {
+    wp_redirect(home_url());
+    exit;
+}
 ?>
 
 @extends('layouts.app')
 
 @section('content')
-  <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8 text-slate-800">Менеджер предложений</h1>
+  <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="flex justify-between items-center mb-12 border-b border-slate-100 pb-8">
+      <div>
+        <h1 class="text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none mb-2">Генератор офферов</h1>
+        <p class="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Manager Access Only</p>
+      </div>
+      <a href="/wp/wp-admin/edit.php?post_type=personal_offer" class="px-6 py-3 bg-slate-100 text-slate-600 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-sm hover:shadow-xl">
+        Все предложения &rarr;
+      </a>
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <!-- Create Offer Form -->
-      <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100">
-        <h2 class="text-xl font-semibold mb-6 text-slate-700">Создать новое предложение</h2>
-        
-        <form id="create-offer-form" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-slate-600 mb-1">Название предложения (для менеджера)</label>
-            <input type="text" name="offer_title" placeholder="Напр. Скидка для Ивана" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-all">
+    <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl shadow-slate-200/50 border border-slate-100 relative overflow-hidden">
+      <!-- Decoration -->
+      <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full opacity-50 -mr-8 -mt-8"></div>
+      
+      <form id="create-offer-form" class="space-y-10 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="space-y-2">
+            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Название оффера</label>
+            <input type="text" name="offer_title" placeholder="Напр. Скидка для Ивана" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-blue-100 transition-all font-bold text-slate-800 placeholder:text-slate-300">
           </div>
 
           @if ($products->have_posts())
-            <div>
-              <label class="block text-sm font-medium text-slate-600 mb-1">Выберите товар</label>
-              <select name="product_id" id="product_id" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-all" required>
+            <div class="space-y-2">
+              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Товар</label>
+              <select name="product_id" id="product_id" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-blue-100 transition-all font-bold text-slate-800" required>
                 <option value="">-- Выбрать товар --</option>
                 @while ($products->have_posts()) @php $products->the_post() @endphp
                   <option value="{{ get_the_ID() }}" data-prices='@json(get_field("price_options"))'>
@@ -44,69 +57,52 @@ $products = new WP_Query([
               </select>
             </div>
           @endif
+        </div>
 
-          <div id="price-variants" class="hidden">
-             <label class="block text-sm font-medium text-slate-600 mb-1">Вариант цены</label>
-             <div class="space-y-2" id="price-list"></div>
-          </div>
+        <div id="price-variants" class="hidden animate-in fade-in slide-in-from-top-4 duration-300">
+           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-3">Выберите цену</label>
+           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="price-list"></div>
+        </div>
 
-          <div>
-            <label class="block text-sm font-medium text-slate-600 mb-1">Срок действия</label>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+          <div class="space-y-3">
+            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Срок действия</label>
             <div class="flex items-center space-x-6">
-              <div class="flex items-center space-x-2">
-                <input type="number" name="expiry_hours" value="24" class="w-20 p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-all">
-                <span class="text-sm font-bold text-slate-400 uppercase tracking-tighter">час.</span>
+              <div class="flex items-center space-x-3">
+                <input type="number" name="expiry_hours" value="24" class="w-24 p-4 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-blue-100 transition-all font-black text-slate-800">
+                <span class="text-[10px] font-black text-slate-900 uppercase tracking-widest">час.</span>
               </div>
-              <div class="flex items-center space-x-2">
-                <input type="number" name="expiry_minutes" value="0" class="w-20 p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-all">
-                <span class="text-sm font-bold text-slate-400 uppercase tracking-tighter">мин.</span>
+              <div class="flex items-center space-x-3">
+                <input type="number" name="expiry_minutes" value="0" class="w-24 p-4 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-blue-100 transition-all font-black text-slate-800">
+                <span class="text-[10px] font-black text-slate-900 uppercase tracking-widest">мин.</span>
               </div>
             </div>
           </div>
 
-          <div class="flex items-center space-x-2 py-2">
-            <input type="checkbox" name="use_cookie_security" id="use_cookie_security" checked class="w-4 h-4 text-blue-600 border-slate-300 rounded">
-            <label for="use_cookie_security" class="text-sm font-medium text-slate-600">Привязать к браузеру клиента (Cookie Security)</label>
+          <div class="flex items-center space-x-3 bg-slate-50 p-4 rounded-2xl border border-transparent hover:border-blue-200 transition-all cursor-pointer group" onclick="document.getElementById('use_cookie_security').click()">
+            <input type="checkbox" name="use_cookie_security" id="use_cookie_security" checked class="w-6 h-6 text-blue-600 border-none bg-white rounded-lg focus:ring-blue-500 shadow-sm pointer-events-none">
+            <label class="text-xs font-black text-slate-600 uppercase tracking-tight leading-none cursor-pointer"> Привязать к браузеру</label>
           </div>
-
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md">
-            Сгенерировать ссылку
-          </button>
-        </form>
-
-        <div id="offer-result" class="mt-6 hidden p-4 bg-green-50 border border-green-200 rounded-lg">
-           <p class="text-sm text-green-800 font-medium mb-2">Ссылка создана:</p>
-           <div class="flex items-center space-x-2">
-             <input type="text" id="generated-link" readonly class="flex-1 p-2 bg-white border border-green-300 rounded text-sm overflow-ellipsis">
-             <button onclick="copyLink()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm transition-colors">Copy</button>
-           </div>
         </div>
-      </div>
 
-      <!-- Instructions or Recent Offers could go here -->
-      <div class="hidden md:block">
-        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
-           <h3 class="font-bold text-slate-700 mb-4 italic">Как это работает:</h3>
-           <ul class="space-y-3 text-slate-600 text-sm">
-             <li class="flex items-start">
-               <span class="bg-blue-100 text-blue-600 rounded-full w-5 h-5 flex items-center justify-center text-xs mt-0.5 mr-2">1</span>
-               <span>Выберите товар из списка.</span>
-             </li>
-             <li class="flex items-start">
-               <span class="bg-blue-100 text-blue-600 rounded-full w-5 h-5 flex items-center justify-center text-xs mt-0.5 mr-2">2</span>
-               <span>Выберите подходящую цену (скидка, рассрочка и т.д.).</span>
-             </li>
-             <li class="flex items-start">
-               <span class="bg-blue-100 text-blue-600 rounded-full w-5 h-5 flex items-center justify-center text-xs mt-0.5 mr-2">3</span>
-               <span>Установите время в часах, за которое клиент должен принять решение.</span>
-             </li>
-             <li class="flex items-start">
-               <span class="bg-blue-100 text-blue-600 rounded-full w-5 h-5 flex items-center justify-center text-xs mt-0.5 mr-2">4</span>
-               <span>Отправьте ссылку. Если включена защита, ссылка откроется только в браузере клиента!</span>
-             </li>
-           </ul>
-        </div>
+        <button type="submit" class="w-full bg-slate-900 hover:bg-blue-600 text-white font-black py-5 px-8 rounded-2xl transition-all shadow-2xl hover:shadow-blue-500/40 text-lg uppercase tracking-widest active:scale-[0.98]">
+          Создать предложение
+        </button>
+      </form>
+
+      <div id="offer-result" class="mt-12 hidden p-8 bg-blue-600 rounded-3xl animate-in zoom-in-95 duration-500 shadow-2xl shadow-blue-500/30">
+         <p class="text-[10px] text-white/60 font-black uppercase tracking-widest mb-4">Предложение готово:</p>
+         <div class="flex flex-col sm:flex-row items-center gap-4">
+           <input type="text" id="generated-link" readonly class="w-full p-4 bg-white/10 border border-white/20 rounded-2xl text-white font-mono text-sm focus:ring-0 placeholder:text-white/30">
+           <button onclick="copyLink()" class="w-full sm:w-auto bg-white text-blue-600 px-10 py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-lg active:scale-95">
+             Копировать
+           </button>
+         </div>
       </div>
+    </div>
+    
+    <div class="mt-12 text-center">
+      <p class="text-slate-400 text-xs font-bold italic uppercase tracking-widest opacity-50">Manage statuses and view reports in the WordPress admin panel.</p>
     </div>
   </div>
 
@@ -127,15 +123,17 @@ $products = new WP_Query([
         priceVariants.classList.remove('hidden');
         prices.forEach((item, index) => {
           const div = document.createElement('div');
-          div.className = 'flex items-center space-x-2 p-2 bg-slate-50 rounded border border-slate-200 hover:bg-slate-100 cursor-pointer transition-colors';
+          div.className = 'flex items-center space-x-3 p-4 bg-slate-50 rounded-2xl border-2 border-transparent hover:border-blue-600 hover:bg-white cursor-pointer transition-all group';
           div.innerHTML = `
-            <input type="radio" name="price" value="${item.price}" id="price-${index}" ${index === 0 ? 'checked' : ''} class="w-4 h-4 text-blue-600">
-            <label for="price-${index}" class="flex-1 cursor-pointer text-sm">
-              <span class="font-bold">${item.label}:</span> 
-              <span class="text-blue-600">${item.price} руб.</span>
+            <input type="radio" name="price" value="${item.price}" id="price-${index}" ${index === 0 ? 'checked' : ''} class="w-5 h-5 text-blue-600 border-none bg-white shadow-sm">
+            <label for="price-${index}" class="flex-1 cursor-pointer">
+              <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-blue-400 transition-colors">${item.label}</div>
+              <div class="text-lg font-black text-slate-900 font-mono">${item.price} ₽</div>
             </label>
           `;
-          div.addEventListener('click', () => div.querySelector('input').checked = true);
+          div.addEventListener('click', () => {
+            div.querySelector('input').checked = true;
+          });
           priceList.appendChild(div);
         });
       } else {
@@ -149,6 +147,11 @@ $products = new WP_Query([
       formData.append('action', 'create_personalized_offer');
       formData.append('nonce', '{{ wp_create_nonce("manager_dashboard_nonce") }}');
 
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerText;
+      submitBtn.innerText = 'Генерация...';
+      submitBtn.disabled = true;
+
       try {
         const response = await fetch('/wp/wp-admin/admin-ajax.php', {
           method: 'POST',
@@ -161,11 +164,14 @@ $products = new WP_Query([
           generatedLink.value = data.data.link;
           resultDiv.scrollIntoView({ behavior: 'smooth' });
         } else {
-          alert('Error: ' + data.data.message);
+          alert('Ошибка: ' + data.data.message);
         }
       } catch (err) {
         console.error(err);
-        alert('Network error occurred.');
+        alert('Ошибка сети.');
+      } finally {
+        submitBtn.innerText = originalText;
+        submitBtn.disabled = false;
       }
     });
 
@@ -174,11 +180,11 @@ $products = new WP_Query([
       document.execCommand('copy');
       const btn = event.target;
       const originalText = btn.innerText;
-      btn.innerText = 'Copied!';
-      btn.classList.replace('bg-green-600', 'bg-blue-600');
+      btn.innerText = 'Готово!';
+      btn.classList.add('bg-slate-900', 'text-white');
       setTimeout(() => {
         btn.innerText = originalText;
-        btn.classList.replace('bg-blue-600', 'bg-green-600');
+        btn.classList.remove('bg-slate-900', 'text-white');
       }, 2000);
     }
   </script>

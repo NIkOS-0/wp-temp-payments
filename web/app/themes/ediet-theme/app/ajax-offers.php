@@ -14,7 +14,7 @@ add_action('wp_ajax_create_personalized_offer', function () {
     }
 
     // 2. Check permissions
-    if (!current_user_can('edit_posts')) {
+    if (!current_user_can('manage_offers')) {
         wp_send_json_error(['message' => 'Insufficient permissions'], 403);
     }
 
@@ -59,4 +59,29 @@ add_action('template_redirect', function () {
         get_template_part('404');
         exit;
     }
+});
+
+/**
+ * AJAX Handler for marking as paid.
+ */
+add_action('wp_ajax_mark_offer_as_paid', function () {
+    if (!check_ajax_referer('manager_dashboard_nonce', 'nonce', false)) {
+        wp_send_json_error(['message' => 'Invalid nonce'], 403);
+    }
+
+    if (!current_user_can('manage_offers')) {
+        wp_send_json_error(['message' => 'Insufficient permissions'], 403);
+    }
+
+    $offerId = intval($_POST['offer_id'] ?? 0);
+    if (!$offerId) {
+        wp_send_json_error(['message' => 'Missing offer ID']);
+    }
+
+    wp_update_post([
+        'ID' => $offerId,
+        'post_status' => 'paid',
+    ]);
+
+    wp_send_json_success(['message' => 'Offer marked as paid']);
 });
