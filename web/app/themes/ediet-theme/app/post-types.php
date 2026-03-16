@@ -83,7 +83,6 @@ add_filter('manage_personal_offer_posts_columns', function ($columns) {
             $new_columns['offer_status'] = __('Status', 'sage');
             $new_columns['target_product'] = __('Product', 'sage');
             $new_columns['expiry_time'] = __('Expires In', 'sage');
-            $new_columns['creator'] = __('Creator', 'sage');
         }
         $new_columns[$key] = $value;
     }
@@ -118,14 +117,6 @@ add_action('manage_personal_offer_posts_custom_column', function ($column, $post
             }
             break;
 
-        case 'creator':
-            $author_id = get_post_field('post_author', $post_id);
-            if ($author_id) {
-                echo get_the_author_meta('display_name', $author_id);
-            } else {
-                echo '—';
-            }
-            break;
 
         case 'expiry_time':
             $expiry = get_post_meta($post_id, '_expiry_timestamp', true);
@@ -194,3 +185,60 @@ add_filter('wp_insert_post_data', function ($data, $postarr) {
     }
     return $data;
 }, 10, 2);
+
+/**
+ * Make custom columns sortable for personal_offer.
+ */
+add_filter('manage_edit-personal_offer_sortable_columns', function ($columns) {
+    $columns['offer_status'] = 'offer_status';
+    $columns['expiry_time'] = 'expiry_time';
+    return $columns;
+});
+
+/**
+ * Handle sorting for personal_offer custom columns.
+ */
+add_action('pre_get_posts', function ($query) {
+    if (!is_admin() || !$query->is_main_query() || $query->get('post_type') !== 'personal_offer') {
+        return;
+    }
+
+    $orderby = $query->get('orderby');
+
+    if ($orderby === 'offer_status') {
+        $order = $query->get('order') ?: 'ASC';
+        
+        $query->set('meta_query', [
+            'relation' => 'OR',
+            'expired_clause' => [
+                'key' => '_expiry_timestamp',
+                'value' => time(),
+                'compare' => '<',
+                'type' => 'NUMERIC'
+            ],
+            'active_clause' => [
+                'key' => '_expiry_timestamp',
+                'value' => time(),
+                'compare' => '>=',
+                'type' => 'NUMERIC'
+            ],
+            'no_expiry_clause' => [
+                'key' => '_expiry_timestamp',
+                'compare' => 'NOT EXISTS'
+            ]
+        ]);
+
+        // We sort by post_status first to group "paid" together,
+        // then by our named meta query clauses to separate active and expired.
+        // WP 5.1+ allows sorting by specific meta_query keys.
+        $query->set('orderby', [
+            'post_status' => $order,
+            'active_clause' => $order,
+            'expired_clause' => $order,
+        ]);
+
+    } elseif ($orderby === 'expiry_time') {
+        $query->set('meta_key', '_expiry_timestamp');
+        $query->set('orderby', 'meta_value_num');
+    }
+});

@@ -104,6 +104,9 @@ add_action('acf/init', function () {
         ],
     ]);
 
+    global $pagenow;
+    $is_new_post = ($pagenow === 'post-new.php' && isset($_GET['post_type']) && $_GET['post_type'] === 'personal_offer');
+
     // Personalized Offer Fields
     acf_add_local_field_group([
         'key' => 'group_personal_offer',
@@ -139,6 +142,9 @@ add_action('acf/init', function () {
                 'name' => 'expiry_hours',
                 'type' => 'number',
                 'default_value' => 24,
+                'wrapper' => [
+                    'class' => $is_new_post ? '' : 'acf-hidden',
+                ],
             ],
             [
                 'key' => 'field_offer_expiry_minutes',
@@ -146,6 +152,9 @@ add_action('acf/init', function () {
                 'name' => 'expiry_minutes',
                 'type' => 'number',
                 'default_value' => 0,
+                'wrapper' => [
+                    'class' => $is_new_post ? '' : 'acf-hidden',
+                ],
             ],
             [
                 'key' => 'field_offer_security',

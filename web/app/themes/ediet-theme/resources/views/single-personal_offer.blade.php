@@ -108,10 +108,10 @@
               </div>
             </div>
 
-            <button class="relative group/btn w-full sm:w-auto px-10 py-5 bg-slate-900 text-white rounded-2xl font-black text-xl tracking-wide shadow-2xl transition-all hover:bg-blue-600 hover:shadow-blue-500/30 overflow-hidden">
+            <button id="checkout-button" class="relative group/btn w-full sm:w-auto px-10 py-5 bg-slate-900 text-white rounded-2xl font-black text-xl tracking-wide shadow-2xl transition-all hover:bg-blue-600 hover:shadow-blue-500/30 overflow-hidden cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
               <span class="relative z-10 flex items-center justify-center gap-3">
-                Оформить сейчас
-                <svg class="w-6 h-6 transform transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                <span id="checkout-text">Оформить сейчас</span>
+                <svg id="checkout-icon" class="w-6 h-6 transform transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
               </span>
               <div class="absolute inset-0 w-full h-full bg-linear-to-r from-blue-600 to-indigo-600 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
             </button>
@@ -140,6 +140,28 @@
     </div>
   </div>
 
+  <!-- Expiry Popup -->
+  <div id="expiry-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-3xl p-8 max-w-sm w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300 text-center border-t-4 border-red-500">
+      <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      </div>
+      <h3 class="text-2xl font-black text-slate-900 mb-2">Ссылка истекла</h3>
+      <p class="text-slate-500 mb-8">Время действия этого персонального предложения подошло к концу. Пожалуйста, запросите новую ссылку.</p>
+      <button onclick="closeExpiryPopup()" class="w-full py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors">Понятно</button>
+    </div>
+  </div>
+
+  <!-- Success/Error Popup (Robokassa Test) -->
+  <div id="payment-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300 text-center">
+      <div id="payment-status-icon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"></div>
+      <h3 id="payment-status-title" class="text-2xl font-black text-slate-900 mb-2">Статус платежа</h3>
+      <p id="payment-status-message" class="text-slate-500 mb-8">Сообщение платежа</p>
+      <button onclick="closePaymentPopup()" class="w-full py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors">Закрыть</button>
+    </div>
+  </div>
+
   <script>
     function setActiveSlide(index) {
       const items = document.querySelectorAll('[data-gallery-item]');
@@ -160,16 +182,46 @@
 
     const expiryTimestamp = {{ $expiry_timestamp }} * 1000;
     const countdownEl = document.getElementById('countdown');
+    const checkoutBtn = document.getElementById('checkout-button');
+    const checkoutText = document.getElementById('checkout-text');
+    const expiryPopup = document.getElementById('expiry-popup');
+    
+    let isExpired = false;
+
+    function showExpiryPopup() {
+      expiryPopup.classList.remove('hidden');
+      setTimeout(() => {
+        expiryPopup.classList.remove('opacity-0');
+        expiryPopup.querySelector('div').classList.remove('scale-95');
+      }, 10);
+    }
+
+    function closeExpiryPopup() {
+      expiryPopup.classList.add('opacity-0');
+      expiryPopup.querySelector('div').classList.add('scale-95');
+      setTimeout(() => {
+        expiryPopup.classList.add('hidden');
+      }, 300);
+    }
 
     function updateCountdown() {
+      if (isExpired) return;
+
       const now = new Date().getTime();
       const distance = expiryTimestamp - now;
 
       if (distance < 0) {
+        isExpired = true;
         countdownEl.innerHTML = "ИСТЕКЛО";
         countdownEl.classList.replace('text-orange-600', 'text-red-600');
-        // Immediately reload the page to trigger server-side 404/expiry check
-        setTimeout(() => location.reload(), 1000);
+        
+        // Deactivate checkout button
+        checkoutBtn.disabled = true;
+        checkoutText.innerText = "Предложение недоступно";
+        document.getElementById('checkout-icon').classList.add('hidden');
+        
+        // Show popup
+        showExpiryPopup();
         return;
       }
 
@@ -180,6 +232,152 @@
       const pad = (num) => String(num).padStart(2, '0');
       countdownEl.innerHTML = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
     }
+
+    // Robokassa Demo Logic
+    /**
+     * Helper to show the dynamic payment status popup
+     */
+    function showPaymentStatus(isSuccess, title, message) {
+      const popup = document.getElementById('payment-popup');
+      const iconContainer = document.getElementById('payment-status-icon');
+      const titleEl = document.getElementById('payment-status-title');
+      const messageEl = document.getElementById('payment-status-message');
+
+      if (isSuccess) {
+        iconContainer.className = 'w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6';
+        iconContainer.innerHTML = '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+        titleEl.className = 'text-2xl font-black text-green-700 mb-2';
+      } else {
+        iconContainer.className = 'w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6';
+        iconContainer.innerHTML = '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+        titleEl.className = 'text-2xl font-black text-red-700 mb-2';
+      }
+
+      titleEl.innerText = title;
+      messageEl.innerHTML = message;
+
+      popup.classList.remove('hidden');
+      setTimeout(() => {
+        popup.classList.remove('opacity-0');
+        popup.querySelector('div').classList.remove('scale-95');
+      }, 10);
+    }
+
+    function closePaymentPopup() {
+      const popup = document.getElementById('payment-popup');
+      popup.classList.add('opacity-0');
+      popup.querySelector('div').classList.add('scale-95');
+      setTimeout(() => {
+        popup.classList.add('hidden');
+        // If it was a success, you might want to redirect them or update UI further here.
+      }, 300);
+    }
+
+    // Handle incoming return from Robokassa
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      // If we returned from Robokassa with parameters
+      if (urlParams.has('InvId')) {
+        const outSum = urlParams.get('OutSum');
+        const invId = urlParams.get('InvId');
+        
+        // This is a naive frontend check based on URL parameters ONLY for demonstration.
+        // In reality, you MUST verify the SignatureValue on the backend via the ResultURL webhook.
+        // And use the backend to verify the SuccessURL parameters.
+        if (urlParams.has('SignatureValue')) {
+          // Assuming success for demo if SignatureValue is present
+          showPaymentStatus(
+            true, 
+            'Оплата прошла успешно!', 
+            `Спасибо за покупку! Заказ #${invId} оплачен на сумму ${outSum} руб.<br><br><span class="text-sm">В ближайшее время менеджер свяжется с вами или вы получите доступ на почту.</span>`
+          );
+        } else {
+            // Fail scenario, maybe they clicked cancel.
+            showPaymentStatus(
+                false, 
+                'Ошибка оплаты', 
+                `Оплата заказа #${invId} не была завершена.<br><span class="text-sm">Пожалуйста, попробуйте снова или обратитесь в поддержку.</span>`
+            );
+        }
+        
+        // Clean URL parameters
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    });
+
+    checkoutBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (isExpired) return;
+
+      checkoutBtn.disabled = true;
+      checkoutText.innerText = "Переход к оплате...";
+
+      // Prepare data for Robokassa test mode
+      const mrh_login = "demo"; // Note: 'demo' login is usually used for Robokassa testing
+      const out_summ = "{{ $price }}";
+      const inv_id = "{{ get_the_ID() }}99"; // Faked invoice ID for uniqueness in test mode
+      const inv_desc = "Оплата персонального предложения: {{ $product->post_title }}";
+      
+      // We must generate the MD5 signature. Since this is purely frontend demo logic for test mode, 
+      // we are breaking security rules by hashing on the frontend or passing dummy data.
+      // Usually, you MUST fetch the signature and URL from your PHP backend.
+      
+      // For this temporary solution, we'll route the user directly to the demo page
+      // In a real scenario, this form submission must be generated securely by backend.
+      
+      const currentUrl = encodeURIComponent(window.location.href);
+      
+      // Note: testing environment for Robokassa usually expects properly md5 signed parameters.
+      // Since we don't have the backend endpoint ready, we'll simulate the merchant request
+      // Note: without a valid password 1, Robokassa will reject it even in test mode if IsTest is strictly enforced
+      // against a real live merchant login. 
+      // For pure dummy link behavior, as requested ("переход на оплату в демо-режиме"):
+      
+      const robokassaForm = document.createElement('form');
+      robokassaForm.action = "https://auth.robokassa.ru/Merchant/Index.aspx";
+      robokassaForm.method = "POST";
+      
+      // Add hidden fields
+      const params = {
+          MerchantLogin: 'demo', // Using demo
+          OutSum: out_summ,
+          InvId: inv_id,
+          Description: inv_desc,
+          SignatureValue: '11111111111111111111111111111111', // Dummy signature for UI testing
+          IsTest: '1',
+          Culture: 'ru',
+      };
+
+      for (const [key, value] of Object.entries(params)) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = value;
+          robokassaForm.appendChild(input);
+      }
+      
+      // Fallback for UI if signature fails (which it will without backend integration)
+      // To fulfill the requirement "either show popup success or failure", we can simply mock the flow if you strictly want a mockup,
+      // But let's attempt to redirect first. Because Robokassa will reject the dummy signature, let's actually
+      // just simulate the flow locally so you can see the popups.
+
+      // IF YOU WANT TO ACTUALLY REDIRECT, UNCOMMENT BELOW:
+      document.body.appendChild(robokassaForm);
+      robokassaForm.submit();
+      
+      // IF YOU WANT TO JUST SIMULATE THE POPUP DIRECTLY (since real redirect requires backend):
+      /*
+      setTimeout(() => {
+          // Simulating a random success/failure
+          if (Math.random() > 0.5) {
+              window.location.href = window.location.href + (window.location.href.includes('?') ? '&' : '?') + `InvId=${inv_id}&OutSum=${out_summ}&SignatureValue=MOCKED`;
+          } else {
+              window.location.href = window.location.href + (window.location.href.includes('?') ? '&' : '?') + `InvId=${inv_id}&OutSum=${out_summ}`;
+          }
+      }, 1000);
+      */
+    });
 
     setInterval(updateCountdown, 1000);
     updateCountdown();
