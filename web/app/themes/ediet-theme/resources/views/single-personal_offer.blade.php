@@ -108,13 +108,24 @@
               </div>
             </div>
 
-            <button id="checkout-button" class="relative group/btn w-full sm:w-auto px-10 py-5 bg-slate-900 text-white rounded-2xl font-black text-xl tracking-wide shadow-2xl transition-all hover:bg-blue-600 hover:shadow-blue-500/30 overflow-hidden cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-              <span class="relative z-10 flex items-center justify-center gap-3">
-                <span id="checkout-text">Оформить сейчас</span>
-                <svg id="checkout-icon" class="w-6 h-6 transform transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-              </span>
-              <div class="absolute inset-0 w-full h-full bg-linear-to-r from-blue-600 to-indigo-600 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
-            </button>
+            <div class="flex flex-col gap-3 w-full sm:w-auto">
+              <!-- Robokassa -->
+              <button id="checkout-button" class="relative group/btn px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-lg tracking-wide shadow-xl transition-all hover:bg-orange-500 hover:shadow-orange-500/30 overflow-hidden cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="relative z-10 flex items-center justify-center gap-3">
+                  <span id="checkout-text">Карта РФ (Robokassa)</span>
+                  <svg id="checkout-icon" class="w-5 h-5 transform transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </span>
+              </button>
+              
+              <!-- Stripe -->
+              <button id="checkout-stripe" class="relative group/btn px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-lg tracking-wide shadow-xl transition-all hover:bg-indigo-500 hover:shadow-indigo-500/30 overflow-hidden cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="relative z-10 flex items-center justify-center gap-3">
+                  <span id="checkout-stripe-text">Иностранная карта (Stripe)</span>
+                  <svg id="checkout-stripe-icon" class="w-5 h-5 transform transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                </span>
+                <div class="absolute inset-0 w-full h-full bg-linear-to-r from-purple-500 to-indigo-500 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -184,6 +195,8 @@
     const countdownEl = document.getElementById('countdown');
     const checkoutBtn = document.getElementById('checkout-button');
     const checkoutText = document.getElementById('checkout-text');
+    const checkoutStripe = document.getElementById('checkout-stripe');
+    const checkoutStripeText = document.getElementById('checkout-stripe-text');
     const expiryPopup = document.getElementById('expiry-popup');
     
     let isExpired = false;
@@ -219,6 +232,10 @@
         checkoutBtn.disabled = true;
         checkoutText.innerText = "Предложение недоступно";
         document.getElementById('checkout-icon').classList.add('hidden');
+        
+        checkoutStripe.disabled = true;
+        checkoutStripeText.innerText = "Предложение недоступно";
+        document.getElementById('checkout-stripe-icon').classList.add('hidden');
         
         // Show popup
         showExpiryPopup();
@@ -277,6 +294,26 @@
     document.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       
+      // Check Stripe return
+      if (urlParams.has('stripe')) {
+        const stripeStatus = urlParams.get('stripe');
+        if (stripeStatus === 'success') {
+          showPaymentStatus(
+            true, 
+            'Оплата (Stripe) успешна!', 
+            `Спасибо за покупку! Платеж успешно обработан.<br><br><span class="text-sm">В ближайшее время менеджер свяжется с вами или вы получите доступ на почту.</span>`
+          );
+        } else {
+          showPaymentStatus(
+            false, 
+            'Ошибка оплаты', 
+            `Процесс оплаты Stripe был прерван.<br><span class="text-sm">Пожалуйста, попробуйте снова.</span>`
+          );
+        }
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      }
+
       // If we returned from Robokassa with parameters
       if (urlParams.has('InvId')) {
         const outSum = urlParams.get('OutSum');
@@ -306,78 +343,45 @@
       }
     });
 
-    checkoutBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (isExpired) return;
+    function initCheckoutButton(btnElement, btnTextElement, provider, originalText) {
+      btnElement.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (isExpired) return;
 
-      checkoutBtn.disabled = true;
-      checkoutText.innerText = "Переход к оплате...";
+        btnElement.disabled = true;
+        btnTextElement.innerText = "Создание сессии...";
 
-      // Prepare data for Robokassa test mode
-      const mrh_login = "demo"; // Note: 'demo' login is usually used for Robokassa testing
-      const out_summ = "{{ $price }}";
-      const inv_id = "{{ get_the_ID() }}99"; // Faked invoice ID for uniqueness in test mode
-      const inv_desc = "Оплата персонального предложения: {{ $product->post_title }}";
-      
-      // We must generate the MD5 signature. Since this is purely frontend demo logic for test mode, 
-      // we are breaking security rules by hashing on the frontend or passing dummy data.
-      // Usually, you MUST fetch the signature and URL from your PHP backend.
-      
-      // For this temporary solution, we'll route the user directly to the demo page
-      // In a real scenario, this form submission must be generated securely by backend.
-      
-      const currentUrl = encodeURIComponent(window.location.href);
-      
-      // Note: testing environment for Robokassa usually expects properly md5 signed parameters.
-      // Since we don't have the backend endpoint ready, we'll simulate the merchant request
-      // Note: without a valid password 1, Robokassa will reject it even in test mode if IsTest is strictly enforced
-      // against a real live merchant login. 
-      // For pure dummy link behavior, as requested ("переход на оплату в демо-режиме"):
-      
-      const robokassaForm = document.createElement('form');
-      robokassaForm.action = "https://auth.robokassa.ru/Merchant/Index.aspx";
-      robokassaForm.method = "POST";
-      
-      // Add hidden fields
-      const params = {
-          MerchantLogin: 'demo', // Using demo
-          OutSum: out_summ,
-          InvId: inv_id,
-          Description: inv_desc,
-          SignatureValue: '11111111111111111111111111111111', // Dummy signature for UI testing
-          IsTest: '1',
-          Culture: 'ru',
-      };
+        const formData = new FormData();
+        formData.append('action', 'create_payment_checkout');
+        formData.append('provider', provider);
+        formData.append('offer_id', '{{ get_the_ID() }}');
 
-      for (const [key, value] of Object.entries(params)) {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = value;
-          robokassaForm.appendChild(input);
-      }
-      
-      // Fallback for UI if signature fails (which it will without backend integration)
-      // To fulfill the requirement "either show popup success or failure", we can simply mock the flow if you strictly want a mockup,
-      // But let's attempt to redirect first. Because Robokassa will reject the dummy signature, let's actually
-      // just simulate the flow locally so you can see the popups.
-
-      // IF YOU WANT TO ACTUALLY REDIRECT, UNCOMMENT BELOW:
-      document.body.appendChild(robokassaForm);
-      robokassaForm.submit();
-      
-      // IF YOU WANT TO JUST SIMULATE THE POPUP DIRECTLY (since real redirect requires backend):
-      /*
-      setTimeout(() => {
-          // Simulating a random success/failure
-          if (Math.random() > 0.5) {
-              window.location.href = window.location.href + (window.location.href.includes('?') ? '&' : '?') + `InvId=${inv_id}&OutSum=${out_summ}&SignatureValue=MOCKED`;
+        fetch('{{ admin_url('admin-ajax.php') }}', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success && res.data.url) {
+            window.location.href = res.data.url;
           } else {
-              window.location.href = window.location.href + (window.location.href.includes('?') ? '&' : '?') + `InvId=${inv_id}&OutSum=${out_summ}`;
+            btnElement.disabled = false;
+            btnTextElement.innerText = originalText;
+            showPaymentStatus(false, 'Ошибка платежной системы', res.data?.message || 'Не удалось создать сессию оплаты. Подробности в консоли.');
+            console.error(res);
           }
-      }, 1000);
-      */
-    });
+        })
+        .catch(err => {
+          btnElement.disabled = false;
+          btnTextElement.innerText = originalText;
+          showPaymentStatus(false, 'Ошибка соединения', 'Не удалось связаться с сервером.');
+          console.error(err);
+        });
+      });
+    }
+
+    initCheckoutButton(checkoutBtn, checkoutText, 'robokassa', 'Карта РФ (Robokassa)');
+    initCheckoutButton(checkoutStripe, checkoutStripeText, 'stripe', 'Иностранная карта (Stripe)');
 
     setInterval(updateCountdown, 1000);
     updateCountdown();

@@ -3,4 +3,5 @@
 /public/*
 !/public/.gitkeep
 .env
+.payments_env
 npm-debug.log

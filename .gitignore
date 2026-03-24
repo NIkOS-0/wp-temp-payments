@@ -32,3 +32,6 @@ phpunit.xml
 
 # WP-CLI
 wp-cli.local.yml
+
+# Payments
+.payments_env_example
