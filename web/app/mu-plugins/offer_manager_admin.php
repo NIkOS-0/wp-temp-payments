@@ -3,6 +3,11 @@
  * Custom Admin UI per role: Offer Manager
  */
 
+// Увеличиваем время жизни сессии до 14 дней, чтобы менеджеров не "выкидывало" из админки
+add_filter('auth_cookie_expiration', function ($expirein) {
+    return 14 * DAY_IN_SECONDS;
+});
+
 // 1. Add capabilities to Offer Manager role
 add_action('admin_init', function () {
     $role = get_role('offer_manager');
@@ -80,9 +85,10 @@ add_action('init', function () {
     $user = wp_get_current_user();
     if (!in_array('offer_manager', $user->roles)) return;
 
-    // Remove WP logo
+    // Remove WP logo and profile links
     add_action('admin_bar_menu', function ($wp_admin_bar) {
         $wp_admin_bar->remove_node('wp-logo');
+        $wp_admin_bar->remove_node('edit-profile');
     }, 999);
 
     // Redirect to Dashboard on login
@@ -100,10 +106,10 @@ add_action('init', function () {
         return 'ru_RU';
     });
 
-    // Redirect to custom dashboard from standard index.php
+    // Redirect to custom dashboard from standard index.php and profile.php
     add_action('admin_init', function () {
         global $pagenow;
-        if ($pagenow === 'index.php' && !isset($_GET['page'])) {
+        if (in_array($pagenow, ['index.php', 'profile.php']) && !isset($_GET['page'])) {
             wp_safe_redirect(admin_url('admin.php?page=offer-manager-dashboard'));
             exit;
         }
@@ -112,6 +118,7 @@ add_action('init', function () {
     // Hide unnecessary menu items
     add_action('admin_menu', function () {
         remove_menu_page('index.php'); // Standard dashboard
+        remove_menu_page('profile.php'); // Убираем доступ к профилю
         remove_menu_page('tools.php');
         remove_menu_page('options-general.php');
         remove_menu_page('edit-comments.php');
