@@ -82,8 +82,8 @@ add_action('admin_menu', function () {
     }
 
     add_menu_page(
-        'Offer generator',
-        'Offer generator',
+        'Дашборд Менеджера', // Changed from Offer generator
+        'Дашборд Менеджера',
         'read',
         'offer-manager-dashboard-link',
         function () {

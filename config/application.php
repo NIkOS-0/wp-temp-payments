@@ -143,6 +143,7 @@ Config::define('NONCE_SALT', env('NONCE_SALT'));
  */
 Config::define('AUTOMATIC_UPDATER_DISABLED', true);
 Config::define('DISABLE_WP_CRON', env('DISABLE_WP_CRON') ?: false);
+Config::define('FS_METHOD', env('FS_METHOD') ?: 'direct');
 
 // Disable the plugin and theme file editor in the admin
 Config::define('DISALLOW_FILE_EDIT', true);

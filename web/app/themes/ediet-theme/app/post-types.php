@@ -8,8 +8,16 @@ namespace App;
 add_action('init', function () {
     register_post_type('product_offer', [
         'labels' => [
-            'name' => __('Products (Offers)', 'sage'),
-            'singular_name' => __('Product', 'sage'),
+            'name' => 'Товары (Офферы)',
+            'singular_name' => 'Товар',
+            'add_new' => 'Добавить товар',
+            'add_new_item' => 'Добавить новый товар',
+            'edit_item' => 'Редактировать товар',
+            'new_item' => 'Новый товар',
+            'view_item' => 'Посмотреть товар',
+            'search_items' => 'Искать товары',
+            'not_found' => 'Товаров не найдено',
+            'not_found_in_trash' => 'В корзине товаров не найдено',
         ],
         'public' => true,
         'show_ui' => true,
@@ -25,8 +33,16 @@ add_action('init', function () {
 
     register_post_type('personal_offer', [
         'labels' => [
-            'name' => __('Personalized Offers', 'sage'),
-            'singular_name' => __('Personalized Offer', 'sage'),
+            'name' => 'Персональные предложения',
+            'singular_name' => 'Предложение',
+            'add_new' => 'Создать предложение',
+            'add_new_item' => 'Создать новое предложение',
+            'edit_item' => 'Редактировать предложение',
+            'new_item' => 'Новое предложение',
+            'view_item' => 'Посмотреть предложение',
+            'search_items' => 'Искать предложения',
+            'not_found' => 'Предложений не найдено',
+            'not_found_in_trash' => 'В корзине предложений не найдено',
         ],
         'public' => true,
         'show_ui' => true,
@@ -42,8 +58,8 @@ add_action('init', function () {
     ]);
 
     register_post_status('paid', [
-        'label'                     => _x('Paid', 'post status', 'sage'),
-        'label_count'               => _n_noop('Paid <span class="count">(%s)</span>', 'Paid <span class="count">(%s)</span>', 'sage'),
+        'label'                     => 'Оплачено',
+        'label_count'               => _n_noop('Оплачено <span class="count">(%s)</span>', 'Оплачено <span class="count">(%s)</span>', 'sage'),
         'public'                    => true,
         'show_in_admin_all_list'    => true,
         'show_in_admin_status_list' => true,
@@ -80,9 +96,9 @@ add_filter('manage_personal_offer_posts_columns', function ($columns) {
     $new_columns = [];
     foreach ($columns as $key => $value) {
         if ($key === 'date') {
-            $new_columns['offer_status'] = __('Status', 'sage');
-            $new_columns['target_product'] = __('Product', 'sage');
-            $new_columns['expiry_time'] = __('Expires In', 'sage');
+            $new_columns['offer_status'] = 'Статус';
+            $new_columns['target_product'] = 'Товар';
+            $new_columns['expiry_time'] = 'Истекает через';
         }
         $new_columns[$key] = $value;
     }

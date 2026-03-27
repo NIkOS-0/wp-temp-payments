@@ -61,7 +61,13 @@ class OfferService
     {
         $status = get_post_status($offerId);
         if ($status === 'paid') {
-            return ['valid' => false, 'reason' => 'already_paid'];
+            // Allow one final view of the page if returning from successful payment.
+            // (The frontend JS removes this query parameter via replaceState immediately to prevent reload bypass).
+            if (isset($_GET['payment']) && $_GET['payment'] === 'success') {
+                 // proceed
+            } else {
+                return ['valid' => false, 'reason' => 'already_paid'];
+            }
         }
 
         $expiryTimestamp = get_post_meta($offerId, '_expiry_timestamp', true);
