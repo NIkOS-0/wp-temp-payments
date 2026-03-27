@@ -168,90 +168,265 @@ function render_offer_manager_dashboard() {
         'post_status' => ['publish', 'paid'],
     ]);
 
+    $products = get_posts([
+        'post_type' => 'product_offer',
+        'numberposts' => -1,
+        'post_status' => 'publish',
+    ]);
+
     ?>
-    <div class="wrap om-dashboard">
-        <h1 class="wp-heading-inline">Панель управления менеджера</h1>
-        <hr class="wp-header-end">
+    <div class="wrap tw-isolate" style="margin: 20px 20px 0 2px;">
+        <style>
+            /* Изолируем Tailwind стили, чтобы они не ломали WP Admin */
+            .tw-isolate * { font-family: inherit; box-sizing: border-box; }
+            .tw-isolate input[type=text], .tw-isolate input[type=number], .tw-isolate select { box-shadow: none !important; border: none !important; outline: none !important; margin: 0; }
+            .tw-isolate input[type=checkbox], .tw-isolate input[type=radio] { box-shadow: none !important; border: none !important; min-width: 20px; min-height: 20px; cursor: pointer; margin: 0; }
+            .tw-isolate label { margin: 0; padding: 0; }
+            /* Сброс WP стилей для Tailwind a */
+            .tw-isolate a { text-decoration: none !important; }
+            /* Hide WP notices in this UI */
+            .update-nag, .notice { display: none !important; }
+        </style>
 
-        <div class="om-stats-grid">
-            <div class="om-stat-card">
-                <div class="om-stat-label">Всего предложений</div>
-                <div class="om-stat-value"><?php echo $total_offers; ?></div>
-            </div>
-            <div class="om-stat-card">
-                <div class="om-stat-label">Оплачено</div>
-                <div class="om-stat-value om-color-paid"><?php echo $paid_offers; ?></div>
-            </div>
-            <div class="om-stat-card">
-                <div class="om-stat-label">Конверсия</div>
-                <div class="om-stat-value"><?php echo $conversion; ?>%</div>
-            </div>
-        </div>
+        <!-- Подключаем Tailwind для UI блока всего дашборда -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                corePlugins: {
+                    preflight: false,
+                }
+            }
+        </script>
 
-        <div class="om-content-grid">
-            <div class="om-recent-activity">
-                <h2>Последние предложения</h2>
-                <table class="wp-list-table widefat fixed striped">
-                    <thead>
-                        <tr>
-                            <th>Название</th>
-                            <th>Статус</th>
-                            <th>Дата</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($recent_offers as $offer): 
-                            $status = get_post_status($offer->ID);
-                            $status_label = ($status === 'paid') ? 'Оплачено' : 'Активен';
-                            $status_class = ($status === 'paid') ? 'om-tag-paid' : 'om-tag-active';
-                        ?>
-                            <tr>
-                                <td><strong><a href="<?php echo get_edit_post_link($offer->ID); ?>"><?php echo get_the_title($offer->ID); ?></a></strong></td>
-                                <td><span class="om-tag <?php echo $status_class; ?>"><?php echo $status_label; ?></span></td>
-                                <td><?php echo get_the_date('d.m.Y H:i', $offer->ID); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        <?php if (empty($recent_offers)): ?>
-                            <tr><td colspan="3">Предложений пока нет</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+        <div class="max-w-6xl mx-auto py-2 px-2 sm:px-6">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 uppercase m-0 leading-none" style="padding:0;">Панель управления</h1>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1 mb-0">Менеджер предложений</p>
+                </div>
+                <a href="<?php echo admin_url('edit.php?post_type=product_offer'); ?>" class="inline-flex items-center justify-center px-6 py-3 bg-white border border-slate-200 text-slate-700 font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-slate-50 hover:text-blue-600 transition-all shadow-sm whitespace-nowrap cursor-pointer">Управление товарами &rarr;</a>
             </div>
 
-            <div class="om-quick-actions">
-                <h2>Быстрые действия</h2>
-                <div class="om-action-list">
-                    <a href="<?php echo admin_url('admin.php?page=offer-manager-dashboard-link'); ?>" class="button button-primary button-hero">Создать предложение</a>
-                    <a href="<?php echo admin_url('edit.php?post_type=product_offer'); ?>" class="button button-secondary">Управление товарами</a>
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/40 flex flex-col justify-center items-center sm:items-start text-center sm:text-left transition-transform hover:-translate-y-1">
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Всего предложений</div>
+                    <div class="text-4xl font-black text-slate-900 leading-none"><?php echo $total_offers; ?></div>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/40 flex flex-col justify-center items-center sm:items-start text-center sm:text-left transition-transform hover:-translate-y-1">
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Оплачено</div>
+                    <div class="text-4xl font-black text-emerald-600 leading-none"><?php echo $paid_offers; ?></div>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/40 flex flex-col justify-center items-center sm:items-start text-center sm:text-left transition-transform hover:-translate-y-1">
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Конверсия</div>
+                    <div class="text-4xl font-black text-blue-600 leading-none"><?php echo $conversion; ?>%</div>
                 </div>
             </div>
+
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                
+                <!-- Generator Form (2 cols) -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/40 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50/50 rounded-bl-full -mr-8 -mt-8 pointer-events-none"></div>
+                        <h2 class="text-xl font-black text-slate-900 tracking-tight uppercase leading-none mb-6 relative z-10 m-0">Создать предложение</h2>
+                        
+                        <form id="create-offer-form" class="space-y-6 relative z-10 w-full m-0">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                              <div class="space-y-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Название оффера</label>
+                                <input type="text" name="offer_title" placeholder="Напр. Скидка для Ивана" class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-blue-100 transition-all font-bold text-slate-800 placeholder:text-slate-300 m-0">
+                              </div>
+
+                              <?php if (!empty($products)): ?>
+                                <div class="space-y-2">
+                                  <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Товар</label>
+                                  <select name="product_id" id="product_id" class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-blue-100 transition-all font-bold text-slate-800 m-0" required>
+                                    <option value="">-- Выбрать товар --</option>
+                                    <?php foreach ($products as $p): ?>
+                                      <option value="<?php echo $p->ID; ?>" data-prices='<?php echo esc_attr(json_encode(get_field("price_options", $p->ID) ?: [])); ?>'>
+                                        <?php echo esc_html($p->post_title); ?>
+                                      </option>
+                                    <?php endforeach; ?>
+                                  </select>
+                                </div>
+                              <?php endif; ?>
+                            </div>
+
+                            <div id="price-variants" class="hidden animate-in fade-in slide-in-from-top-4 duration-300">
+                               <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2">Выберите цену</label>
+                               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="price-list"></div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
+                              <div class="space-y-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Срок действия</label>
+                                <div class="flex items-center space-x-4">
+                                  <div class="flex items-center space-x-2">
+                                    <input type="number" name="expiry_hours" value="24" class="w-24 p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-blue-100 transition-all font-black text-slate-800 text-center m-0">
+                                    <span class="text-[10px] font-black text-slate-900 uppercase tracking-widest">час.</span>
+                                  </div>
+                                  <div class="flex items-center space-x-2">
+                                    <input type="number" name="expiry_minutes" value="0" class="w-24 p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-blue-100 transition-all font-black text-slate-800 text-center m-0">
+                                    <span class="text-[10px] font-black text-slate-900 uppercase tracking-widest">мин.</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="flex items-center space-x-3 bg-slate-50 p-4 rounded-2xl border border-transparent hover:border-blue-200 transition-all cursor-pointer group" onclick="document.getElementById('use_cookie_security').click()">
+                                <input type="checkbox" name="use_cookie_security" id="use_cookie_security" checked class="w-6 h-6 text-blue-600 bg-white rounded-lg focus:ring-blue-500 pointer-events-none m-0">
+                                <label class="text-xs font-black text-slate-600 uppercase tracking-tight leading-none cursor-pointer m-0 pt-0">Привязать к браузеру</label>
+                              </div>
+                            </div>
+
+                            <div class="pt-4">
+                                <button type="submit" class="w-full bg-slate-900 hover:bg-blue-600 text-white font-black py-4 px-6 rounded-xll transition-all shadow-xl hover:shadow-blue-500/40 text-sm uppercase tracking-widest active:scale-[0.98] border-none cursor-pointer flex justify-center items-center m-0 rounded-2xl">
+                                  Создать предложение
+                                </button>
+                            </div>
+                        </form>
+
+                        <div id="offer-result" class="mt-8 hidden p-6 bg-blue-600 rounded-3xl animate-in zoom-in-95 duration-500 shadow-xl shadow-blue-500/30 w-full mb-0">
+                           <p class="text-[10px] text-white/80 font-black uppercase tracking-widest mb-3 m-0">Ссылка готова:</p>
+                           <div class="flex flex-col sm:flex-row items-center gap-3">
+                             <input type="text" id="generated-link" readonly class="w-full p-4 bg-white/10 border border-white/20 rounded-2xl text-white font-mono text-xs focus:ring-0 placeholder:text-white/30 m-0">
+                             <button onclick="copyLink(event)" class="w-full sm:w-auto bg-white text-blue-600 px-6 py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-md active:scale-[0.98] border-none m-0 cursor-pointer text-[11px] whitespace-nowrap">
+                               Копировать
+                             </button>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity (1 col) -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/40">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-sm font-black text-slate-900 tracking-tight uppercase leading-none m-0">Последние ссылки</h2>
+                        </div>
+                        <div class="flex flex-col space-y-3">
+                            <?php foreach ($recent_offers as $offer): 
+                                $status = get_post_status($offer->ID);
+                                $is_paid = ($status === 'paid');
+                                $status_label = $is_paid ? 'Оплачено' : 'Активен';
+                                $bg_class = $is_paid ? 'bg-emerald-50' : 'bg-blue-50';
+                                $text_class = $is_paid ? 'text-emerald-700' : 'text-blue-700';
+                            ?>
+                                <a href="<?php echo get_edit_post_link($offer->ID); ?>" class="group block p-4 rounded-2xl border border-slate-100 hover:border-blue-200 hover:bg-slate-50 transition-all cursor-pointer">
+                                    <div class="font-bold text-slate-800 text-sm mb-3 group-hover:text-blue-600 transition-colors leading-tight"><?php echo esc_html(get_the_title($offer->ID)); ?></div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest <?php echo $bg_class . ' ' . $text_class; ?>"><?php echo $status_label; ?></span>
+                                        <span class="text-[10px] font-bold text-slate-400 font-mono"><?php echo get_the_date('d.m.Y', $offer->ID); ?></span>
+                                    </div>
+                                </a>
+                            <?php endforeach; ?>
+                            <?php if (empty($recent_offers)): ?>
+                                <div class="text-center p-6 text-sm font-bold text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">Предложений пока нет</div>
+                            <?php endif; ?>
+                            
+                            <?php if (count($recent_offers) >= 5): ?>
+                                <a href="<?php echo admin_url('edit.php?post_type=personal_offer'); ?>" class="block text-center mt-2 text-xs font-black text-slate-400 uppercase tracking-widest hover:text-blue-600 transition-colors">Все предложения &rarr;</a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
+        
+        <script>
+            const form = document.getElementById('create-offer-form');
+            const productSelect = document.getElementById('product_id');
+            const priceVariants = document.getElementById('price-variants');
+            const priceList = document.getElementById('price-list');
+            const resultDiv = document.getElementById('offer-result');
+            const generatedLink = document.getElementById('generated-link');
 
-        <style>
-            .om-dashboard { margin-top: 20px; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; }
-            .om-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-            .om-stat-card { background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; }
-            .om-stat-label { color: #6b7280; font-size: 14px; margin-bottom: 8px; font-weight: 500; }
-            .om-stat-value { font-size: 32px; font-weight: 700; color: #111827; }
-            .om-color-paid { color: #059669; }
-            
-            .om-content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-            @media (max-width: 900px) { .om-content-grid { grid-template-columns: 1fr; } }
-            
-            .om-recent-activity, .om-quick-actions { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e5e7eb; }
-            .om-tag { padding: 4px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
-            .om-tag-paid { background: #d1fae5; color: #065f46; }
-            .om-tag-active { background: #dbeafe; color: #1e40af; }
-            
-            .om-action-list { display: flex; flex-direction: column; gap: 10px; }
-            .om-action-list .button { text-align: center; }
-
-            /* Mob responsive tweaks */
-            @media (max-width: 600px) {
-                .om-stats-grid { grid-template-columns: 1fr; }
-                .om-stat-card { text-align: center; }
+            if(productSelect) {
+                productSelect.addEventListener('change', function() {
+                  const selected = this.options[this.selectedIndex];
+                  const prices = JSON.parse(selected.dataset.prices || '[]');
+                  
+                  priceList.innerHTML = '';
+                  if (prices.length > 0) {
+                    priceVariants.classList.remove('hidden');
+                    prices.forEach((item, index) => {
+                      const div = document.createElement('div');
+                      div.className = 'flex items-center space-x-3 p-4 bg-slate-50 rounded-2xl border-2 border-transparent hover:border-blue-600 hover:bg-white cursor-pointer transition-all group m-0';
+                      div.innerHTML = `
+                        <input type="radio" name="price" value="${item.price}" id="price-${index}" ${index === 0 ? 'checked' : ''} class="w-5 h-5 text-blue-600 bg-white m-0 border-none shadow-sm cursor-pointer">
+                        <label for="price-${index}" class="flex-1 cursor-pointer m-0 pt-0">
+                          <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-blue-400 transition-colors leading-tight mb-1">${item.label}</div>
+                          <div class="text-sm font-black text-slate-900 font-mono leading-tight">${item.price} ₽</div>
+                        </label>
+                      `;
+                      div.addEventListener('click', () => {
+                        div.querySelector('input').checked = true;
+                      });
+                      priceList.appendChild(div);
+                    });
+                  } else {
+                    priceVariants.classList.add('hidden');
+                  }
+                });
             }
-        </style>
+
+            if(form) {
+                form.addEventListener('submit', async (e) => {
+                  e.preventDefault();
+                  const formData = new FormData(form);
+                  formData.append('action', 'create_personalized_offer');
+                  formData.append('nonce', '<?php echo wp_create_nonce("manager_dashboard_nonce"); ?>');
+
+                  const submitBtn = form.querySelector('button[type="submit"]');
+                  const originalText = submitBtn.innerText;
+                  submitBtn.innerText = 'Генерация...';
+                  submitBtn.disabled = true;
+                  submitBtn.style.opacity = '0.7';
+
+                  try {
+                    const response = await fetch(ajaxurl, {
+                      method: 'POST',
+                      body: formData
+                    });
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                      resultDiv.classList.remove('hidden');
+                      generatedLink.value = data.data.link;
+                      // resultDiv.scrollIntoView({ behavior: 'smooth' }); // Unnecessary for admin UI
+                    } else {
+                      alert('Ошибка: ' + (data.data.message || 'Неизвестная ошибка'));
+                    }
+                  } catch (err) {
+                    console.error(err);
+                    alert('Ошибка сети.');
+                  } finally {
+                    submitBtn.innerText = originalText;
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '1';
+                  }
+                });
+            }
+
+            function copyLink(e) {
+              e.preventDefault();
+              generatedLink.select();
+              document.execCommand('copy');
+              const btn = e.target;
+              const originalText = btn.innerText;
+              btn.innerText = 'Готово!';
+              btn.classList.add('bg-slate-900', 'text-white');
+              btn.classList.remove('bg-white', 'text-blue-600');
+              setTimeout(() => {
+                btn.innerText = originalText;
+                btn.classList.remove('bg-slate-900', 'text-white');
+                btn.classList.add('bg-white', 'text-blue-600');
+              }, 2000);
+            }
+        </script>
     </div>
     <?php
 }

@@ -73,37 +73,7 @@ add_action('init', function () {
     }
 });
 
-/**
- * Add 'Manager Dashboard' link to the WP Admin sidebar for managers.
- */
-add_action('admin_menu', function () {
-    if (!current_user_can('manage_offers')) {
-        return;
-    }
 
-    add_menu_page(
-        'Offer generator',
-        'Offer generator',
-        'read',
-        'offer-manager-dashboard-link',
-        function () {
-            wp_redirect(home_url('/manager-dashboard'));
-            exit;
-        },
-        'dashicons-dashboard',
-        0
-    );
-});
-
-/**
- * Handle redirection for the manual menu page.
- */
-add_action('admin_init', function () {
-    if (is_admin() && isset($_GET['page']) && $_GET['page'] === 'offer-manager-dashboard-link') {
-        wp_safe_redirect(home_url('/manager-dashboard'));
-        exit;
-    }
-});
 
 add_action('admin_menu', function () {
     $user = wp_get_current_user();
