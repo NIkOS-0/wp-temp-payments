@@ -1,0 +1,272 @@
+/* =======================================================
+   OFFER MANAGER - GLOBAL ADMIN UI STYLES
+   ======================================================= */
+
+/* 1. Hide WP Admin Bar entirely on Desktop */
+@media screen and (min-width: 783px) {
+    #wpadminbar {
+        display: none !important;
+    }
+
+    html.wp-toolbar {
+        padding-top: 0 !important;
+    }
+}
+
+/* Hide Update Nags & Footer */
+#footer-left {
+    visibility: hidden;
+}
+
+#footer-upgrade {
+    display: none;
+}
+
+.update-nag,
+.notice-info,
+.notice-warning {
+    display: none !important;
+}
+
+/* 2. Abstract vs Solid Backgrounds */
+body.wp-admin {
+    min-height: 100vh;
+    transition: background 0.5s ease;
+}
+
+body.wp-admin.om-bg-abstract {
+    /* Beautiful subtle mesh gradient — fixed prevents scroll seams */
+    background: linear-gradient(120deg, #9db5bb 0%, #e6e6ce 50%, #f6e9b2 100%);
+    background-size: 200% 200%;
+    background-attachment: fixed;
+    animation: omGradientBG 15s ease infinite;
+}
+
+@keyframes omGradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+body.wp-admin.om-bg-solid,
+body.wp-admin {
+    /* default fallback */
+    background-color: #f8fafc;
+}
+
+/* 3. Modernize Left Sidebar */
+#adminmenuback,
+#adminmenuwrap {
+    background-color: #0f172a !important;
+    border-right: 1px solid #1e293b;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#adminmenu {
+    background-color: #0f172a !important;
+    margin-top: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#adminmenu a {
+    color: #94a3b8 !important;
+    transition: all 0.2s;
+    padding: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+#adminmenu a:hover,
+#adminmenu a:focus {
+    color: #fff !important;
+}
+
+/* Active Sidebar Item */
+#adminmenu li.wp-has-current-submenu a.wp-has-current-submenu,
+#adminmenu li.current a.menu-top {
+    background: #2563eb !important;
+    color: #fff !important;
+    border-radius: 12px;
+    margin: 0 12px;
+    box-shadow: 0 4px 10px -2px rgba(37, 99, 235, 0.5);
+    padding-left: 12px !important;
+}
+
+#adminmenu li.wp-has-current-submenu a.wp-has-current-submenu .wp-menu-name,
+#adminmenu li.current a.menu-top .wp-menu-name {
+    color: #fff !important;
+}
+
+#adminmenu div.wp-menu-image::before {
+    color: currentcolor !important;
+}
+
+/* Sidebar Hovers */
+#adminmenu li.menu-top:hover {
+    background: transparent !important;
+}
+
+#adminmenu li.menu-top:hover>a {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 12px;
+    margin: 0 12px;
+    padding-left: 12px !important;
+}
+
+/* Hide WordPress Arrow/Shadows on current item */
+ul#adminmenu a.wp-has-current-submenu::after,
+ul#adminmenu>li.current>a.current::after {
+    display: none !important;
+    border: none !important;
+}
+
+/* 4. Bottom Sidebar Custom Menu + Collapse Button */
+#collapse-menu {
+    color: #64748b !important;
+    border-top: 1px solid #1e293b;
+    margin-top: 0 !important;
+}
+
+#collapse-button {
+    color: #94a3b8 !important;
+    transition: all 0.2s;
+}
+
+#collapse-button:hover {
+    color: #fff !important;
+}
+
+#collapse-button .collapse-button-icon,
+#collapse-button .collapse-button-label {
+    color: inherit !important;
+}
+
+.om-bottom-wrapper {
+    margin-top: auto;
+    /* Push to bottom of flex container */
+    padding: 20px 15px 15px 15px;
+    border-top: 1px solid #1e293b;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.om-user-name {
+    color: #64748b;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    margin-bottom: 5px;
+    padding-left: 5px;
+    transition: opacity 0.2s;
+}
+
+.om-bottom-link {
+    color: #94a3b8 !important;
+    text-decoration: none !important;
+    padding: 10px 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease-in-out;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+}
+
+.om-bottom-link:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff !important;
+}
+
+.om-bottom-link.om-logout-link:hover {
+    background: #ef4444 !important;
+    /* Red hover */
+    color: #fff !important;
+    box-shadow: 0 4px 10px -2px rgba(239, 68, 68, 0.5);
+}
+
+.om-bottom-link .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+}
+
+.om-bottom-link-text {
+    transition: opacity 0.2s;
+}
+
+/* 5. Folded (Collapsed) WP State Setup */
+body.folded .om-user-name {
+    display: none;
+}
+
+body.folded .om-bottom-link-text {
+    display: none;
+}
+
+body.folded .om-bottom-wrapper {
+    padding: 15px 5px !important;
+}
+
+body.folded .om-bottom-link {
+    justify-content: center;
+    padding: 10px 0;
+}
+
+body.folded .om-bottom-link .dashicons {
+    margin: 0;
+}
+
+/* 6. Mobile View - Sidebar overlay (Default WP with dark theme) */
+@media screen and (max-width: 782px) {
+
+    /* Keep our dark theme on the sliding mobile sidebar */
+    #adminmenuback,
+    #adminmenuwrap {
+        background-color: #0f172a !important;
+    }
+
+    /* Make sure our custom bottom buttons remain normal in the sliding menu */
+    .om-user-wrapper {
+        border-top: 1px solid #1e293b;
+        margin-top: 20px;
+    }
+
+    /* Show wpadminbar but ONLY the sandwich hamburger icon */
+    #wpadminbar {
+        background: #0f172a !important;
+    }
+
+    #wpadminbar .quicklinks>ul>li:not(#wp-admin-bar-menu-toggle) {
+        display: none !important;
+    }
+
+    #wpadminbar #wp-admin-bar-menu-toggle a {
+        color: #94a3b8 !important;
+    }
+
+    /* Keep the wpwrap and body padding tight to match tailwind app vibe */
+    #wpwrap {
+        padding-bottom: 0 !important;
+    }
+}

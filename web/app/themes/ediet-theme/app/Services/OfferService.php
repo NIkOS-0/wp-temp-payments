@@ -7,7 +7,7 @@ class OfferService
     /**
      * Generate a unique personalized offer link.
      */
-    public function createOffer($productId, $price, $expiryHours, $useCookieSecurity, $title = '', $expiryMinutes = 0)
+    public function createOffer($productId, $price, $expiryHours, $useCookieSecurity, $title = '', $expiryMinutes = 0, $quantity = 1)
     {
         $expiryTime = time() + ($expiryHours * HOUR_IN_SECONDS) + ($expiryMinutes * MINUTE_IN_SECONDS);
         $displayTitle = !empty($title) ? $title : 'Offer for Product #' . $productId . ' - ' . date('Y-m-d H:i');
@@ -33,6 +33,7 @@ class OfferService
         update_field('internal_title', $title, $offerId);
         
         update_post_meta($offerId, '_expiry_timestamp', $expiryTime);
+        update_post_meta($offerId, '_offer_quantity', max(1, (int) $quantity));
 
         return get_permalink($offerId);
     }

@@ -2,35 +2,62 @@
 
 @section('content')
   <div class="min-h-screen bg-linear-to-b from-slate-50 to-slate-200 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-7xl mx-auto">
       <!-- Main Card -->
       <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20 backdrop-blur-xs flex flex-col lg:flex-row transition-all duration-500 hover:shadow-blue-500/10 hover:border-blue-500/20">
-        
         <!-- Images Section -->
-        <div class="lg:w-1/2 bg-slate-100 relative group overflow-hidden">
+        <div class="lg:w-1/2 bg-slate-100 relative group flex flex-col justify-center p-8 lg:p-12 gap-4">
           @if($gallery)
-            <div class="relative h-[400px] lg:h-full overflow-hidden">
-              @foreach($gallery as $img_id)
-                <img src="{{ wp_get_attachment_image_url($img_id, 'large') }}" 
-                     class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 {{ $loop->first ? 'opacity-100' : 'opacity-0' }}" 
-                     data-gallery-item="{{ $loop->index }}" 
-                     alt="Product Image">
-              @endforeach
-              
+            <div class="relative">
+              <!-- Navigation Arrows -->
               @if(count($gallery) > 1)
-                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
-                  @foreach($gallery as $img_id)
-                    <button class="w-2.5 h-2.5 rounded-full transition-all duration-300 {{ $loop->first ? 'bg-blue-600 w-6' : 'bg-white/50 hover:bg-white' }}"
-                            onclick="setActiveSlide({{ $loop->index }})"
-                            data-gallery-dot="{{ $loop->index }}"></button>
-                  @endforeach
-                </div>
+                <button onclick="prevSlide()" class="absolute -left-6 lg:-left-10 bottom-[22px] w-12 h-12 bg-white shadow-2xl rounded-full flex items-center justify-center text-slate-800 hover:text-blue-600 transition-all z-30 hover:scale-110 active:scale-95 border border-slate-100">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <button onclick="nextSlide()" class="absolute -right-6 lg:-right-10 bottom-[22px] w-12 h-12 bg-white shadow-2xl rounded-full flex items-center justify-center text-slate-800 hover:text-blue-600 transition-all z-30 hover:scale-110 active:scale-95 border border-slate-100">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
               @endif
+
+              <div class="relative overflow-hidden aspect-square rounded-3xl shadow-lg bg-white">
+                @foreach($gallery as $img_id)
+                  <img src="{{ wp_get_attachment_image_url($img_id, 'large') }}" 
+                       class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 {{ $loop->first ? 'opacity-100' : 'opacity-0' }}" 
+                       data-gallery-item="{{ $loop->index }}" 
+                       alt="Product Image">
+                @endforeach
+                
+                @if(count($gallery) > 1)
+                  <!-- Dots -->
+                  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+                    @foreach($gallery as $img_id)
+                      <button class="w-2.5 h-2.5 rounded-full transition-all duration-300 {{ $loop->first ? 'bg-slate-900 w-6' : 'bg-white/50 hover:bg-white' }}"
+                              onclick="setActiveSlide({{ $loop->index }})"
+                              data-gallery-dot="{{ $loop->index }}"></button>
+                    @endforeach
+                  </div>
+                @endif
+              </div>
             </div>
+
+            <!-- Thumbnails Gallery -->
+            @if(count($gallery) > 1)
+              <div class="flex gap-2 p-4 backdrop-blur-sm overflow-x-auto no-scrollbar">
+                @foreach($gallery as $img_id)
+                  <button onclick="setActiveSlide({{ $loop->index }})" 
+                          data-gallery-thumb="{{ $loop->index }}"
+                          class="relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border transition-all {{ $loop->first ? 'border-blue-600 scale-105' : 'border-transparent opacity-60 hover:opacity-100' }}">
+                    <img src="{{ wp_get_attachment_image_url($img_id, 'thumbnail') }}" class="w-full h-full object-cover" alt="Thumbnail {{ $loop->iteration }}">
+                  </button>
+                @endforeach
+              </div>
+            @endif
           @elseif($thumbnail)
-            <img src="{{ $thumbnail }}" class="w-full h-full object-cover aspect-square lg:aspect-auto" alt="{{ $product->post_title }}">
+            <div class="relative aspect-square rounded-3xl shadow-lg overflow-hidden bg-white">
+              <img src="{{ $thumbnail }}" class="absolute inset-0 w-full h-full object-cover" alt="{{ $product->post_title }}">
+            </div>
           @else
-            <div class="h-[400px] lg:h-full flex items-center justify-center text-slate-300">
+            <div class="aspect-square rounded-3xl bg-white flex items-center justify-center text-slate-200 border-2 border-dashed border-slate-100">
                <svg class="w-32 h-32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
             </div>
           @endif
@@ -67,7 +94,7 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 @foreach($features as $feature)
                   <div class="flex items-start gap-4 group">
-                    <div class="flex-shrink-0 w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center transition-all group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-blue-200">
+                    <div class="flex-shrink-0 w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center transition-all group-hover:bg-slate-900 group-hover:text-white group-hover:shadow-lg group-hover:shadow-blue-200">
                       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     </div>
                     <div>
@@ -99,10 +126,10 @@
           </div>
 
           <!-- Price & Action Section -->
-          <div class="mt-auto bg-slate-50 -mx-8 -mb-8 lg:-mx-14 lg:-mb-14 p-8 lg:p-14 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-8 group">
+          <div class="mt-auto -mx-8 -mb-8 lg:-mx-14 lg:-mb-14 p-8 lg:p-14 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-8 group">
             <div class="text-center sm:text-left">
               <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Финальная стоимость</div>
-              <div class="flex items-baseline gap-2">
+              <div class="flex items-baseline gap-2 whitespace-nowrap">
                 <span class="text-5xl font-black text-slate-900 tracking-tighter">{{ number_format($price, 0, '.', ' ') }}</span>
                 <span class="text-2xl font-bold text-slate-400">₽</span>
               </div>
@@ -115,14 +142,18 @@
                   ОПЛАЧЕНО
                 </div>
               @else
+                @if($offer_quantity > 1)
+                  <div class="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1 text-center lg:text-right px-1">
+                    В комплекте: {{ $offer_quantity }} шт.
+                  </div>
+                @endif
                 <button id="checkout-button" class="relative group/btn px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-lg tracking-wide shadow-xl transition-all hover:bg-orange-500 hover:shadow-orange-500/30 overflow-hidden cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto">
                   <span class="relative z-10 flex items-center justify-center gap-3">
-                    <span id="checkout-text">Карта РФ (Robokassa)</span>
+                    <span id="checkout-text">Оплатить (Robokassa)</span>
                     <svg id="checkout-icon" class="w-5 h-5 transform transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                   </span>
                 </button>
               @endif
-              
             </div>
           </div>
         </div>
@@ -172,9 +203,14 @@
   </div>
 
   <script>
+    let currentSlide = 0;
+    const totalSlides = {{ $gallery ? count($gallery) : 0 }};
+
     function setActiveSlide(index) {
+      currentSlide = index;
       const items = document.querySelectorAll('[data-gallery-item]');
       const dots = document.querySelectorAll('[data-gallery-dot]');
+      const thumbs = document.querySelectorAll('[data-gallery-thumb]');
       
       items.forEach((item, i) => {
         item.classList.toggle('opacity-100', i === index);
@@ -187,6 +223,23 @@
         dot.classList.toggle('bg-white/50', i !== index);
         dot.classList.toggle('w-2.5', i !== index);
       });
+
+      thumbs.forEach((thumb, i) => {
+        thumb.classList.toggle('border-blue-600', i === index);
+        thumb.classList.toggle('scale-105', i === index);
+        thumb.classList.toggle('border-transparent', i !== index);
+        thumb.classList.toggle('opacity-60', i !== index);
+      });
+    }
+
+    function nextSlide() {
+      let next = (currentSlide + 1) % totalSlides;
+      setActiveSlide(next);
+    }
+
+    function prevSlide() {
+      let prev = (currentSlide - 1 + totalSlides) % totalSlides;
+      setActiveSlide(prev);
     }
 
     const expiryTimestamp = {{ $expiry_timestamp }} * 1000;

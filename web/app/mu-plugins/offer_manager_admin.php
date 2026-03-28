@@ -126,6 +126,138 @@ add_action('init', function () {
     }, 999);
 });
 
+// 3b. 404 Redirect: All public pages except personal_offer
+add_action('template_redirect', function () {
+    // Skip if in WP admin
+    if (is_admin()) return;
+    // Allow access to offer pages and login/logout pages
+    if (is_singular('personal_offer')) return;
+    if (in_array($GLOBALS['pagenow'] ?? '', ['wp-login.php'])) return;
+    // Allow robots.txt, sitemap etc.
+    if (is_robots() || is_feed() || is_trackback()) return;
+
+    // Send a clean 404 screen for everyone else
+    $home_url = home_url();
+    $site_name = get_bloginfo('name');
+    status_header(404);
+    header('Content-Type: text/html; charset=utf-8');
+    echo '<!doctype html><html lang="ru"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Страница не найдена</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f8fafc;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+        .box{text-align:center;max-width:420px}
+        .code{font-size:96px;font-weight:900;color:#e2e8f0;line-height:1;letter-spacing:-4px}
+        h1{font-size:22px;font-weight:700;color:#1e293b;margin-top:8px}
+        p{color:#64748b;margin-top:12px;font-size:15px;line-height:1.6}
+    </style>
+    </head><body>
+    <div class="box">
+        <div class="code">404</div>
+        <h1>Страница не найдена</h1>
+        <p>Запрошенная страница не существует или была удалена.</p>
+    </div>
+    </body></html>';
+    exit;
+}, 1);
+
+// 3c. Localize product_offer editor & replace "Back" button with Dashboard link
+add_action('admin_footer', function () {
+    $screen = get_current_screen();
+    if (!$screen || $screen->post_type !== 'product_offer') return;
+
+    $dashboard_url = esc_url(admin_url('admin.php?page=offer-manager-dashboard'));
+    echo "<script>
+    (function() {
+        const DASHBOARD_URL = '{$dashboard_url}';
+
+        const labels = {
+            'Product Gallery': 'Галерея товара',
+            'Label': 'Название варианта',
+            'price': 'Цена (₽)',
+            'Price': 'Цена (₽)',
+            'Add Price Variant': '+ Добавить вариант цены',
+            'Key Features': 'Ключевые характеристики',
+            'Add Feature': '+ Добавить характеристику',
+            'Specifications': 'Спецификации',
+            'Name': 'Параметр',
+            'Value': 'Значение',
+            'Add Spec': '+ Добавить спецификацию',
+            'Add Row': '+ Добавить строку',
+            'Add to gallery': 'Добавить в галерею',
+            'Short Description': 'Краткое описание',
+            'Description': 'Описание',
+            'Product pricing': 'Цена товара',
+            'Price Options': 'Варианты цен',
+            'Excerpt': 'Краткое описание',
+            'Post': 'Запись',
+            'Category': 'Категория',
+            'Tags': 'Метки',
+            'Title': 'Название',
+            'Featured Image': 'Изображение товара',
+            'Discussion': 'Обсуждение',
+            'Revisions': 'Ревизии',
+            'Slug': 'Постоянная ссылка',
+            'Author': 'Автор',
+            'Published': 'Опубликовано',
+            'Draft': 'Черновик',
+            'Pending Review': 'На рассмотрении',
+            'Publish': 'Опубликовать',
+            'Save as pending': 'Отправить на рассмотрение',
+            'Move to Trash': 'Удалить',
+            'Visibility': 'Видимость',
+            'Public': 'Публичный',
+            'Private': 'Приватный',
+            'Password protected': 'Защищено паролем',
+        };
+
+        function patchUI() {
+            // 1. Replace native back button destination
+            document.querySelectorAll('.editor-header__back, .editor-header__back-button').forEach(function(backBtn) {
+                if (backBtn.dataset.omDone) return;
+                backBtn.dataset.omDone = '1';
+                backBtn.setAttribute('href', DASHBOARD_URL);
+                // onclick override for <button> elements that don't use href
+                backBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.location.href = DASHBOARD_URL;
+                }, true);
+                // Replace visible label text
+                backBtn.querySelectorAll('span, .editor-header__back-button-label').forEach(function(s) {
+                    if (s.childElementCount === 0 && s.textContent.trim()) {
+                        s.textContent = 'Дашборд';
+                    }
+                });
+            });
+
+            // 2. Translate labels
+            document.querySelectorAll(
+                '.components-panel__body-title, label, .components-base-control__label, h2, h3, button, .acf-label label, .acf-button'
+            ).forEach(function(el) {
+                var text = el.childNodes[0];
+                if (text && text.nodeType === Node.TEXT_NODE) {
+                    var trimmed = text.textContent.trim();
+                    if (labels[trimmed]) {
+                        text.textContent = text.textContent.replace(trimmed, labels[trimmed]);
+                    }
+                }
+            });
+        }
+
+        // Run once DOM is ready, then watch for React re-renders
+        document.addEventListener('DOMContentLoaded', function() {
+            patchUI();
+            var observer = new MutationObserver(patchUI);
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+    })();
+    </script>";
+});
+
+
 // 4. Custom Dashboard Page
 add_action('admin_menu', function () {
     add_menu_page(
@@ -138,6 +270,7 @@ add_action('admin_menu', function () {
         2
     );
 });
+
 
 function render_offer_manager_dashboard() {
     global $wpdb;
@@ -191,7 +324,7 @@ function render_offer_manager_dashboard() {
             p.post_status,
             m.meta_value as expiry_time
         FROM {$wpdb->posts} p
-        LEFT JOIN {$wpdb->postmeta} m ON p.ID = m.post_id AND m.meta_key = '_offer_expiry_time'
+        LEFT JOIN {$wpdb->postmeta} m ON p.ID = m.post_id AND m.meta_key = '_expiry_timestamp'
         WHERE p.post_type = 'personal_offer' 
           AND p.post_date >= %s
           AND p.post_status NOT IN ('trash', 'auto-draft')
@@ -248,7 +381,7 @@ function render_offer_manager_dashboard() {
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
                 <div>
                     <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 uppercase m-0 leading-none" style="padding:0;">Панель управления</h1>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1 mb-0">Менеджер предложений</p>
+                    <p class="text-xs font-bold font-white text-slate-400 uppercase tracking-widest mt-1 mb-0">Менеджер предложений</p>
                 </div>
                 <a href="<?php echo admin_url('edit.php?post_type=product_offer'); ?>" class="inline-flex items-center justify-center px-6 py-3 bg-white border border-slate-200 text-slate-700 font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-slate-50 hover:text-blue-600 transition-all shadow-sm whitespace-nowrap cursor-pointer">Управление товарами &rarr;</a>
             </div>
@@ -375,13 +508,13 @@ function render_offer_manager_dashboard() {
                         <form id="create-offer-form" class="space-y-6 relative z-10 w-full m-0">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                               <div class="space-y-2">
-                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Название оффера</label>
+                                <label class="block text-xs font-black text-slate-700 uppercase tracking-widest ml-1">Название оффера</label>
                                 <input type="text" name="offer_title" placeholder="Напр. Скидка для Ивана" class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-blue-100 transition-all font-bold text-slate-800 placeholder:text-slate-300 m-0">
                               </div>
 
                               <?php if (!empty($products)): ?>
                                 <div class="space-y-2">
-                                  <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Товар</label>
+                                  <label class="block text-xs font-black text-slate-700 uppercase tracking-widest ml-1">Товар</label>
                                   <select name="product_id" id="product_id" class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-blue-100 transition-all font-bold text-slate-800 m-0" required>
                                     <option value="">-- Выбрать товар --</option>
                                     <?php foreach ($products as $p): ?>
@@ -394,14 +527,27 @@ function render_offer_manager_dashboard() {
                               <?php endif; ?>
                             </div>
 
+                            <!-- Quantity Field -->
+                            <div id="quantity-wrapper" class="hidden animate-in fade-in slide-in-from-top-4 duration-300">
+                               <label class="block text-xs font-black text-slate-700 uppercase tracking-widest ml-1 mb-2">Количество упаковок</label>
+                               <div class="flex items-center gap-3">
+                                   <div class="flex items-center bg-slate-50 rounded-2xl border-2 border-slate-100 overflow-hidden focus-within:border-blue-200 transition-all">
+                                       <button type="button" id="qty-down" class="w-11 h-11 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-all font-black text-lg border-none cursor-pointer bg-transparent">−</button>
+                                       <input type="number" name="offer_quantity" id="offer_quantity" value="1" min="1" max="50" class="w-16 text-center p-2 bg-transparent focus:ring-0 font-black text-slate-900 text-base m-0 border-none outline-none">
+                                       <button type="button" id="qty-up" class="w-11 h-11 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-all font-black text-lg border-none cursor-pointer bg-transparent">+</button>
+                                   </div>
+                                   <div class="text-sm font-bold text-slate-500">упаковок · <span class="text-blue-600 font-black" id="qty-total-display"></span></div>
+                               </div>
+                            </div>
+
                             <div id="price-variants" class="hidden animate-in fade-in slide-in-from-top-4 duration-300">
-                               <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2">Выберите цену</label>
+                                   <label class="block text-xs font-black text-slate-700 uppercase tracking-widest ml-1 mb-2">Выберите цену</label>
                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="price-list"></div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
                               <div class="space-y-2">
-                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Срок действия</label>
+                                <label class="block text-xs font-black text-slate-700 uppercase tracking-widest ml-1">Срок действия</label>
                                 <div class="flex items-center space-x-4">
                                   <div class="flex items-center space-x-2">
                                     <input type="number" name="expiry_hours" value="24" class="w-24 p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-blue-100 transition-all font-black text-slate-800 text-center m-0">
@@ -482,6 +628,12 @@ function render_offer_manager_dashboard() {
             const priceList = document.getElementById('price-list');
             const resultDiv = document.getElementById('offer-result');
             const generatedLink = document.getElementById('generated-link');
+            const quantityWrapper = document.getElementById('quantity-wrapper');
+            const qtyInput = document.getElementById('offer_quantity');
+            const qtyDown = document.getElementById('qty-down');
+            const qtyUp = document.getElementById('qty-up');
+            const qtyTotalDisplay = document.getElementById('qty-total-display');
+
 
             if(productSelect) {
                 productSelect.addEventListener('change', function() {
@@ -491,6 +643,7 @@ function render_offer_manager_dashboard() {
                   priceList.innerHTML = '';
                   if (prices.length > 0) {
                     priceVariants.classList.remove('hidden');
+                    quantityWrapper.classList.remove('hidden');
                     prices.forEach((item, index) => {
                       const div = document.createElement('div');
                       div.className = 'flex items-center space-x-3 p-4 bg-slate-50 rounded-2xl border-2 border-transparent hover:border-blue-600 hover:bg-white cursor-pointer transition-all group m-0';
@@ -503,14 +656,36 @@ function render_offer_manager_dashboard() {
                       `;
                       div.addEventListener('click', () => {
                         div.querySelector('input').checked = true;
+                        updateTotal();
                       });
                       priceList.appendChild(div);
                     });
+                    updateTotal();
                   } else {
                     priceVariants.classList.add('hidden');
+                    quantityWrapper.classList.add('hidden');
                   }
                 });
             }
+
+            // Quantity stepper
+            function getQty() {
+              return Math.min(50, Math.max(1, parseInt(qtyInput.value) || 1));
+            }
+
+            function updateTotal() {
+              const checkedPrice = priceList.querySelector('input[name="price"]:checked');
+              const qty = getQty();
+              if (checkedPrice && qtyTotalDisplay) {
+                const total = (parseFloat(checkedPrice.value) * qty).toLocaleString('ru-RU');
+                qtyTotalDisplay.textContent = total + ' ₽';
+              }
+            }
+
+            if (qtyDown) qtyDown.addEventListener('click', () => { qtyInput.value = Math.max(1, getQty() - 1); updateTotal(); });
+            if (qtyUp) qtyUp.addEventListener('click', () => { qtyInput.value = Math.min(50, getQty() + 1); updateTotal(); });
+            if (qtyInput) qtyInput.addEventListener('input', () => { qtyInput.value = Math.min(50, Math.max(1, parseInt(qtyInput.value) || 1)); updateTotal(); });
+
 
             if(form) {
                 form.addEventListener('submit', async (e) => {
@@ -570,14 +745,91 @@ function render_offer_manager_dashboard() {
     <?php
 }
 
-// 5. Global Admin Cleanup
+// 5. Global Admin Cleanup & UI Overhaul for Offer Managers
 add_action('admin_enqueue_scripts', function () {
     $user = wp_get_current_user();
     if (!in_array('offer_manager', $user->roles)) return;
 
-    echo '<style>
-        #footer-left { visibility: hidden; }
-        #footer-upgrade { display: none; }
-        .update-nag, .notice-info, .notice-warning { display: none !important; }
-    </style>';
+    $css_url = content_url('mu-plugins/offer-manager-assets/admin-style.css');
+    wp_enqueue_style('om-admin-style', $css_url, [], filemtime(__DIR__ . '/offer-manager-assets/admin-style.css'));
+});
+
+// 6. Bottom Sidebar UI & Abstract Background State
+add_action('admin_footer', function() {
+    $user = wp_get_current_user();
+    if (!in_array('offer_manager', $user->roles)) return;
+    
+    $name = esc_html($user->display_name);
+    $logout_url = wp_logout_url(home_url());
+    $bg_pref = get_user_meta($user->ID, 'om_admin_bg', true) ?: 'abstract';
+
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menu = document.getElementById('adminmenu');
+            if (menu) {
+                const bottomHTML = `
+                    <li class='om-user-wrapper menu-top'>
+                        <div class='om-user-name'>{$name}</div>
+                    </li>
+                    <li class='menu-top menu-top-last om-custom-menu-item'>
+                        <a href='#' id='om-toggle-bg' class='wp-has-submenu wp-not-current-submenu menu-top'>
+                            <div class='wp-menu-arrow'></div>
+                            <div class='wp-menu-image dashicons-before dashicons-art'><br></div>
+                            <div class='wp-menu-name'>Стиль фона</div>
+                        </a>
+                    </li>
+                    <li class='menu-top menu-top-last om-custom-menu-item'>
+                        <a href='{$logout_url}' class='wp-has-submenu wp-not-current-submenu menu-top om-logout-link'>
+                            <div class='wp-menu-arrow'></div>
+                            <div class='wp-menu-image dashicons-before dashicons-exit'><br></div>
+                            <div class='wp-menu-name'>Выйти</div>
+                        </a>
+                    </li>
+                `;
+                const collapseMenu = document.getElementById('collapse-menu');
+                if (collapseMenu) {
+                    collapseMenu.insertAdjacentHTML('beforebegin', bottomHTML);
+                } else {
+                    menu.insertAdjacentHTML('beforeend', bottomHTML);
+                }
+                
+                if ('{$bg_pref}' === 'abstract') {
+                    document.body.classList.add('om-bg-abstract');
+                } else {
+                    document.body.classList.add('om-bg-solid');
+                }
+                
+                document.getElementById('om-toggle-bg').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const body = document.body;
+                    let newState = 'solid';
+                    if (body.classList.contains('om-bg-solid')) {
+                        body.classList.replace('om-bg-solid', 'om-bg-abstract');
+                        newState = 'abstract';
+                    } else {
+                        body.classList.replace('om-bg-abstract', 'om-bg-solid');
+                    }
+                    
+                    const formData = new FormData();
+                    formData.append('action', 'om_save_bg_pref');
+                    formData.append('state', newState);
+                    formData.append('nonce', '" . wp_create_nonce('om_bg_nonce') . "');
+                    
+                    fetch(ajaxurl, {
+                        method: 'POST',
+                        body: formData
+                    });
+                });
+            }
+            // Fix WordPress pushing html down 32px on desktop only via css, not JS
+        });
+    </script>";
+});
+
+// 7. Save Background Preference via AJAX
+add_action('wp_ajax_om_save_bg_pref', function() {
+    if (!check_ajax_referer('om_bg_nonce', 'nonce', false)) wp_send_json_error();
+    $state = $_POST['state'] === 'abstract' ? 'abstract' : 'solid';
+    update_user_meta(get_current_user_id(), 'om_admin_bg', $state);
+    wp_send_json_success();
 });

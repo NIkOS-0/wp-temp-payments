@@ -17,9 +17,11 @@
         {{ __('Skip to content', 'sage') }}
       </a>
 
-      @include('sections.header')
+      @if(!is_singular('personal_offer'))
+        @include('sections.header')
+      @endif
 
-      <main id="main" class="main pt-20">
+      <main id="main" class="{{ is_singular('personal_offer') ? '' : 'main pt-20' }}">
         @yield('content')
       </main>
 
@@ -29,7 +31,9 @@
         </aside>
       @endif
 
-      @include('sections.footer')
+      @if(!is_singular('personal_offer'))
+        @include('sections.footer')
+      @endif
     </div>
 
     @php(do_action('get_footer'))

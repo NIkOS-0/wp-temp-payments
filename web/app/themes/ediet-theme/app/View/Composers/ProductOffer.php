@@ -38,6 +38,7 @@ class ProductOffer extends Composer
             'specs' => get_field('specifications', $productId),
             'expiry_time' => date('H:i', (int) get_post_meta($offerId, '_expiry_timestamp', true)),
             'expiry_timestamp' => (int) get_post_meta($offerId, '_expiry_timestamp', true),
+            'offer_quantity' => max(1, (int) get_post_meta($offerId, '_offer_quantity', true) ?: 1),
         ];
     }
 }
