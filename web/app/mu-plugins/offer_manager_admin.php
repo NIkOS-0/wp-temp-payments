@@ -174,6 +174,51 @@ function render_offer_manager_dashboard() {
         'post_status' => 'publish',
     ]);
 
+    // Data Aggregation for Chart.js (Last 30 Days)
+    $days_data = [];
+    $current_time = time();
+    $thirty_days_ago_date = wp_date('Y-m-d', strtotime('-29 days'));
+
+    for ($i = 29; $i >= 0; $i--) {
+        $date = wp_date('d.m', strtotime("-$i days"));
+        $full_date = wp_date('Y-m-d', strtotime("-$i days"));
+        $days_data[$full_date] = ['label' => $date, 'total' => 0, 'paid' => 0, 'expired' => 0];
+    }
+
+    $chart_query = $wpdb->prepare("
+        SELECT 
+            DATE(p.post_date) as create_date,
+            p.post_status,
+            m.meta_value as expiry_time
+        FROM {$wpdb->posts} p
+        LEFT JOIN {$wpdb->postmeta} m ON p.ID = m.post_id AND m.meta_key = '_offer_expiry_time'
+        WHERE p.post_type = 'personal_offer' 
+          AND p.post_date >= %s
+          AND p.post_status NOT IN ('trash', 'auto-draft')
+    ", $thirty_days_ago_date . ' 00:00:00');
+    
+    $chart_results = $wpdb->get_results($chart_query);
+
+    if ($chart_results) {
+        foreach ($chart_results as $row) {
+            $date = $row->create_date;
+            if (isset($days_data[$date])) {
+                $days_data[$date]['total']++;
+                
+                if ($row->post_status === 'paid') {
+                    $days_data[$date]['paid']++;
+                } elseif (!empty($row->expiry_time) && $current_time > (int)$row->expiry_time) {
+                    $days_data[$date]['expired']++;
+                }
+            }
+        }
+    }
+
+    $chart_labels = wp_json_encode(array_column($days_data, 'label'));
+    $chart_total = wp_json_encode(array_column($days_data, 'total'));
+    $chart_paid = wp_json_encode(array_column($days_data, 'paid'));
+    $chart_expired = wp_json_encode(array_column($days_data, 'expired'));
+
     ?>
     <div class="wrap tw-isolate" style="margin: 20px 20px 0 2px;">
         <style>
@@ -207,6 +252,100 @@ function render_offer_manager_dashboard() {
                 </div>
                 <a href="<?php echo admin_url('edit.php?post_type=product_offer'); ?>" class="inline-flex items-center justify-center px-6 py-3 bg-white border border-slate-200 text-slate-700 font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-slate-50 hover:text-blue-600 transition-all shadow-sm whitespace-nowrap cursor-pointer">Управление товарами &rarr;</a>
             </div>
+
+            <!-- 30 Days Activity Chart (Hidden on mobile) -->
+            <div class="hidden md:block bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/40 mb-8 w-full">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-sm font-black text-slate-900 tracking-tight uppercase leading-none m-0 pt-0">Активность (30 дней)</h2>
+                    <div class="flex space-x-5">
+                        <div class="flex items-center space-x-2"><div class="w-3 h-3 rounded-full bg-slate-800"></div><span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0 mb-0 pt-0 leading-none">Всего</span></div>
+                        <div class="flex items-center space-x-2"><div class="w-3 h-3 rounded-full bg-emerald-500"></div><span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0 mb-0 pt-0 leading-none">Оплачено</span></div>
+                        <div class="flex items-center space-x-2"><div class="w-3 h-3 rounded-full bg-red-500"></div><span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0 mb-0 pt-0 leading-none">Истекли</span></div>
+                    </div>
+                </div>
+                <!-- Fixed Height Wrapper for Chart.js -->
+                <div class="relative w-full h-56">
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const ctx = document.getElementById('activityChart');
+                    if (ctx) {
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: <?php echo $chart_labels; ?>,
+                                datasets: [
+                                    {
+                                        label: 'Создано',
+                                        data: <?php echo $chart_total; ?>,
+                                        borderColor: '#1e293b', // slate-800
+                                        backgroundColor: 'rgba(30, 41, 59, 0.05)',
+                                        borderWidth: 2,
+                                        pointRadius: 3,
+                                        pointHoverRadius: 5,
+                                        tension: 0.4,
+                                        fill: true
+                                    },
+                                    {
+                                        label: 'Оплачено',
+                                        data: <?php echo $chart_paid; ?>,
+                                        borderColor: '#10b981', // emerald-500
+                                        backgroundColor: 'transparent',
+                                        borderWidth: 2,
+                                        pointRadius: 0,
+                                        pointHoverRadius: 4,
+                                        tension: 0.4
+                                    },
+                                    {
+                                        label: 'Истекли',
+                                        data: <?php echo $chart_expired; ?>,
+                                        borderColor: '#ef4444', // red-500
+                                        backgroundColor: 'transparent',
+                                        borderWidth: 2,
+                                        pointRadius: 0,
+                                        pointHoverRadius: 4,
+                                        borderDash: [5, 5],
+                                        tension: 0.4
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: {
+                                        mode: 'index',
+                                        intersect: false,
+                                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                                        titleFont: { size: 11, family: 'sans-serif' },
+                                        bodyFont: { size: 12, family: 'sans-serif', weight: 'bold' },
+                                        padding: 12,
+                                        cornerRadius: 8,
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        grid: { display: false, drawBorder: false },
+                                        ticks: { font: { size: 10 }, color: '#94a3b8' }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        border: { display: false },
+                                        grid: { color: '#f1f5f9' },
+                                        ticks: { precision: 0, font: { size: 10 }, color: '#94a3b8', padding: 10 }
+                                    }
+                                },
+                                interaction: { mode: 'nearest', axis: 'x', intersect: false }
+                            }
+                        });
+                    }
+                });
+            </script>
 
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
