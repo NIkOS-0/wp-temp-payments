@@ -9,7 +9,7 @@ add_action('acf/init', function () {
     // Product Fields
     acf_add_local_field_group([
         'key' => 'group_product_prices',
-        'title' => __('Product Pricing', 'sage'),
+        'title' => __('Создание товара', 'sage'),
         'fields' => [
             [
                 'key' => 'field_product_prices',
@@ -24,7 +24,7 @@ add_action('acf/init', function () {
                         'label' => __('Label', 'sage'),
                         'name' => 'label',
                         'type' => 'text',
-                        'placeholder' => __('Regular Price, Discounted etc.', 'sage'),
+                        'placeholder' => __('Например, "Цена со скидкой"', 'sage'),
                     ],
                     [
                         'key' => 'field_price_value',
@@ -83,6 +83,7 @@ add_action('acf/init', function () {
                         'label' => __('Name', 'sage'),
                         'name' => 'name',
                         'type' => 'text',
+                        'placeholder' => __('Например, "Дозировка или кол-во в упаковке"', 'sage'),
                     ],
                     [
                         'key' => 'field_spec_value',

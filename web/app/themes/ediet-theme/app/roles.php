@@ -44,8 +44,10 @@ add_action('init', function () {
     ];
 
     $custom_caps = [
-        'manage_offers' => true,
-        'read'         => true, // Required for admin access
+        'manage_offers'     => true,
+        'read'              => true, // Required for admin access
+        'edit_posts'        => true, // Required for duplicate_page plugin
+        'edit_others_posts' => true, // Required for duplicate_page plugin
     ];
 
     $all_caps = array_merge(
@@ -83,4 +85,7 @@ add_action('admin_menu', function () {
     }
 
     remove_menu_page('index.php');
+    remove_menu_page('edit.php');          // Hide standard Posts
+    remove_menu_page('edit-comments.php'); // Hide Comments
+    remove_menu_page('wpseo_workouts');    // Hide Yoast SEO
 }, 999);

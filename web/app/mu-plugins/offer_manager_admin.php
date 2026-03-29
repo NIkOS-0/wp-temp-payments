@@ -502,7 +502,7 @@ function render_offer_manager_dashboard() {
                 <!-- Generator Form (2 cols) -->
                 <div class="lg:col-span-2 space-y-6">
                     <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/40 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50/50 rounded-bl-full -mr-8 -mt-8 pointer-events-none"></div>
+
                         <h2 class="text-xl font-black text-slate-900 tracking-tight uppercase leading-none mb-6 relative z-10 m-0">Создать предложение</h2>
                         
                         <form id="create-offer-form" class="space-y-6 relative z-10 w-full m-0">
@@ -833,3 +833,20 @@ add_action('wp_ajax_om_save_bg_pref', function() {
     update_user_meta(get_current_user_id(), 'om_admin_bg', $state);
     wp_send_json_success();
 });
+
+// 8. Custom Admin Footer for Offer Manager
+add_filter('admin_footer_text', function($text) {
+    $user = wp_get_current_user();
+    if (in_array('offer_manager', $user->roles)) {
+        return '<span id="footer-thankyou">E-diet Manager Panel</span>';
+    }
+    return $text;
+});
+
+add_filter('update_footer', function($text) {
+    $user = wp_get_current_user();
+    if (in_array('offer_manager', $user->roles)) {
+        return 'Version 1.0.37';
+    }
+    return $text;
+}, 99);

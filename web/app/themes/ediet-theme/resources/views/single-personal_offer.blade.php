@@ -1,25 +1,25 @@
 @extends('layouts.app')
 
 @section('content')
-  <div class="min-h-screen bg-linear-to-b from-slate-50 to-slate-200 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-[#fff5d4] py-6 sm:py-12 px-2 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
       <!-- Main Card -->
-      <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20 backdrop-blur-xs flex flex-col lg:flex-row transition-all duration-500 hover:shadow-blue-500/10 hover:border-blue-500/20">
+      <div class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-[#ffc671]/20 backdrop-blur-xs flex flex-col lg:flex-row transition-all duration-500 hover:shadow-[#ffc671]/20 hover:border-[#ffc671]/40">
         <!-- Images Section -->
-        <div class="lg:w-1/2 bg-slate-100 relative group flex flex-col justify-center p-8 lg:p-12 gap-4">
+        <div class="lg:w-1/2 bg-[#fffcf0] relative group flex flex-col justify-center p-6 sm:p-8 lg:p-12 gap-4">
           @if($gallery)
             <div class="relative">
               <!-- Navigation Arrows -->
               @if(count($gallery) > 1)
-                <button onclick="prevSlide()" class="absolute -left-6 lg:-left-10 bottom-[22px] w-12 h-12 bg-white shadow-2xl rounded-full flex items-center justify-center text-slate-800 hover:text-blue-600 transition-all z-30 hover:scale-110 active:scale-95 border border-slate-100">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                <button onclick="prevSlide()" class="absolute -left-4 sm:-left-6 lg:-left-10 bottom-[22px] w-10 sm:w-12 h-10 sm:h-12 bg-white shadow-2xl rounded-full flex items-center justify-center text-[#0a2633] hover:text-[#ffc671] transition-all z-30 hover:scale-110 active:scale-95 border border-[#fff5d4]">
+                  <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                 </button>
-                <button onclick="nextSlide()" class="absolute -right-6 lg:-right-10 bottom-[22px] w-12 h-12 bg-white shadow-2xl rounded-full flex items-center justify-center text-slate-800 hover:text-blue-600 transition-all z-30 hover:scale-110 active:scale-95 border border-slate-100">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                <button onclick="nextSlide()" class="absolute -right-4 sm:-right-6 lg:-right-10 bottom-[22px] w-10 sm:w-12 h-10 sm:h-12 bg-white shadow-2xl rounded-full flex items-center justify-center text-[#0a2633] hover:text-[#ffc671] transition-all z-30 hover:scale-110 active:scale-95 border border-[#fff5d4]">
+                  <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </button>
               @endif
 
-              <div class="relative overflow-hidden aspect-square rounded-3xl shadow-lg bg-white">
+              <div class="relative overflow-hidden aspect-square rounded-2xl sm:rounded-3xl shadow-lg bg-white">
                 @foreach($gallery as $img_id)
                   <img src="{{ wp_get_attachment_image_url($img_id, 'large') }}" 
                        class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 {{ $loop->first ? 'opacity-100' : 'opacity-0' }}" 
@@ -29,9 +29,9 @@
                 
                 @if(count($gallery) > 1)
                   <!-- Dots -->
-                  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+                  <div class="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
                     @foreach($gallery as $img_id)
-                      <button class="w-2.5 h-2.5 rounded-full transition-all duration-300 {{ $loop->first ? 'bg-slate-900 w-6' : 'bg-white/50 hover:bg-white' }}"
+                      <button class="w-2.5 h-2.5 rounded-full transition-all duration-300 {{ $loop->first ? 'bg-[#0a2633] w-6' : 'bg-white/70 hover:bg-white' }}"
                               onclick="setActiveSlide({{ $loop->index }})"
                               data-gallery-dot="{{ $loop->index }}"></button>
                     @endforeach
@@ -42,31 +42,31 @@
 
             <!-- Thumbnails Gallery -->
             @if(count($gallery) > 1)
-              <div class="flex gap-2 p-4 backdrop-blur-sm overflow-x-auto no-scrollbar">
+              <div class="flex gap-2 p-3 sm:p-4 backdrop-blur-sm overflow-x-auto no-scrollbar snap-x snap-mandatory">
                 @foreach($gallery as $img_id)
                   <button onclick="setActiveSlide({{ $loop->index }})" 
                           data-gallery-thumb="{{ $loop->index }}"
-                          class="relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border transition-all {{ $loop->first ? 'border-blue-600 scale-105' : 'border-transparent opacity-60 hover:opacity-100' }}">
+                          class="snap-center relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border transition-all {{ $loop->first ? 'border-[#ffc671] scale-105' : 'border-transparent opacity-60 hover:opacity-100' }}">
                     <img src="{{ wp_get_attachment_image_url($img_id, 'thumbnail') }}" class="w-full h-full object-cover" alt="Thumbnail {{ $loop->iteration }}">
                   </button>
                 @endforeach
               </div>
             @endif
           @elseif($thumbnail)
-            <div class="relative aspect-square rounded-3xl shadow-lg overflow-hidden bg-white">
+            <div class="relative aspect-square rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden bg-white">
               <img src="{{ $thumbnail }}" class="absolute inset-0 w-full h-full object-cover" alt="{{ $product->post_title }}">
             </div>
           @else
-            <div class="aspect-square rounded-3xl bg-white flex items-center justify-center text-slate-200 border-2 border-dashed border-slate-100">
-               <svg class="w-32 h-32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            <div class="aspect-square rounded-2xl sm:rounded-3xl bg-white flex items-center justify-center text-slate-200 border-2 border-dashed border-[#fff5d4]">
+               <svg class="w-24 h-24 sm:w-32 sm:h-32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
             </div>
           @endif
 
-          <div class="absolute top-6 left-6 z-10">
-            <span class="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
+          <div class="absolute top-4 sm:top-6 left-4 sm:left-6 z-10">
+            <span class="bg-[#ffc671] text-[#0a2633] px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-lg flex items-center gap-2">
               <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-300"></span>
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-white/80"></span>
               </span>
               Эксклюзивное предложение
             </span>
@@ -74,32 +74,32 @@
         </div>
 
         <!-- Content Section -->
-        <div class="lg:w-1/2 p-8 lg:p-14 flex flex-col">
-          <header class="mb-8">
-            <h1 class="text-4xl lg:text-5xl font-black text-slate-900 leading-tight mb-4">
+        <div class="lg:w-1/2 p-6 sm:p-8 lg:p-14 flex flex-col">
+          <header class="mb-6 sm:mb-8">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0a2633] leading-tight mb-4">
               {{ $product->post_title }}
             </h1>
             <div class="flex items-center gap-4 mb-6">
               @if($short_description)
-                <p class="text-lg text-slate-600 leading-relaxed font-medium italic border-l-4 border-blue-500 pl-4 py-1">
+                <p class="text-base sm:text-lg text-[#0a2633]/80 leading-relaxed font-medium italic border-l-4 border-[#ffc671] pl-4 py-1">
                   {{ $short_description }}
                 </p>
               @endif
             </div>
           </header>
 
-          <div class="space-y-10 mb-12">
+          <div class="space-y-8 sm:space-y-10 mb-10 sm:mb-12">
             <!-- Features Grid -->
             @if($features)
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 @foreach($features as $feature)
                   <div class="flex items-start gap-4 group">
-                    <div class="flex-shrink-0 w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center transition-all group-hover:bg-slate-900 group-hover:text-white group-hover:shadow-lg group-hover:shadow-blue-200">
+                    <div class="flex-shrink-0 w-12 h-12 bg-[#ffc671]/20 text-[#0a2633] rounded-2xl flex items-center justify-center transition-all group-hover:bg-[#ffc671] group-hover:shadow-lg group-hover:shadow-[#ffc671]/40">
                       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     </div>
                     <div>
-                      <h4 class="font-bold text-slate-900 mb-0.5">{{ $feature['title'] }}</h4>
-                      <p class="text-sm text-slate-500 line-clamp-2">{{ $feature['description'] }}</p>
+                      <h4 class="font-bold text-[#0a2633] mb-0.5">{{ $feature['title'] }}</h4>
+                      <p class="text-sm text-[#0a2633]/60 line-clamp-2">{{ $feature['description'] }}</p>
                     </div>
                   </div>
                 @endforeach
@@ -107,17 +107,17 @@
             @endif
 
             <!-- Tabs/Specs accordion -->
-            <div class="border-t border-slate-100 pt-8">
-              <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+            <div class="border-t border-[#ffc671]/20 pt-6 sm:pt-8">
+              <h3 class="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#0a2633]/60 mb-4 sm:mb-6 flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Характеристики
               </h3>
               @if($specs)
                 <div class="grid grid-cols-1 gap-y-3">
                   @foreach($specs as $spec)
-                    <div class="flex justify-between items-end border-b border-dashed border-slate-200 pb-2 hover:border-blue-300 transition-colors">
-                      <span class="text-slate-500 text-sm font-medium">{{ $spec['name'] }}</span>
-                      <span class="text-slate-900 text-sm font-bold">{{ $spec['value'] }}</span>
+                    <div class="flex justify-between items-end border-b border-dashed border-[#ffc671]/30 pb-2 hover:border-[#ffc671] transition-colors">
+                      <span class="text-[#0a2633]/70 text-sm font-medium">{{ $spec['name'] }}</span>
+                      <span class="text-[#0a2633] text-sm font-bold">{{ $spec['value'] }}</span>
                     </div>
                   @endforeach
                 </div>
@@ -126,28 +126,28 @@
           </div>
 
           <!-- Price & Action Section -->
-          <div class="mt-auto -mx-8 -mb-8 lg:-mx-14 lg:-mb-14 p-8 lg:p-14 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-8 group">
+          <div class="mt-auto -mx-6 sm:-mx-8 lg:-mx-14 -mb-6 sm:-mb-8 lg:-mb-14 p-6 sm:p-8 lg:p-14 border-t border-[#ffc671]/20 flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-8 group bg-[#fffcf0] lg:bg-transparent">
             <div class="text-center sm:text-left">
-              <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Финальная стоимость</div>
-              <div class="flex items-baseline gap-2 whitespace-nowrap">
-                <span class="text-5xl font-black text-slate-900 tracking-tighter">{{ number_format($price, 0, '.', ' ') }}</span>
-                <span class="text-2xl font-bold text-slate-400">₽</span>
+              <div class="text-xs font-bold text-[#0a2633]/60 uppercase tracking-widest mb-1">Итого к оплате:</div>
+              <div class="flex items-baseline gap-2 whitespace-nowrap justify-center sm:justify-start">
+                <span class="text-4xl sm:text-5xl font-black text-[#0a2633] tracking-tighter">{{ number_format($price, 0, '.', ' ') }}</span>
+                <span class="text-xl sm:text-2xl font-bold text-[#0a2633]/60">₽</span>
               </div>
             </div>
             
             <div class="flex flex-col gap-3 w-full sm:w-auto">
               <!-- Robokassa -->
               @if(get_post_status() === 'paid')
-                <div class="px-8 py-4 text-white rounded-2xl font-black text-lg tracking-wide shadow-xl text-center w-full sm:w-auto" style="color: var(--color-slate-900);">
+                <div class="px-8 py-4 bg-[#0a2633]/10 text-[#0a2633] rounded-2xl font-black text-lg tracking-wide shadow-xl text-center w-full sm:w-auto">
                   ОПЛАЧЕНО
                 </div>
               @else
                 @if($offer_quantity > 1)
-                  <div class="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1 text-center lg:text-right px-1">
-                    В комплекте: {{ $offer_quantity }} шт.
+                  <div class="text-xs font-bold text-[#ffc671] uppercase tracking-widest mb-1 text-center lg:text-right px-1">
+                    Количество: {{ $offer_quantity }} шт.
                   </div>
                 @endif
-                <button id="checkout-button" class="relative group/btn px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-lg tracking-wide shadow-xl transition-all hover:bg-orange-500 hover:shadow-orange-500/30 overflow-hidden cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto">
+                <button id="checkout-button" class="relative group/btn px-8 py-4 bg-[#0a2633] text-white rounded-2xl font-black text-base sm:text-lg tracking-wide shadow-xl transition-all hover:bg-[#ffc671] hover:text-[#0a2633] hover:shadow-[#ffc671]/40 overflow-hidden cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto">
                   <span class="relative z-10 flex items-center justify-center gap-3">
                     <span id="checkout-text">Оплатить (Robokassa)</span>
                     <svg id="checkout-icon" class="w-5 h-5 transform transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
@@ -160,45 +160,45 @@
       </div>
 
       <!-- Trust Badges -->
-      <div class="mt-12 flex flex-wrap justify-center gap-8 lg:gap-16">
-        <div class="flex items-center gap-3 text-slate-500 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-          <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-          <span class="text-sm font-bold uppercase tracking-wider">Защищенная сделка</span>
-        </div>
-        <div class="flex items-center gap-3 text-slate-500 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-          <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          <span class="text-sm font-bold uppercase tracking-wider">
-            Спеццена истекает через: 
-            <span id="countdown" class="font-black text-orange-600 tabular-nums">--:--:--</span>
+      <div class="mt-8 sm:mt-12 flex flex-col sm:flex-row flex-wrap justify-center items-center gap-6 sm:gap-8 lg:gap-16 px-4">
+        <div class="flex items-center gap-3 text-[#0a2633]/70 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300 w-full sm:w-auto justify-center">
+          <svg class="w-8 h-8 text-[#0a2633]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span class="text-xs sm:text-sm font-bold uppercase tracking-wider text-center sm:text-left">
+            Спеццена истекает: <br class="sm:hidden">
+            <span id="countdown" class="font-black text-[#0a2633] tabular-nums mt-1 sm:mt-0 block sm:inline">--:--:--</span>
           </span>
         </div>
-        <div class="flex items-center gap-3 text-slate-500 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-          <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
-          <span class="text-sm font-bold uppercase tracking-wider">Гарантия качества</span>
+        <div class="flex items-center gap-3 text-[#0a2633]/70 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300 w-full sm:w-auto justify-center">
+          <svg class="w-8 h-8 text-[#0a2633]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+          <span class="text-xs sm:text-sm font-bold uppercase tracking-wider text-center sm:text-left">Защищенная сделка</span>
+        </div>
+        <div class="flex items-center gap-3 text-[#0a2633]/70 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300 w-full sm:w-auto justify-center">
+          <svg class="w-8 h-8 text-[#0a2633]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
+          <span class="text-xs sm:text-sm font-bold uppercase tracking-wider text-center sm:text-left">Гарантия качества</span>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Expiry Popup -->
-  <div id="expiry-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
-    <div class="bg-white rounded-3xl p-8 max-w-sm w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300 text-center border-t-4 border-red-500">
-      <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+  <div id="expiry-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0a2633]/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300 text-center border-t-4 border-[#0a2633]">
+      <div class="w-16 h-16 bg-[#0a2633]/20 text-[#0a2633] rounded-full flex items-center justify-center mx-auto mb-6">
         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
       </div>
-      <h3 class="text-2xl font-black text-slate-900 mb-2">Ссылка истекла</h3>
-      <p class="text-slate-500 mb-8">Время действия этого персонального предложения подошло к концу. Пожалуйста, запросите новую ссылку.</p>
-      <button onclick="closeExpiryPopup()" class="w-full py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors">Понятно</button>
+      <h3 class="text-2xl font-black text-[#0a2633] mb-2">Ссылка истекла</h3>
+      <p class="text-[#0a2633]/60 mb-8">Время действия этого персонального предложения подошло к концу. Пожалуйста, запросите новую ссылку у менеджера.</p>
+      <button onclick="closeExpiryPopup()" class="w-full py-4 bg-[#fffcf0] hover:bg-[#fff5d4] text-[#0a2633] font-bold rounded-xl transition-colors">Понятно</button>
     </div>
   </div>
 
   <!-- Success/Error Popup (Robokassa Test) -->
-  <div id="payment-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
-    <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300 text-center">
+  <div id="payment-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0a2633]/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300 text-center">
       <div id="payment-status-icon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"></div>
-      <h3 id="payment-status-title" class="text-2xl font-black text-slate-900 mb-2">Статус платежа</h3>
-      <p id="payment-status-message" class="text-slate-500 mb-8">Сообщение платежа</p>
-      <button onclick="closePaymentPopup()" class="w-full py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors">Закрыть</button>
+      <h3 id="payment-status-title" class="text-2xl font-black text-[#0a2633] mb-2">Статус платежа</h3>
+      <p id="payment-status-message" class="text-[#0a2633]/60 mb-8">Сообщение платежа</p>
+      <button onclick="closePaymentPopup()" class="w-full py-4 bg-[#fffcf0] hover:bg-[#fff5d4] text-[#0a2633] font-bold rounded-xl transition-colors">Закрыть</button>
     </div>
   </div>
 
@@ -218,14 +218,14 @@
       });
       
       dots.forEach((dot, i) => {
-        dot.classList.toggle('bg-blue-600', i === index);
+        dot.classList.toggle('bg-[#0a2633]', i === index);
         dot.classList.toggle('w-6', i === index);
-        dot.classList.toggle('bg-white/50', i !== index);
+        dot.classList.toggle('bg-white/70', i !== index);
         dot.classList.toggle('w-2.5', i !== index);
       });
 
       thumbs.forEach((thumb, i) => {
-        thumb.classList.toggle('border-blue-600', i === index);
+        thumb.classList.toggle('border-[#ffc671]', i === index);
         thumb.classList.toggle('scale-105', i === index);
         thumb.classList.toggle('border-transparent', i !== index);
         thumb.classList.toggle('opacity-60', i !== index);
@@ -275,7 +275,7 @@
       if (distance < 0) {
         isExpired = true;
         countdownEl.innerHTML = "ИСТЕКЛО";
-        countdownEl.classList.replace('text-orange-600', 'text-red-600');
+        countdownEl.classList.replace('text-[#0a2633]', 'text-red-600');
         
         // Deactivate checkout button if it exists
         if (checkoutBtn) {
@@ -289,7 +289,7 @@
         return;
       }
 
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const hours = Math.floor(distance / (1000 * 60 * 60));
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
@@ -341,8 +341,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       
-  
-
       // Check payment status from redirect
       const paymentStatus = urlParams.get('payment');
       if (paymentStatus === 'success') {
@@ -351,13 +349,13 @@
           'Оплата прошла успешно!', 
           `
 <div class="text-left bg-slate-50 p-4 rounded-xl mb-4 border border-slate-100">
-  <div class="text-xs text-slate-400 uppercase tracking-widest font-bold mb-1">Детали заказа</div>
-  <div class="font-bold text-slate-800">{{ $product->post_title }}</div>
-  <div class="text-sm text-slate-500 mt-1">Сумма: {{ number_format($price, 0, '.', ' ') }} ₽</div>
-  <div class="text-sm text-slate-500">Заказ №{{ get_the_ID() }}</div>
+  <div class="text-xs text-[#0a2633]/60 uppercase tracking-widest font-bold mb-1">Детали заказа</div>
+  <div class="font-bold text-[#0a2633]">{{ $product->post_title }}</div>
+  <div class="text-sm text-[#0a2633]/70 mt-1">Сумма: {{ number_format($price, 0, '.', ' ') }} ₽</div>
+  <div class="text-sm text-[#0a2633]/70">Заказ №{{ get_the_ID() }}</div>
 </div>
-<div class="text-sm text-slate-600 mb-6">
-  В ближайшее время мы свяжемся с вами или вы получите доступ на указанную почту. Если у вас возникнут вопросы, пожалуйста, напишите нашему менеджеру:
+<div class="text-sm text-[#0a2633]/80 mb-6">
+  Свяжитесь с менеджером, который выставил вам счёт и сообщите номер заказа.
 </div>
 <div class="flex flex-col sm:flex-row gap-3 justify-center mb-2">
   <a href="https://wa.me/79000000000" target="_blank" style="background-color: #25d366;" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-white rounded-xl font-bold hover:opacity-90 transition-opacity">
@@ -418,7 +416,7 @@
     }
 
     if (checkoutBtn) {
-      initCheckoutButton(checkoutBtn, checkoutText, 'robokassa', 'Карта РФ (Robokassa)');
+      initCheckoutButton(checkoutBtn, checkoutText, 'robokassa', 'Оплатить (Robokassa)');
     }
 
     setInterval(updateCountdown, 1000);
