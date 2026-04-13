@@ -1,0 +1,50 @@
+{
+    "key": "group_clinic_info",
+    "title": "Информация о клинике",
+    "fields": [
+        {
+            "key": "field_ediet_clinic_logo",
+            "label": "Логотип",
+            "name": "clinic_logo",
+            "type": "image",
+            "return_format": "array",
+            "preview_size": "medium",
+            "instructions": "Загружайте только WebP. Минимальный размер: 800x600px."
+        },
+        {
+            "key": "field_ediet_clinic_address",
+            "label": "Адрес/Город",
+            "name": "clinic_address",
+            "type": "text"
+        },
+        {
+            "key": "field_ediet_clinic_url",
+            "label": "Ссылка на сайт",
+            "name": "clinic_url",
+            "type": "url"
+        },
+        {
+            "key": "field_ediet_clinic_desc",
+            "label": "Описание",
+            "name": "clinic_desc",
+            "type": "wysiwyg",
+            "toolbar": "basic"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "clinic"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "modified": 1713020000
+}

@@ -92,8 +92,16 @@ if (!defined('WP_DEVELOPMENT_MODE')) {
 /**
  * URLs
  */
-Config::define('WP_HOME', env('WP_HOME'));
-Config::define('WP_SITEURL', env('WP_SITEURL'));
+$http_host = $_SERVER['HTTP_HOST'] ?? '';
+$order_domain = env('ORDER_DOMAIN');
+
+if ($http_host === $order_domain) {
+    Config::define('WP_HOME', 'https://' . $order_domain);
+    Config::define('WP_SITEURL', 'https://' . $order_domain . '/wp');
+} else {
+    Config::define('WP_HOME', env('WP_HOME'));
+    Config::define('WP_SITEURL', env('WP_SITEURL'));
+}
 
 /**
  * Custom Content Directory

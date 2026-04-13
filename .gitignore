@@ -19,7 +19,6 @@ web/.htaccess
 # Dotenv
 .env
 .env.*
-!.env.example
 
 # Composer
 /vendor
@@ -34,4 +33,4 @@ phpunit.xml
 wp-cli.local.yml
 
 # Payments
-.payments_env_example
+.payments_env

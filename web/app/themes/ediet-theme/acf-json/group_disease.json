@@ -1,0 +1,122 @@
+{
+    "key": "group_disease_card",
+    "title": "Карточка заболевания (P-04)",
+    "fields": [
+        {
+            "key": "field_disease_intro_text",
+            "label": "Вводный текст",
+            "name": "intro_text",
+            "type": "wysiwyg",
+            "toolbar": "basic"
+        },
+        {
+            "key": "field_disease_consultations",
+            "label": "Консультации (Связь с Услугами)",
+            "name": "consultations",
+            "type": "relationship",
+            "post_type": [
+                "service"
+            ],
+            "filters": [
+                "search"
+            ]
+        },
+        {
+            "key": "field_disease_courses",
+            "label": "Курсы (Связь)",
+            "name": "courses",
+            "type": "relationship",
+            "post_type": [
+                "course"
+            ],
+            "filters": [
+                "search"
+            ]
+        },
+        {
+            "key": "field_disease_products",
+            "label": "Продукты (Связь)",
+            "name": "products",
+            "type": "relationship",
+            "post_type": [
+                "product"
+            ],
+            "filters": [
+                "search"
+            ]
+        },
+        {
+            "key": "field_disease_free_guide",
+            "label": "Бесплатный гайд",
+            "name": "free_guide",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+                {
+                    "key": "field_disease_guide_file",
+                    "label": "Файл гайда",
+                    "name": "file",
+                    "type": "file"
+                },
+                {
+                    "key": "field_disease_guide_form_id",
+                    "label": "ID формы (Form ID)",
+                    "name": "form_id",
+                    "type": "number"
+                }
+            ]
+        },
+        {
+            "key": "field_disease_drugs",
+            "label": "Препараты (drugs)",
+            "name": "drugs",
+            "type": "repeater",
+            "sub_fields": [
+                {
+                    "key": "field_d_drug_name",
+                    "name": "drug_name",
+                    "label": "Название",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "key": "field_disease_tests",
+            "label": "Анализы (tests)",
+            "name": "tests",
+            "type": "repeater",
+            "sub_fields": [
+                {
+                    "key": "field_d_test_name",
+                    "name": "test_name",
+                    "label": "Название анализа",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "key": "field_disease_supplements",
+            "label": "БАДы (supplements)",
+            "name": "supplements",
+            "type": "repeater",
+            "sub_fields": [
+                {
+                    "key": "field_d_sup_name",
+                    "name": "sup_name",
+                    "label": "Название добавки",
+                    "type": "text"
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "disease"
+            }
+        ]
+    ],
+    "active": true
+}

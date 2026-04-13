@@ -1,0 +1,78 @@
+{
+    "key": "group_product_service_card",
+    "title": "Карточка товара / услуги (P-08, P-09)",
+    "fields": [
+        {
+            "key": "field_ps_price",
+            "label": "Цена",
+            "name": "price",
+            "type": "text"
+        },
+        {
+            "key": "field_ps_benefits",
+            "label": "Преимущества",
+            "name": "benefits",
+            "type": "repeater",
+            "sub_fields": [
+                {
+                    "key": "field_ps_benefit_title",
+                    "label": "Заголовок",
+                    "name": "title",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "key": "field_ps_what_inside",
+            "label": "Что внутри",
+            "name": "what_inside",
+            "type": "wysiwyg"
+        },
+        {
+            "key": "field_ps_woo_id",
+            "label": "WooCommerce ID для оплаты",
+            "name": "woo_product_id",
+            "type": "number",
+            "instructions": "ID товара из WooCommerce. При клике на Купить пользователь будет перенаправлен на чекаут с этим ID."
+        },
+        {
+            "key": "field_ps_result",
+            "label": "Результат",
+            "name": "result",
+            "type": "wysiwyg"
+        },
+        {
+            "key": "field_ps_reviews",
+            "label": "Отзывы",
+            "name": "reviews",
+            "type": "relationship",
+            "post_type": [
+                "review"
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "product"
+            }
+        ],
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "service"
+            }
+        ],
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "course"
+            }
+        ]
+    ],
+    "active": true
+}

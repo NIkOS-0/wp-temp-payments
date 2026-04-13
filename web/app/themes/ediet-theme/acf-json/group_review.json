@@ -1,0 +1,57 @@
+{
+    "key": "group_review_card",
+    "title": "Отзывы (P-20)",
+    "fields": [
+        {
+            "key": "field_review_type",
+            "label": "Тип отзыва",
+            "name": "type",
+            "type": "select",
+            "choices": {
+                "text": "Текст",
+                "image": "Изображение/Скриншот",
+                "video": "Видео",
+                "before_after": "Было -> Стало"
+            }
+        },
+        {
+            "key": "field_review_before_text",
+            "label": "Текст (или Было)",
+            "name": "before_text",
+            "type": "wysiwyg",
+            "toolbar": "basic"
+        },
+        {
+            "key": "field_review_after_text",
+            "label": "Стало",
+            "name": "after_text",
+            "type": "wysiwyg",
+            "toolbar": "basic",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_review_type",
+                        "operator": "==",
+                        "value": "before_after"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_review_media",
+            "label": "Медиафайл",
+            "name": "media",
+            "type": "image"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "review"
+            }
+        ]
+    ],
+    "active": true
+}

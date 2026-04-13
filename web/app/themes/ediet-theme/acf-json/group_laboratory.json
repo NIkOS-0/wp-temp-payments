@@ -1,0 +1,44 @@
+{
+    "key": "group_laboratory_info",
+    "title": "Информация о лаборатории",
+    "fields": [
+        {
+            "key": "field_ediet_lab_logo",
+            "label": "Логотип",
+            "name": "lab_logo",
+            "type": "image",
+            "return_format": "array",
+            "preview_size": "medium",
+            "instructions": "Загружайте только WebP. Минимальный размер: 800x600px."
+        },
+        {
+            "key": "field_ediet_lab_url",
+            "label": "Ссылка на сайт",
+            "name": "lab_url",
+            "type": "url"
+        },
+        {
+            "key": "field_ediet_lab_desc",
+            "label": "Описание",
+            "name": "lab_desc",
+            "type": "wysiwyg",
+            "toolbar": "basic"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "laboratory"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "modified": 1713020000
+}

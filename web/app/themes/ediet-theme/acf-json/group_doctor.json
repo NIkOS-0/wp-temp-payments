@@ -1,0 +1,51 @@
+{
+    "key": "group_doctor_info",
+    "title": "Профиль специалиста",
+    "fields": [
+        {
+            "key": "field_ediet_doctor_photo",
+            "label": "Фотография",
+            "name": "doctor_photo",
+            "type": "image",
+            "return_format": "array",
+            "preview_size": "medium",
+            "instructions": "Загружайте только WebP. Минимальный размер: 800x600px."
+        },
+        {
+            "key": "field_ediet_doctor_specialty",
+            "label": "Специализация",
+            "name": "doctor_specialty",
+            "type": "text",
+            "instructions": "Например: Эндокринолог, Нутрициолог"
+        },
+        {
+            "key": "field_ediet_doctor_exp",
+            "label": "Опыт работы",
+            "name": "doctor_exp",
+            "type": "text"
+        },
+        {
+            "key": "field_ediet_doctor_desc",
+            "label": "Описание / Регалии",
+            "name": "doctor_desc",
+            "type": "wysiwyg",
+            "toolbar": "basic"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "doctor"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "modified": 1713020000
+}
