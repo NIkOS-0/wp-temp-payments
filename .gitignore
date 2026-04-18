@@ -34,3 +34,13 @@ wp-cli.local.yml
 
 # Payments
 .payments_env
+
+# Dev
+web/app/mu-plugins/ip-restriction.php
+
+# Backup
+backup.sql
+
+# Antigravity
+.agents/*
+.antigravity/*
