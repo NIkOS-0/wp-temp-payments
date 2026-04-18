@@ -26,9 +26,15 @@
             ]) !!}
           @endif
           
-          <a href="/dashboard" class="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-500/20 transition-all">
-            Личный кабинет
-          </a>
+          @if(is_user_logged_in())
+            <a href="/cabinet" class="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-500/20 transition-all">
+              Личный кабинет
+            </a>
+          @else
+            <button onclick="document.getElementById('otp-modal').classList.remove('hidden')" class="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-500/20 transition-all">
+              Войти
+            </button>
+          @endif
         </nav>
 
         <!-- Mobile Menu Button -->
@@ -54,9 +60,15 @@
           'echo' => false
         ]) !!}
       @endif
-      <a href="/dashboard" class="block w-full text-center py-4 bg-blue-600 text-white font-bold">
-        Личный кабинет
-      </a>
+      @if(is_user_logged_in())
+        <a href="/cabinet" class="block w-full text-center py-4 bg-blue-600 text-white font-bold">
+          Личный кабинет
+        </a>
+      @else
+        <button onclick="document.getElementById('otp-modal').classList.remove('hidden'); toggleMobileMenu();" class="block w-full text-center py-4 bg-blue-600 text-white font-bold">
+          Войти
+        </button>
+      @endif
     </div>
   </div>
 </header>
@@ -78,3 +90,16 @@
     }
   });
 </script>
+
+@if(!is_user_logged_in())
+<div id="otp-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity">
+  <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full relative mx-4">
+    <button onclick="document.getElementById('otp-modal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 transition-colors">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+    {!! do_shortcode('[ediet_otp_login]') !!}
+  </div>
+</div>
+@endif

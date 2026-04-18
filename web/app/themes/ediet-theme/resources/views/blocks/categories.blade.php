@@ -6,35 +6,311 @@
     
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_500px] gap-12 md:gap-16 items-center">
       <!-- Left: Wheel Interactive -->
-      <div class="relative w-full aspect-square max-w-[700px] mx-auto rounded-full bg-white shadow-xl shadow-slate-200/50 flex items-center justify-center border-[16px] border-slate-50 group">
+      <div id="wheel-container" class="relative w-full aspect-square max-w-[700px] mx-auto flex items-center justify-center">
          
          @if(!empty($block['items']))
-           @php $count = count($block['items']); @endphp
-           <!-- Orbiting Terms dynamically rendered in a circle! -->
-           <div class="absolute inset-0 w-full h-full rounded-full">
-             @foreach($block['items'] as $index => $item)
-               @php 
-                 // Calculate angle for circular orbit starting from top
-                 $deg = ($index * (360 / $count)) - 90; 
-                 // Define orbit radius. Must be strictly larger than core_radius + item_radius
-                 $radius = "clamp(160px, 25vw, 260px)"; 
-               @endphp
-               <a href="{{ get_permalink($item->ID) }}" class="absolute top-1/2 left-1/2 w-[90px] h-[90px] sm:w-[110px] sm:h-[110px] -mt-[45px] -ml-[45px] sm:-mt-[55px] sm:-ml-[55px] bg-white shadow-xl rounded-[1.5rem] flex flex-col items-center justify-center hover:scale-110 hover:bg-blue-600 hover:text-white transition-all duration-300 z-10 group/term" style="transform: rotate({{ $deg }}deg) translateX({{ $radius }}) rotate({{ -$deg }}deg);">
-                  <!-- Dynamic term icon placeholder -->
-                  <svg class="w-8 h-8 text-slate-400 group-hover/term:text-white mb-1.5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-                  <span class="text-[9px] sm:text-[10px] font-black text-center leading-tight tracking-widest uppercase px-2">{{ $item->post_title }}</span>
-               </a>
-             @endforeach
-           </div>
+           <canvas id="health-wheel" class="absolute inset-0 w-full h-full cursor-pointer touch-none z-10"></canvas>
+           <script>
+           document.addEventListener('DOMContentLoaded', () => {
+             const cats = [
+               @foreach($block['items'] as $index => $item)
+                 { 
+                   id: {{ $index + 1 }}, 
+                   short: "{{ addslashes($item->post_title) }}", 
+                   iconUrl: "{{ get_field('hero_icon', $item->ID) ?: 'https://dev.e-diet.wiki/wp-includes/images/smilies/icon_neutral.gif' }}", 
+                   color: "{{ get_field('wheel_color', $item->ID) ?: '#4aaee0' }}",
+                   url: "{{ get_permalink($item->ID) }}" 
+                 },
+               @endforeach
+             ];
+
+             const canvas = document.getElementById('health-wheel');
+             const container = document.getElementById('wheel-container');
+             const ctx = canvas.getContext('2d');
+             
+             let W, H, CX, CY, MIN, R_IN, R_OUT, R_EXP;
+             const DPR = window.devicePixelRatio || 1;
+
+             function initCanvas() {
+                 const rect = container.getBoundingClientRect();
+                 W = rect.width || 300;
+                 H = rect.height || 300;
+                 canvas.width = W * DPR; 
+                 canvas.height = H * DPR;
+                 canvas.style.width = W + 'px'; 
+                 canvas.style.height = H + 'px';
+                 ctx.scale(DPR, DPR);
+
+                 CX = W / 2; CY = H / 2;
+                 MIN = Math.min(W, H);
+                 R_IN   = MIN * 0.16;
+                 R_OUT  = MIN * 0.44;
+                 R_EXP  = MIN * 0.055;
+             }
+             window.addEventListener('resize', initCanvas);
+             initCanvas();
+
+             const N = cats.length;
+             const SLICE = (2 * Math.PI) / N;
+             const GAP   = 0.022;
+
+             let hovered = -1;
+             
+             function hexRgb(hex) {
+               hex = hex || '#4aaee0';
+               if (hex.length === 4) {
+                 hex = '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+               }
+               const r = parseInt(hex.slice(1,3), 16) || 0;
+               const g = parseInt(hex.slice(3,5), 16) || 0;
+               const b = parseInt(hex.slice(5,7), 16) || 0;
+               return [r,g,b];
+             }
+             function rgba(hex, a) {
+               const [r,g,b] = hexRgb(hex);
+               return `rgba(${r},${g},${b},${a})`;
+             }
+             function lighten(hex, amt) {
+               let [r,g,b] = hexRgb(hex);
+               r = Math.min(255, r + amt); g = Math.min(255, g + amt); b = Math.min(255, b + amt);
+               return `rgb(${r},${g},${b})`;
+             }
+
+             // Preload images
+             cats.forEach(c => {
+                 const img = new Image();
+                 img.src = c.iconUrl;
+                 c.imgObj = img;
+             });
+
+             function drawSector(i, expandT) {
+               const cat = cats[i];
+               const startA = i * SLICE - Math.PI/2 + GAP/2;
+               const endA   = startA + SLICE - GAP;
+               const midA   = i * SLICE - Math.PI/2 + SLICE/2;
+
+               const ox = Math.cos(midA) * R_EXP * expandT;
+               const oy = Math.sin(midA) * R_EXP * expandT;
+
+               ctx.save();
+               ctx.translate(ox, oy);
+
+               // Sector path
+               ctx.beginPath();
+               ctx.moveTo(Math.cos(startA) * R_IN, Math.sin(startA) * R_IN);
+               ctx.arc(0, 0, R_OUT, startA, endA);
+               ctx.arc(0, 0, R_IN,  endA, startA, true);
+               ctx.closePath();
+
+               // Shadow
+               ctx.shadowColor = rgba(cat.color, 0.25);
+               ctx.shadowBlur  = 16;
+               ctx.shadowOffsetY = 4;
+
+               // Fill
+               const grad = ctx.createRadialGradient(
+                 Math.cos(midA)*(R_IN+R_OUT)*0.38, Math.sin(midA)*(R_IN+R_OUT)*0.38, 0,
+                 0, 0, R_OUT
+               );
+               grad.addColorStop(0, lighten(cat.color, 55));
+               grad.addColorStop(0.5, cat.color);
+               grad.addColorStop(1, rgba(cat.color, 0.75));
+               ctx.fillStyle = grad;
+               ctx.fill();
+
+               ctx.shadowColor = 'transparent';
+               ctx.shadowBlur  = 0;
+               ctx.shadowOffsetY = 0;
+
+               // Stroke
+               ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+               ctx.lineWidth = 1.5;
+               ctx.stroke();
+
+               // Image
+               const emojiR = R_IN + (R_OUT - R_IN) * 0.58;
+               const ex = Math.cos(midA) * emojiR;
+               const ey = Math.sin(midA) * emojiR;
+               
+               if (cat.imgObj && cat.imgObj.complete && cat.imgObj.naturalHeight !== 0) {
+                   const sSize = MIN * 0.08;
+                   ctx.drawImage(cat.imgObj, ex - sSize/2, ey - sSize/2, sSize, sSize);
+               }
+
+               // Number near outer edge
+               const numR = R_OUT - MIN * 0.028;
+               ctx.font = `300 ${MIN * 0.018}px 'Inter', sans-serif`;
+               ctx.fillStyle = 'rgba(255,255,255,0.55)';
+               ctx.textAlign = 'center';
+               ctx.textBaseline = 'middle';
+               ctx.fillText(String(cat.id).padStart(2,'0'), Math.cos(midA)*numR, Math.sin(midA)*numR);
+
+               ctx.restore();
+             }
+
+             function drawOuterLabels() {
+               const labelR = R_OUT + MIN * 0.045;
+               cats.forEach((cat, i) => {
+                 const midA = i * SLICE - Math.PI/2 + SLICE/2;
+                 const lx = Math.cos(midA) * labelR;
+                 const ly = Math.sin(midA) * labelR;
+
+                 ctx.save();
+                 ctx.translate(lx, ly);
+                 let rot = midA + Math.PI/2;
+                 if (midA > Math.PI/2 && midA < Math.PI*1.5) rot += Math.PI;
+                 ctx.rotate(rot);
+
+                 ctx.font = `700 ${MIN * 0.0145}px 'Inter', sans-serif`;
+                 ctx.textAlign = 'center';
+                 ctx.textBaseline = 'middle';
+                 ctx.fillStyle = rgba(cat.color, 0.72);
+                 ctx.fillText(cat.short.toUpperCase(), 0, 0);
+                 ctx.restore();
+               });
+             }
+
+             function drawCenter(cat) {
+               // White circle
+               ctx.beginPath();
+               ctx.arc(0, 0, R_IN * 0.97, 0, Math.PI*2);
+               ctx.shadowColor = 'rgba(0,0,0,0.05)';
+               ctx.shadowBlur = 20;
+               ctx.fillStyle = '#ffffff';
+               ctx.fill();
+               ctx.shadowBlur = 0;
+
+               // Dashed ring
+               ctx.beginPath();
+               ctx.arc(0, 0, R_IN * 0.87, 0, Math.PI*2);
+               ctx.strokeStyle = cat ? rgba(cat.color, 0.45) : 'rgba(200,210,230,0.5)';
+               ctx.lineWidth = 1.5;
+               ctx.setLineDash([3,5]);
+               ctx.stroke();
+               ctx.setLineDash([]);
+
+               // Tint
+               if (cat) {
+                 ctx.beginPath();
+                 ctx.arc(0, 0, R_IN * 0.80, 0, Math.PI*2);
+                 ctx.fillStyle = rgba(cat.color, 0.09);
+                 ctx.fill();
+               }
+
+               // Image in center
+               if (cat && cat.imgObj && cat.imgObj.complete && cat.imgObj.naturalHeight !== 0) {
+                   const sSize = R_IN * 0.55;
+                   ctx.drawImage(cat.imgObj, -sSize/2, -R_IN * 0.1 - sSize/2, sSize, sSize);
+               } else if (!cat) {
+                   const sSize = R_IN * 0.45;
+                   ctx.font = `800 ${sSize}px 'Inter', sans-serif`;
+                   ctx.textAlign = 'center';
+                   ctx.textBaseline = 'middle';
+                   ctx.globalAlpha = 0.2;
+                   ctx.fillText('✚', 0, -R_IN * 0.1);
+                   ctx.globalAlpha = 1;
+               }
+
+               // Title
+               ctx.font = `800 ${MIN * 0.021}px 'Inter', sans-serif`;
+               ctx.textAlign = 'center';
+               ctx.textBaseline = 'middle';
+               ctx.fillStyle = cat ? cat.color : '#0f172a';
+               ctx.fillText(cat ? cat.short.toUpperCase() : 'ЗДОРОВЬЕ', 0, R_IN * 0.40);
+
+               // Subtitle
+               ctx.font = `600 ${MIN * 0.014}px 'Inter', sans-serif`;
+               ctx.fillStyle = '#94a3b8';
+               ctx.fillText(cat ? `Раздел ${String(cat.id).padStart(2,'0')}` : 'Выберите раздел', 0, R_IN * 0.58);
+             }
+
+             const expandStates = new Array(N).fill(0);
+             let lastTime = 0;
+
+             function render(now) {
+               const dt = Math.min((now - lastTime) / 1000, 0.05);
+               lastTime = now;
+
+               for (let i = 0; i < N; i++) {
+                 const target = i === hovered ? 1 : 0;
+                 const speed = 8;
+                 expandStates[i] += (target - expandStates[i]) * speed * dt;
+                 if (Math.abs(expandStates[i] - target) <= 0.001) expandStates[i] = target;
+               }
+
+               ctx.clearRect(0, 0, W, H);
+               
+               ctx.save();
+               ctx.translate(CX, CY);
+
+               for (let i = 0; i < N; i++) {
+                 if (i !== hovered) drawSector(i, expandStates[i]);
+               }
+               if (hovered >= 0) drawSector(hovered, expandStates[hovered]);
+
+               drawOuterLabels();
+               drawCenter(hovered >= 0 ? cats[hovered] : null);
+
+               ctx.restore();
+               requestAnimationFrame(render);
+             }
+
+             function handleHit(mx, my) {
+               const dist = Math.sqrt(mx*mx + my*my);
+               if (dist < R_IN || dist > R_OUT + R_EXP * 1.2) {
+                 return -1;
+               }
+               let angle = Math.atan2(my, mx) + Math.PI/2;
+               if (angle < 0) angle += 2 * Math.PI;
+               return Math.floor(angle / SLICE) % N;
+             }
+
+             canvas.addEventListener('mousemove', e => {
+               const rect = canvas.getBoundingClientRect();
+               const mx = e.clientX - rect.left - CX;
+               const my = e.clientY - rect.top  - CY;
+               
+               const hit = handleHit(mx, my);
+               hovered = hit;
+               canvas.style.cursor = hit >= 0 ? 'pointer' : 'default';
+             });
+
+             canvas.addEventListener('mouseleave', () => { hovered = -1; });
+             
+             canvas.addEventListener('click', e => {
+                const rect = canvas.getBoundingClientRect();
+                const mx = e.clientX - rect.left - CX;
+                const my = e.clientY - rect.top  - CY;
+                const hit = handleHit(mx, my);
+                if (hit >= 0) {
+                    window.location.href = cats[hit].url;
+                }
+             });
+             
+             canvas.addEventListener('touchstart', e => {
+                 if (e.touches.length > 0) {
+                     const rect = canvas.getBoundingClientRect();
+                     const mx = e.touches[0].clientX - rect.left - CX;
+                     const my = e.touches[0].clientY - rect.top  - CY;
+                     const hit = handleHit(mx, my);
+                     
+                     if (hit >= 0) {
+                        e.preventDefault();
+                        if (hovered === hit) {
+                            window.location.href = cats[hit].url;
+                        } else {
+                            hovered = hit;
+                        }
+                     } else {
+                        hovered = -1;
+                     }
+                 }
+             }, {passive: false});
+
+             requestAnimationFrame(render);
+           });
+           </script>
          @endif
-         
-         <!-- Center Core -->
-         <div class="absolute inset-0 flex flex-col items-center justify-center rounded-full pointer-events-none">
-           <div class="w-40 h-40 sm:w-56 sm:h-56 bg-slate-900 shadow-2xl rounded-full flex flex-col items-center justify-center text-white ring-[10px] ring-white">
-             <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1 sm:mb-2">E-DIET</span>
-             <span class="text-xl sm:text-2xl font-black text-center leading-none">КОЛЕСО<br>ЗДОРОВЬЯ</span>
-           </div>
-         </div>
       </div>
       
       <!-- Right: Content -->
