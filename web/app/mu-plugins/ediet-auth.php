@@ -4,6 +4,10 @@
  * Description: Handles OTP login via email without passwords.
  */
 
+// Устанавливаем адрес и имя отправителя для WordPress
+add_filter('wp_mail_from', function() { return 'dev@e-diet.wiki'; });
+add_filter('wp_mail_from_name', function() { return 'e-diet platform'; });
+
 add_action('wp_ajax_ediet_send_otp', 'ediet_send_otp_handler');
 add_action('wp_ajax_nopriv_ediet_send_otp', 'ediet_send_otp_handler');
 
@@ -33,7 +37,10 @@ function ediet_send_otp_handler() {
 
     wp_mail($email, $subject, $message, $headers);
 
-    wp_send_json_success(['message' => 'Код отправлен на вашу почту.']);
+    wp_send_json_success([
+        'message' => 'Код отправлен на вашу почту.',
+        'dev_code' => $code // ВРЕМЕННО ДЛЯ РАЗРАБОТКИ
+    ]);
 }
 
 add_action('wp_ajax_ediet_verify_otp', 'ediet_verify_otp_handler');
@@ -74,13 +81,13 @@ function ediet_verify_otp_handler() {
     wp_set_current_user($user->ID);
     wp_set_auth_cookie($user->ID, true); // Keep logged in
 
-    wp_send_json_success(['message' => 'Успешный вход.', 'redirect' => wc_get_account_endpoint_url('dashboard')]);
+    wp_send_json_success(['message' => 'Успешный вход.', 'redirect' => home_url('/cabinet')]);
 }
 
 // 3. Shortcode to display Form
 add_shortcode('ediet_otp_login', function() {
     if (is_user_logged_in()) {
-        return '<p>Вы уже вошли в систему. <a href="'.wc_get_account_endpoint_url('dashboard').'">Перейти в ЛК</a></p>';
+        return '<p>Вы уже вошли в систему. <a href="'.home_url('/cabinet').'">Перейти в ЛК</a></p>';
     }
 
     wp_enqueue_script('jquery');
@@ -126,6 +133,10 @@ add_shortcode('ediet_otp_login', function() {
                     $('#ediet-otp-email-form').hide();
                     $('#ediet-otp-code-form').show();
                     $('#ediet-otp-message').css('color', 'green').text(res.data.message);
+                    
+                    if(res.data.dev_code) {
+                        console.log('🔑 ДЛЯ ОТЛАДКИ | OTP Код: ' + res.data.dev_code);
+                    }
                 } else {
                     $('#ediet-otp-message').css('color', 'red').text(res.data.message);
                 }

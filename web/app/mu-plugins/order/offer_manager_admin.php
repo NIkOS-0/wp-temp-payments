@@ -117,12 +117,21 @@ add_action('init', function () {
 
     // Hide unnecessary menu items
     add_action('admin_menu', function () {
-        remove_menu_page('index.php'); // Standard dashboard
-        remove_menu_page('profile.php'); // Убираем доступ к профилю
-        remove_menu_page('tools.php');
-        remove_menu_page('options-general.php');
-        remove_menu_page('edit-comments.php');
-        remove_menu_page('edit.php'); // Posts
+        global $menu;
+        $allowed = [
+            'offer-manager-dashboard',
+            'upload.php',
+            'edit.php?post_type=product_offer',
+            'edit.php?post_type=personal_offer'
+        ];
+        
+        if ( is_array( $menu ) ) {
+            foreach ( $menu as $m ) {
+                if ( ! empty( $m[2] ) && ! in_array( $m[2], $allowed, true ) ) {
+                    remove_menu_page( $m[2] );
+                }
+            }
+        }
     }, 999);
 });
 
