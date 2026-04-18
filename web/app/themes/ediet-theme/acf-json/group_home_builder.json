@@ -1,0 +1,316 @@
+{
+    "key": "group_front_page_builder",
+    "title": "Конструктор Главной Страницы",
+    "fields": [
+        {
+            "key": "field_fp_blocks",
+            "label": "Секции страницы",
+            "name": "home_blocks",
+            "type": "flexible_content",
+            "layouts": {
+                "layout_hero": {
+                    "key": "layout_hero",
+                    "name": "hero",
+                    "label": "Hero Блок",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_hero_title",
+                            "label": "Заголовок",
+                            "name": "title",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_hero_subtitle",
+                            "label": "Подзаголовок",
+                            "name": "subtitle",
+                            "type": "textarea"
+                        },
+                        {
+                            "key": "field_hero_cta_1",
+                            "label": "Кнопка 1",
+                            "name": "cta_1",
+                            "type": "link"
+                        },
+                        {
+                            "key": "field_hero_cta_2",
+                            "label": "Кнопка 2",
+                            "name": "cta_2",
+                            "type": "link"
+                        },
+                        {
+                            "key": "field_hero_bg",
+                            "label": "Фоновое Изображение (Превью)",
+                            "name": "background",
+                            "type": "image",
+                            "return_format": "array"
+                        },
+                        {
+                            "key": "field_hero_video",
+                            "label": "Видео (Ссылка YouTube/Vimeo)",
+                            "name": "video",
+                            "type": "oembed"
+                        }
+                    ]
+                },
+                "layout_categories": {
+                    "key": "layout_categories",
+                    "name": "categories",
+                    "label": "Категории Диагнозов",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_cat_title",
+                            "label": "Заголовок секции",
+                            "name": "title",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_cat_items",
+                            "label": "Заболевания на Колесе",
+                            "name": "items",
+                            "type": "relationship",
+                            "post_type": [
+                                "disease"
+                            ],
+                            "return_format": "object"
+                        }
+                    ]
+                },
+                "layout_featured_products": {
+                    "key": "layout_featured_products",
+                    "name": "featured_products",
+                    "label": "Топ Продукты",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_prod_title",
+                            "label": "Заголовок",
+                            "name": "title",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_prod_items",
+                            "label": "Продукты / Курсы",
+                            "name": "items",
+                            "type": "relationship",
+                            "post_type": [
+                                "mpo",
+                                "course",
+                                "service"
+                            ],
+                            "return_format": "object"
+                        }
+                    ]
+                },
+                "layout_expert": {
+                    "key": "layout_expert",
+                    "name": "expert",
+                    "label": "Блок Эксперта",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_exp_main_title",
+                            "label": "Общий Заголовок",
+                            "name": "main_title",
+                            "type": "text",
+                            "default_value": "Почему нам доверяют?"
+                        },
+                        {
+                            "key": "field_exp_main_link",
+                            "label": "Ссылка 'О специалистах'",
+                            "name": "main_link",
+                            "type": "link"
+                        },
+                        {
+                            "key": "field_exp_photo",
+                            "label": "Фото Эксперта",
+                            "name": "photo",
+                            "type": "image",
+                            "return_format": "array"
+                        },
+                        {
+                            "key": "field_exp_name",
+                            "label": "Имя Эксперта",
+                            "name": "name",
+                            "type": "text",
+                            "default_value": "Dr. Lorem Ipsum"
+                        },
+                        {
+                            "key": "field_exp_role",
+                            "label": "Должность",
+                            "name": "role",
+                            "type": "text",
+                            "default_value": "Главный Врач-нутрициолог"
+                        },
+                        {
+                            "key": "field_exp_tag1",
+                            "label": "Тег 1",
+                            "name": "tag1",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_exp_tag2",
+                            "label": "Тег 2",
+                            "name": "tag2",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_exp_content_title",
+                            "label": "Заголовок текста",
+                            "name": "content_title",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_exp_content_text",
+                            "label": "Текст",
+                            "name": "text",
+                            "type": "wysiwyg",
+                            "toolbar": "basic"
+                        },
+                        {
+                            "key": "field_exp_quote",
+                            "label": "Цитата",
+                            "name": "quote",
+                            "type": "textarea"
+                        },
+                        {
+                            "key": "field_exp_stats",
+                            "label": "Статистика",
+                            "name": "stats",
+                            "type": "repeater",
+                            "layout": "table",
+                            "button_label": "Добавить цифру",
+                            "sub_fields": [
+                                {
+                                    "key": "field_exp_stat_v",
+                                    "label": "Число",
+                                    "name": "value",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "field_exp_stat_l",
+                                    "label": "Текст",
+                                    "name": "label",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "field_exp_stat_c",
+                                    "label": "Цвет значения (Tailwind Class)",
+                                    "name": "color",
+                                    "type": "text",
+                                    "default_value": "slate-900"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "layout_narrow_hook": {
+                    "key": "layout_narrow_hook",
+                    "name": "narrow_hook",
+                    "label": "Узкий Хук (Баннер)",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_nh_icon",
+                            "label": "Иконка / Картинка",
+                            "name": "icon",
+                            "type": "image",
+                            "return_format": "array"
+                        },
+                        {
+                            "key": "field_nh_title",
+                            "label": "Заголовок",
+                            "name": "title",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_nh_subtitle",
+                            "label": "Подзаголовок",
+                            "name": "subtitle",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_nh_text",
+                            "label": "Текст",
+                            "name": "text",
+                            "type": "textarea"
+                        },
+                        {
+                            "key": "field_nh_btn",
+                            "label": "Кнопка",
+                            "name": "btn",
+                            "type": "link"
+                        }
+                    ]
+                },
+                "layout_reviews": {
+                    "key": "layout_reviews",
+                    "name": "featured_reviews",
+                    "label": "Отзывы",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_rev_title",
+                            "label": "Заголовок",
+                            "name": "title",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_rev_items",
+                            "label": "Выбранные Отзывы",
+                            "name": "items",
+                            "type": "relationship",
+                            "post_type": [
+                                "review"
+                            ],
+                            "return_format": "object"
+                        }
+                    ]
+                },
+                "layout_quiz": {
+                    "key": "layout_quiz",
+                    "name": "quiz_banner",
+                    "label": "Квиз Баннер",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_quiz_title",
+                            "label": "Заголовок",
+                            "name": "title",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_quiz_subtitle",
+                            "label": "Подзаголовок",
+                            "name": "subtitle",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_quiz_form_id",
+                            "label": "ID Формы / Шорткод",
+                            "name": "form_id",
+                            "type": "text"
+                        }
+                    ]
+                }
+            },
+            "button_label": "Добавить секцию на Главную"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "page"
+            },
+            {
+                "param": "page_type",
+                "operator": "==",
+                "value": "front_page"
+            }
+        ]
+    ],
+    "active": true
+}

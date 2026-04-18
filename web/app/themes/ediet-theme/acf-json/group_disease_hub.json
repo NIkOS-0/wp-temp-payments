@@ -1,0 +1,109 @@
+{
+    "key": "group_disease_hub",
+    "title": "Контент Для Карточки Заболевания",
+    "fields": [
+        {
+            "key": "field_dh_hero_icon",
+            "label": "Иконка на Колесе / Hero (PNG/SVG)",
+            "name": "hero_icon",
+            "type": "image",
+            "return_format": "url",
+            "instructions": "Загрузите PNG или SVG с прозрачным фоном."
+        },
+        {
+            "key": "field_dh_wheel_color",
+            "label": "Цвет на колесе (HEX)",
+            "name": "wheel_color",
+            "type": "color_picker",
+            "default_value": "#4aaee0"
+        },
+        {
+            "key": "field_dh_hero_eyebrow",
+            "label": "Отрасль (Eyebrow)",
+            "name": "hero_eyebrow",
+            "type": "text",
+            "default_value": "Гепатология · Гастроэнтерология"
+        },
+        {
+            "key": "field_dh_hero_title",
+            "label": "Заголовок",
+            "name": "hero_title",
+            "type": "textarea",
+            "instructions": "Оберните слово в <em>слово</em>, чтобы выделить его синим цветом.",
+            "default_value": "Болезни печени\nи <em>ЖКТ</em>"
+        },
+        {
+            "key": "field_dh_hero_desc",
+            "label": "Краткое описание",
+            "name": "hero_desc",
+            "type": "textarea"
+        },
+        {
+            "key": "field_dh_hero_stats",
+            "label": "Статистика (до 4 шт)",
+            "name": "hero_stats",
+            "type": "repeater",
+            "layout": "table",
+            "max": 4,
+            "sub_fields": [
+                {
+                    "key": "field_dh_stat_val",
+                    "label": "Цифра",
+                    "name": "value",
+                    "type": "text"
+                },
+                {
+                    "key": "field_dh_stat_label",
+                    "label": "Подпись",
+                    "name": "label",
+                    "type": "text"
+                },
+                {
+                    "key": "field_dh_stat_color",
+                    "label": "Цвет (CSS)",
+                    "name": "color",
+                    "type": "text",
+                    "instructions": "hex или var(--orange)"
+                }
+            ]
+        },
+        {
+            "key": "field_dh_doctors",
+            "label": "Рекомендуемые Врачи",
+            "name": "recommended_doctors",
+            "type": "relationship",
+            "post_type": [
+                "doctor"
+            ],
+            "return_format": "object"
+        },
+        {
+            "key": "field_dh_clinics",
+            "label": "Лаборатории / Клиники",
+            "name": "recommended_clinics",
+            "type": "relationship",
+            "post_type": [
+                "clinic",
+                "laboratory"
+            ],
+            "return_format": "object"
+        },
+        {
+            "key": "field_dh_lead_magnet",
+            "label": "Лид-Магнит (документ)",
+            "name": "lead_magnet_file",
+            "type": "file",
+            "return_format": "url"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "disease"
+            }
+        ]
+    ],
+    "active": true
+}

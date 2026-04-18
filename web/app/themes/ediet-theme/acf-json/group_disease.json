@@ -39,7 +39,7 @@
             "name": "products",
             "type": "relationship",
             "post_type": [
-                "product"
+                "mpo"
             ],
             "filters": [
                 "search"

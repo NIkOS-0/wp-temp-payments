@@ -1,0 +1,72 @@
+{
+    "key": "group_disease_relation",
+    "title": "Связанные Диагнозы",
+    "fields": [
+        {
+            "key": "field_global_disease_relation",
+            "label": "Относится к диагнозам",
+            "name": "related_diseases",
+            "type": "relationship",
+            "post_type": [
+                "disease"
+            ],
+            "filters": [
+                "search"
+            ],
+            "return_format": "object"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "doctor"
+            }
+        ],
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "service"
+            }
+        ],
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "course"
+            }
+        ],
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "mpo"
+            }
+        ],
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "review"
+            }
+        ],
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "clinic"
+            }
+        ],
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "laboratory"
+            }
+        ]
+    ],
+    "position": "side",
+    "active": true
+}

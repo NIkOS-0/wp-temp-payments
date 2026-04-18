@@ -29,13 +29,6 @@
             "type": "wysiwyg"
         },
         {
-            "key": "field_ps_woo_id",
-            "label": "WooCommerce ID для оплаты",
-            "name": "woo_product_id",
-            "type": "number",
-            "instructions": "ID товара из WooCommerce. При клике на Купить пользователь будет перенаправлен на чекаут с этим ID."
-        },
-        {
             "key": "field_ps_result",
             "label": "Результат",
             "name": "result",
@@ -56,7 +49,7 @@
             {
                 "param": "post_type",
                 "operator": "==",
-                "value": "product"
+                "value": "mpo"
             }
         ],
         [
