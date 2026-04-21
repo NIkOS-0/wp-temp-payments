@@ -146,12 +146,17 @@
 .mpo-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
 
 .mpo-card-cover {
-  height: 156px;
+  height: 260px;
   background: linear-gradient(135deg, #d8dee8 0%, #c8d0dc 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+}
+.mpo-card-cover > a {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
 }
 .mpo-card-cover img {
   width: 100%; height: 100%; object-fit: cover;
@@ -269,6 +274,7 @@
   letter-spacing: 0.01em;
   white-space: nowrap;
   display: inline-block;
+  text-decoration: none !important;
 }
 .mpo-buy-btn:hover { background: #374151; transform: scale(1.03); color: #fff; }
 
@@ -333,6 +339,7 @@
   background: var(--white);
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   display: inline-block;
+  text-decoration: none !important;
 }
 .mpo-view-all-btn:hover { background: var(--text); color: #fff; border-color: var(--text); }
 </style>
@@ -369,6 +376,7 @@
           @foreach($items as $i => $item)
           <div class="mpo-card" data-i="{{ $i }}">
             <div class="mpo-card-cover">
+              <a href="{{ get_permalink($item->ID) }}" aria-label="{{ $item->post_title }}"></a>
               @if(has_post_thumbnail($item->ID))
                 {!! get_the_post_thumbnail($item->ID, 'large') !!}
               @else
@@ -376,12 +384,15 @@
                   <svg viewBox="0 0 52 40" fill="none"><rect x="1" y="1" width="50" height="38" rx="4" stroke="#6b7280" stroke-width="1.5"/><path d="M8 30 L18 18 L26 25 L34 14 L44 30" stroke="#6b7280" stroke-width="1.5" stroke-linejoin="round" fill="none"/><circle cx="16" cy="13" r="4" stroke="#6b7280" stroke-width="1.5"/></svg>
                 </div>
               @endif
+              @php $badge = function_exists('get_field') ? get_field('ps_card_badge', $item->ID) : ''; @endphp
+              @if($badge)
+                  <span style="position: absolute; top: 12px; left: 12px; background: #EF4444; color: #fff; padding: 4px 12px; border-radius: 8px; font-weight: 700; font-size: 11px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">{{ $badge }}</span>
+              @endif
               <div class="mpo-card-badge">{{ get_post_type_object($item->post_type)->labels->singular_name ?? 'Гайд' }}</div>
             </div>
             
             <div class="mpo-card-body">
               <div class="mpo-card-title">{{ $item->post_title }}</div>
-              <p class="mpo-card-desc">{{ has_excerpt($item->ID) ? get_the_excerpt($item->ID) : strip_tags(wp_trim_words($item->post_content, 10)) }}</p>
               
               <ul class="mpo-card-benefits">
                  @php
@@ -401,8 +412,15 @@
               </ul>
               
               <div class="mpo-card-footer">
-                <div class="mpo-price-block">
-                  <div class="mpo-price-main">{{ function_exists('get_field') ? get_field('price', $item->ID) : '' }} ₽</div>
+                @php 
+                   $price_old = function_exists('get_field') ? get_field('book_price_old', $item->ID) : ''; 
+                   $price = function_exists('get_field') ? get_field('price', $item->ID) : '';
+                @endphp
+                <div class="mpo-price-block" style="position: relative;">
+                  @if(!empty($price_old))
+                    <div style="font-size: 12.5px; text-decoration: line-through; color: #94A3B8; margin-bottom: -2px;">{{ $price_old }} ₽</div>
+                  @endif
+                  <div class="mpo-price-main">{{ $price }} ₽</div>
                   <div class="mpo-price-sub">PDF · Доступ навсегда</div>
                 </div>
                 <a href="{{ get_permalink($item->ID) }}" class="mpo-buy-btn text-center hover:text-white">КУПИТЬ</a>
@@ -464,7 +482,9 @@
         }
 
         function goTo(idx, instant) {
-          current = Math.max(0, Math.min(idx, N - 1));
+          if (idx < 0) idx = N - 1;
+          else if (idx >= N) idx = 0;
+          current = idx;
           
           let maxOffset = (N * (CARD_W + GAP)) - track.parentElement.offsetWidth + PEEK;
           if (maxOffset < 0) maxOffset = 0;
@@ -482,9 +502,6 @@
             if(i === current) d.classList.add('on');
             else d.classList.remove('on');
           });
-          
-          if(prevBtn) prevBtn.disabled = current === 0;
-          if(nextBtn) nextBtn.disabled = current === N - 1;
         }
 
         if(prevBtn) prevBtn.addEventListener('click', () => goTo(current - 1));

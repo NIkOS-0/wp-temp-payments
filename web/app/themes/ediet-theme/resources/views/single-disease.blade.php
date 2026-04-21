@@ -12,20 +12,28 @@
   $clinics = get_field('recommended_clinics') ?: [];
   $lead_magnet = get_field('lead_magnet_file');
   
-  // GET RELATED PRODUCTS (MPOs) via robust array filtering
+  $disease_id = get_the_ID();
+  
+  $mpos_assigned = function_exists('get_field') ? (get_field('products', $disease_id) ?: []) : [];
+  $mpos = is_array($mpos_assigned) ? $mpos_assigned : [];
+  $mpos_ids = array_map(function($m) { return is_object($m) ? $m->ID : (is_array($m) ? ($m['ID'] ?? null) : $m); }, $mpos);
+
+  // GET RELATED PRODUCTS (Books) via robust array filtering
   $all_mpos = get_posts([
-     'post_type' => 'mpo',
+     'post_type' => 'book',
      'posts_per_page' => -1,
   ]);
   
-  $mpos = [];
   foreach($all_mpos as $m) {
+      if (in_array($m->ID, $mpos_ids)) continue;
+      
       $assigned = function_exists('get_field') ? get_field('related_diseases', $m->ID) : [];
       if (is_array($assigned)) {
           foreach($assigned as $a) {
               $a_id = is_object($a) ? $a->ID : (is_array($a) ? ($a['ID'] ?? null) : $a);
-              if ($a_id == get_the_ID()) {
+              if ($a_id == $disease_id) {
                   $mpos[] = $m;
+                  $mpos_ids[] = $m->ID;
                   break;
               }
           }
@@ -100,7 +108,7 @@
 .ds-sc-label { font-size: 12.5px; font-weight: 600; }
 
 /* Grid MPO */
-.ds-mpo-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+.ds-mpo-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 21px; }
 .ds-mpo-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-lg); overflow: hidden; cursor: pointer; transition: transform 0.25s, box-shadow 0.25s ease; display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0,0,0,0.04); text-decoration:none !important; color:inherit; }
 .ds-mpo-card:hover { transform: translateY(-5px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); border-color: rgba(200,210,230,0.8); }
 .ds-mpo-cover { height: 160px; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; padding: 14px 16px; position: relative; overflow: hidden; }
@@ -109,6 +117,24 @@
 .ds-mpo-body { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; }
 .ds-mpo-desc { font-size: 12px; color: var(--sub); line-height: 1.55; margin-bottom: 12px; }
 .ds-mpo-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); margin-top:auto; }
+
+/* Book Product Card from Single Book */
+.book-product-card { background: var(--surface); border: 0.5px solid #B1B5C4; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.2s; text-decoration: none; color: inherit; height: 100%; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.book-product-card:hover { box-shadow: 0 8px 24px rgba(100,120,180,0.18); transform: translateY(-5px); border-color: rgba(200,210,230,0.8); }
+.book-card-img { height: 260px; background: rgba(112,152,223,0.41); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.book-card-img-overlay { position: absolute; inset: 0; background: rgba(151,151,151,0.2); box-shadow: inset 0 0 15px rgba(0,0,0,0.25); }
+.book-card-book { width: 130px; height: 182px; background: linear-gradient(144.46deg, #5BB8E8 0%, #3A9BD5 100%); box-shadow: -6px 6px 18px rgba(0,0,0,0.25), 3px 0 0 rgba(0,0,0,0.1); border-radius: 4px 10px 10px 4px; position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 14px 12px; }
+.book-card-book::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 9px; background: rgba(0,0,0,0.15); border-radius: 4px 0 0 4px; }
+.book-card-book-title { font-weight: 700; font-size: 12px; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.2); padding-left: 10px; line-height: 1.3; }
+.book-card-body { padding: 0 20px 16px; display: flex; flex-direction: column; flex: 1; }
+.book-card-features { display: flex; flex-direction: column; gap: 6px; padding: 12px 0; flex: 1; }
+.book-card-feature { display: flex; align-items: center; gap: 8px; font-weight: 200; font-size: 13px; color: #000; }
+.book-card-check { width: 18px; height: 18px; background: #DCFCE7; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.book-card-check svg { width: 9px; height: 9px; }
+.book-card-footer { border-top: 0.5px solid #D9D9D9; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;}
+.book-card-price { font-weight: 600; font-size: 20px; letter-spacing: -0.4px; color: #000; }
+.book-card-delivery { font-weight: 200; font-size: 12px; color: var(--sub); margin-top: 2px; }
+.book-btn-card-buy { background: #000; color: #fff; border: none; border-radius: 10px; padding: 11.5px 18px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12.5px; cursor: pointer; transition: opacity 0.15s; }
 
 /* Consult / Clinics */
 .ds-consult-row { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
@@ -153,8 +179,21 @@
         @endif
         
         <div class="flex gap-3 mt-4">
-          <a href="#mpo-catalog" class="ds-btn-primary">📋 Смотреть планы МПО</a>
-          <button class="ds-btn-ghost" onclick="alert('Форма записи в разработке')">💬 Консультация</button>
+          @php
+             $btn1 = get_field('hero_primary_link', get_the_ID());
+             $btn2 = get_field('hero_secondary_link', get_the_ID());
+          @endphp
+          @if($btn1)
+             <a href="{{ $btn1['url'] }}" target="{{ $btn1['target'] }}" class="ds-btn-primary">{{ $btn1['title'] }}</a>
+          @else
+             <a href="#mpo-catalog" class="ds-btn-primary">📋 Смотреть планы МПО</a>
+          @endif
+
+          @if($btn2)
+             <a href="{{ $btn2['url'] }}" target="{{ $btn2['target'] }}" class="ds-btn-ghost">{{ $btn2['title'] }}</a>
+          @else
+             <button class="ds-btn-ghost" onclick="alert('Форма записи в разработке')">💬 Консультация</button>
+          @endif
         </div>
       </div>
       
@@ -174,7 +213,7 @@
     <!-- ── CATALOG MPO ── -->
     <div class="ds-sec-head mt-12" id="mpo-catalog">
       <div>
-        <div class="ds-sec-title">📋 Доступные МПО (Готовые планы оздоровления)</div>
+        <div class="ds-sec-title">Доступные продукты</div>
         <div class="ds-sec-sub">Протоколы специально для: {{ get_the_title() }}</div>
       </div>
     </div>
@@ -184,29 +223,50 @@
          @foreach($mpos as $mpo)
            @php 
              $price = function_exists('get_field') ? get_field('price', $mpo->ID) : '2 490';
-             $is_bestseller = $loop->first; 
-             $bg = $is_bestseller ? 'linear-gradient(135deg,#c2410c,#ea580c,#fb923c)' : 'linear-gradient(135deg,#0f4c75,#1b6ca8,#3a9bd5)';
+             $price_old = function_exists('get_field') ? get_field('book_price_old', $mpo->ID) : '';
+             $image = get_the_post_thumbnail_url($mpo->ID, 'medium') ?: '';
+             $badge = function_exists('get_field') ? get_field('ps_card_badge', $mpo->ID) : '';
+             $features = function_exists('get_field') ? get_field('book_features', $mpo->ID) : [];
+             $delivery = function_exists('get_field') ? get_field('book_delivery_note', $mpo->ID) : '';
+             $type_label = $mpo->post_type === 'course' ? 'Курс' : 'Книга';
            @endphp
-           <a href="{{ get_permalink($mpo->ID) }}" class="ds-mpo-card {{ $is_bestseller ? 'col-span-3 lg:col-span-2' : '' }}">
-             <div class="ds-mpo-cover" style="background:{{ $bg }}">
-                <div class="absolute inset-0" style="background-image: radial-gradient(circle, rgba(255,255,255,0.15) 1.5px, transparent 1.5px); background-size: 18px 18px;"></div>
-                <div class="absolute top-3 right-3 text-5xl opacity-20 leading-none">💊</div>
-                @if($is_bestseller)
-                  <div class="relative z-10 inline-flex items-center gap-1 bg-white/20 backdrop-blur-md border border-white/30 text-white text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded">🔥 Хит · Бестселлер</div>
-                @endif
-                <div class="ds-mpo-cover-title mt-2">{{ $mpo->post_title }}</div>
-             </div>
-             <div class="ds-mpo-body">
-                <div class="ds-mpo-desc">{{ has_excerpt($mpo->ID) ? get_the_excerpt($mpo->ID) : strip_tags(wp_trim_words($mpo->post_content, 15)) }}</div>
-                <div class="ds-mpo-footer">
-                  <div>
-                    <div class="text-[18px] font-black tracking-tight leading-none">{{ $price }} ₽</div>
-                    <div class="text-[10px] text-slate-400 mt-1">PDF · Доступ навсегда</div>
-                  </div>
-                  <div class="ds-btn-primary px-4 py-2 text-xs">Купить →</div>
+
+          <a href="{{ get_permalink($mpo->ID) }}" class="book-product-card" style="position: relative;">
+            <div class="book-card-img" style="{{ !empty($image) ? 'background-image: url('.$image.'); background-size: cover; background-position: center;' : '' }}">
+              @if(empty($image))
+                <div class="book-card-img-overlay"></div>
+                <div class="book-card-book" @if($type_label === 'Курс') style="background: linear-gradient(135deg, #10B981 0%, #047857 100%)" @endif>
+                  <div class="book-card-book-title">{!! nl2br(esc_html($mpo->post_title)) !!}</div>
                 </div>
-             </div>
-           </a>
+              @endif
+              
+              @if(!empty($badge))
+                <span style="position: absolute; top: 12px; left: 12px; background: #EF4444; color: #fff; padding: 4px 12px; border-radius: 8px; font-weight: 700; font-size: 11px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">{{ $badge }}</span>
+              @endif
+            </div>
+            
+            <div class="book-card-body">
+              <div class="book-card-features">
+                @if(!empty($features))
+                  @foreach(array_slice($features, 0, 4) as $f)
+                    <div class="book-card-feature"><div class="book-card-check"><svg viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/></svg></div>{{ is_array($f) ? ($f['text'] ?? $f['title'] ?? 'Полезный материал') : 'Полезный материал' }}</div>
+                  @endforeach
+                @else
+                  <div class="book-card-feature"><div class="book-card-check"><svg viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/></svg></div>Полезный материал</div>
+                @endif
+              </div>
+              <div class="book-card-footer">
+                <div style="position: relative;">
+                  @if(!empty($price_old))
+                    <div style="font-size: 13.5px; text-decoration: line-through; color: #94A3B8; margin-bottom: -2px;">{{ $price_old }} ₽</div>
+                  @endif
+                  <div class="book-card-price">{{ $price }} ₽</div>
+                  <div class="book-card-delivery">{{ $delivery }}</div>
+                </div>
+                <button class="book-btn-card-buy">{{ $type_label === 'Курс' ? 'Участвовать' : 'Купить' }}</button>
+              </div>
+            </div>
+          </a>
          @endforeach
        @else
          <div class="col-span-3 p-8 border-2 border-dashed border-slate-300 rounded-2xl text-center">
@@ -220,7 +280,7 @@
     <!-- ── CONSULTS ── -->
     <div class="ds-sec-head">
       <div>
-        <div class="ds-sec-title">👨⚕️ Консультации специалистов</div>
+        <div class="ds-sec-title">Реестр специалистов</div>
         <div class="ds-sec-sub">Врачи интегративной медицины, курирующие данное направление</div>
       </div>
     </div>

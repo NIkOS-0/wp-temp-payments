@@ -48,13 +48,13 @@ function ediet_register_cpts() {
         'hierarchical' => true, 'show_in_rest' => true,
     ]);
 
-    // 5. Service (Услуга)
-    register_post_type('service', [
-        'labels' => ['name' => __('Услуги', 'ediet'), 'singular_name' => __('Услуга', 'ediet')],
+    // 5. Consultation (Консультация)
+    register_post_type('consultation', [
+        'labels' => ['name' => __('Консультации', 'ediet'), 'singular_name' => __('Консультация', 'ediet')],
         'public' => true, 'has_archive' => true, 'show_in_rest' => true,
         'menu_icon' => 'dashicons-clipboard',
         'supports' => ['title', 'editor', 'thumbnail', 'excerpt'],
-        'rewrite' => ['slug' => 'service', 'with_front' => false]
+        'rewrite' => ['slug' => 'consultations', 'with_front' => false]
     ]);
 
     // 6. Course (Курс)
@@ -66,13 +66,13 @@ function ediet_register_cpts() {
         'rewrite' => ['slug' => 'course', 'with_front' => false]
     ]);
 
-    // 7. Product (Продукт / Лендинг)
-    register_post_type('mpo', [
-        'labels' => ['name' => __('МПО (Планы)', 'ediet'), 'singular_name' => __('План МПО', 'ediet')],
+    // 7. Book (Книга - formerly MPO/Лендинг)
+    register_post_type('book', [
+        'labels' => ['name' => __('Книги', 'ediet'), 'singular_name' => __('Книга', 'ediet')],
         'public' => true, 'has_archive' => true, 'show_in_rest' => true,
-        'menu_icon' => 'dashicons-clipboard',
+        'menu_icon' => 'dashicons-book',
         'supports' => ['title', 'editor', 'thumbnail', 'excerpt'],
-        'rewrite' => ['slug' => 'mpo', 'with_front' => false]
+        'rewrite' => ['slug' => 'books', 'with_front' => false]
     ]);
 
     // 8. Review (Отзывы)

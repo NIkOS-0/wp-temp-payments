@@ -17,7 +17,7 @@
                  { 
                    id: {{ $index + 1 }}, 
                    short: "{{ addslashes($item->post_title) }}", 
-                   iconUrl: "{{ get_field('hero_icon', $item->ID) ?: 'https://dev.e-diet.wiki/wp-includes/images/smilies/icon_neutral.gif' }}", 
+                   iconUrl: "{{ get_field('hero_icon', $item->ID) ?: 'https://dev.e-diet.wiki/themes/ediet-theme/resources/images/logo.png' }}", 
                    color: "{{ get_field('wheel_color', $item->ID) ?: '#4aaee0' }}",
                    url: "{{ get_permalink($item->ID) }}" 
                  },
@@ -133,13 +133,13 @@
                const ey = Math.sin(midA) * emojiR;
                
                if (cat.imgObj && cat.imgObj.complete && cat.imgObj.naturalHeight !== 0) {
-                   const sSize = MIN * 0.08;
+                   const sSize = MIN * 0.14;
                    ctx.drawImage(cat.imgObj, ex - sSize/2, ey - sSize/2, sSize, sSize);
                }
 
                // Number near outer edge
                const numR = R_OUT - MIN * 0.028;
-               ctx.font = `300 ${MIN * 0.018}px 'Inter', sans-serif`;
+               ctx.font = `300 ${MIN * 0.044}px 'Inter', sans-serif`;
                ctx.fillStyle = 'rgba(255,255,255,0.55)';
                ctx.textAlign = 'center';
                ctx.textBaseline = 'middle';
@@ -161,7 +161,7 @@
                  if (midA > Math.PI/2 && midA < Math.PI*1.5) rot += Math.PI;
                  ctx.rotate(rot);
 
-                 ctx.font = `700 ${MIN * 0.0145}px 'Inter', sans-serif`;
+                 ctx.font = `700 ${MIN * 0.018}px 'Inter', sans-serif`;
                  ctx.textAlign = 'center';
                  ctx.textBaseline = 'middle';
                  ctx.fillStyle = rgba(cat.color, 0.72);
@@ -199,10 +199,10 @@
 
                // Image in center
                if (cat && cat.imgObj && cat.imgObj.complete && cat.imgObj.naturalHeight !== 0) {
-                   const sSize = R_IN * 0.55;
+                   const sSize = R_IN * 0.75;
                    ctx.drawImage(cat.imgObj, -sSize/2, -R_IN * 0.1 - sSize/2, sSize, sSize);
                } else if (!cat) {
-                   const sSize = R_IN * 0.45;
+                   const sSize = R_IN * 0.6;
                    ctx.font = `800 ${sSize}px 'Inter', sans-serif`;
                    ctx.textAlign = 'center';
                    ctx.textBaseline = 'middle';
@@ -212,14 +212,14 @@
                }
 
                // Title
-               ctx.font = `800 ${MIN * 0.021}px 'Inter', sans-serif`;
+               ctx.font = `800 ${MIN * 0.026}px 'Inter', sans-serif`;
                ctx.textAlign = 'center';
                ctx.textBaseline = 'middle';
                ctx.fillStyle = cat ? cat.color : '#0f172a';
                ctx.fillText(cat ? cat.short.toUpperCase() : 'ЗДОРОВЬЕ', 0, R_IN * 0.40);
 
                // Subtitle
-               ctx.font = `600 ${MIN * 0.014}px 'Inter', sans-serif`;
+               ctx.font = `600 ${MIN * 0.017}px 'Inter', sans-serif`;
                ctx.fillStyle = '#94a3b8';
                ctx.fillText(cat ? `Раздел ${String(cat.id).padStart(2,'0')}` : 'Выберите раздел', 0, R_IN * 0.58);
              }

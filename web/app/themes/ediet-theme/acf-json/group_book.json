@@ -1,0 +1,242 @@
+{
+    "key": "group_book",
+    "title": "Детали Книги (Book Card)",
+    "fields": [
+        {
+            "key": "field_ediet_book_top_labels",
+            "label": "Ярлыки сверху",
+            "name": "book_top_labels",
+            "type": "repeater",
+            "layout": "table",
+            "sub_fields": [
+                {
+                    "key": "field_ediet_book_top_label_text",
+                    "label": "Текст ярлыка",
+                    "name": "text",
+                    "type": "text"
+                },
+                {
+                    "key": "field_ediet_book_top_label_style",
+                    "label": "Стиль",
+                    "name": "style",
+                    "type": "select",
+                    "choices": {
+                        "default": "По умолчанию (серый/белый)",
+                        "pdf": "Синий (PDF)",
+                        "verified": "Зеленый (Проверено)"
+                    },
+                    "default_value": "default"
+                }
+            ]
+        },
+        {
+            "key": "field_ediet_book_image_badge",
+            "label": "Ярлык на изображении",
+            "name": "book_image_badge",
+            "type": "text",
+            "instructions": "Например: БЕСТСЕЛЛЕР"
+        },
+        {
+            "key": "field_ediet_book_gallery",
+            "label": "Обложки / Галерея",
+            "name": "book_gallery",
+            "type": "gallery",
+            "return_format": "array",
+            "insert": "append",
+            "library": "all",
+            "min": "",
+            "max": 4,
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": ""
+        },
+        {
+            "key": "field_ediet_book_author",
+            "label": "Автор",
+            "name": "book_author",
+            "type": "relationship",
+            "post_type": [
+                "doctor"
+            ],
+            "filters": [
+                "search"
+            ],
+            "return_format": "object",
+            "max": 1
+        },
+        {
+            "key": "field_ediet_book_stats",
+            "label": "Цифры (Мини-статистика)",
+            "name": "book_stats",
+            "type": "repeater",
+            "layout": "table",
+            "sub_fields": [
+                {
+                    "key": "field_ediet_book_stat_value",
+                    "label": "Значение",
+                    "name": "value",
+                    "type": "text"
+                },
+                {
+                    "key": "field_ediet_book_stat_label",
+                    "label": "Подпись",
+                    "name": "label",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "key": "field_ediet_book_features",
+            "label": "Особенности (список с галочками)",
+            "name": "book_features",
+            "type": "repeater",
+            "layout": "table",
+            "sub_fields": [
+                {
+                    "key": "field_ediet_book_feature_text",
+                    "label": "Текст",
+                    "name": "text",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "key": "field_ediet_book_description",
+            "label": "Описание (Вкладка)",
+            "name": "book_description",
+            "type": "flexible_content",
+            "button_label": "Добавить блок описания",
+            "layouts": {
+                "layout_text": {
+                    "key": "layout_book_desc_text",
+                    "name": "text_block",
+                    "label": "Текстовый блок",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_book_desc_text_title",
+                            "label": "Заголовок",
+                            "name": "title",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_book_desc_text_content",
+                            "label": "Содержимое",
+                            "name": "content",
+                            "type": "wysiwyg",
+                            "media_upload": 0
+                        }
+                    ]
+                },
+                "layout_quote": {
+                    "key": "layout_book_desc_quote",
+                    "name": "quote_block",
+                    "label": "Цитата",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_book_desc_quote_text",
+                            "label": "Текст цитаты",
+                            "name": "quote",
+                            "type": "textarea"
+                        }
+                    ]
+                },
+                "layout_use_cases": {
+                    "key": "layout_book_desc_use_cases",
+                    "name": "use_cases_block",
+                    "label": "Блоки применения (Карточки)",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_book_desc_uc_items",
+                            "label": "Карточки",
+                            "name": "items",
+                            "type": "repeater",
+                            "layout": "block",
+                            "sub_fields": [
+                                {
+                                    "key": "field_book_desc_uc_icon",
+                                    "label": "Иконка",
+                                    "name": "icon",
+                                    "type": "select",
+                                    "choices": {
+                                        "patient": "Пациент с диагнозом",
+                                        "relative": "Родственник пациента",
+                                        "student": "Изучает тему",
+                                        "check": "После лечения"
+                                    }
+                                },
+                                {
+                                    "key": "field_book_desc_uc_title",
+                                    "label": "Заголовок",
+                                    "name": "title",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "field_book_desc_uc_desc",
+                                    "label": "Описание",
+                                    "name": "desc",
+                                    "type": "textarea"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "key": "field_ediet_book_contents",
+            "label": "Содержание (Вкладка)",
+            "name": "book_contents",
+            "type": "repeater",
+            "layout": "block",
+            "sub_fields": [
+                {
+                    "key": "field_ediet_book_content_title",
+                    "label": "Заголовок / Пункт",
+                    "name": "title",
+                    "type": "text"
+                },
+                {
+                    "key": "field_ediet_book_content_desc",
+                    "label": "Описание пункта (необязательно)",
+                    "name": "desc",
+                    "type": "textarea"
+                }
+            ]
+        },
+        {
+            "key": "field_ediet_book_price_old",
+            "label": "Старая цена",
+            "name": "book_price_old",
+            "type": "number"
+        },
+        {
+            "key": "field_ediet_book_delivery_note",
+            "label": "Текст доставки",
+            "name": "book_delivery_note",
+            "type": "text",
+            "default_value": "PDF · Link-Access · получение на e-mail"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "book"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true
+}

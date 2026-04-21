@@ -9,6 +9,12 @@
             "type": "text"
         },
         {
+            "key": "field_ps_card_badge",
+            "label": "Ярлык карточки (в сетке продуктов, хит и т.д.)",
+            "name": "ps_card_badge",
+            "type": "text"
+        },
+        {
             "key": "field_ps_benefits",
             "label": "Преимущества",
             "name": "benefits",
@@ -21,18 +27,6 @@
                     "type": "text"
                 }
             ]
-        },
-        {
-            "key": "field_ps_what_inside",
-            "label": "Что внутри",
-            "name": "what_inside",
-            "type": "wysiwyg"
-        },
-        {
-            "key": "field_ps_result",
-            "label": "Результат",
-            "name": "result",
-            "type": "wysiwyg"
         },
         {
             "key": "field_ps_reviews",
@@ -49,7 +43,7 @@
             {
                 "param": "post_type",
                 "operator": "==",
-                "value": "mpo"
+                "value": "book"
             }
         ],
         [

@@ -30,6 +30,57 @@
             "name": "doctor_desc",
             "type": "wysiwyg",
             "toolbar": "basic"
+        },
+        {
+            "key": "field_ediet_doc_verified",
+            "label": "Верифицирован (Зеленая галочка)",
+            "name": "doc_verified",
+            "type": "true_false",
+            "message": "Показывать галочку?",
+            "default_value": 0,
+            "ui": 1
+        },
+        {
+            "key": "field_ediet_doc_tags",
+            "label": "Ярлыки (регалии / особенности)",
+            "name": "doc_tags",
+            "type": "repeater",
+            "layout": "table",
+            "sub_fields": [
+                {
+                    "key": "field_ediet_doc_tag_text",
+                    "label": "Текст ярлыка",
+                    "name": "text",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "key": "field_ediet_doc_stats",
+            "label": "Мини-статистика (цифры)",
+            "name": "doc_stats",
+            "type": "repeater",
+            "layout": "table",
+            "sub_fields": [
+                {
+                    "key": "field_ediet_doc_stat_val",
+                    "label": "Значение",
+                    "name": "value",
+                    "type": "text"
+                },
+                {
+                    "key": "field_ediet_doc_stat_lab",
+                    "label": "Подпись",
+                    "name": "label",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "key": "field_ediet_doc_quote",
+            "label": "Цитата",
+            "name": "doc_quote",
+            "type": "textarea"
         }
     ],
     "location": [

@@ -95,7 +95,7 @@
                             "name": "items",
                             "type": "relationship",
                             "post_type": [
-                                "mpo",
+                                "book",
                                 "course",
                                 "service"
                             ],

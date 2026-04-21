@@ -39,7 +39,7 @@
             "name": "products",
             "type": "relationship",
             "post_type": [
-                "mpo"
+                "book"
             ],
             "filters": [
                 "search"
@@ -107,6 +107,20 @@
                     "type": "text"
                 }
             ]
+        },
+        {
+            "key": "field_disease_hero_btn1",
+            "label": "Главная кнопка на обложке",
+            "name": "hero_primary_link",
+            "type": "link",
+            "instructions": "Ссылка и текст для первой кнопки под описанием (Смотреть планы МПО)"
+        },
+        {
+            "key": "field_disease_hero_btn2",
+            "label": "Вторая кнопка на обложке",
+            "name": "hero_secondary_link",
+            "type": "link",
+            "instructions": "Ссылка и текст для второй кнопки (Консультация)"
         }
     ],
     "location": [
