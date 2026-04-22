@@ -1,14 +1,440 @@
 @import "tailwindcss" theme(static);
+
 @source "../../app/**/*.php";
 @source "../**/*.blade.php";
 @source "../**/*.js";
+
+/* ════════════════════════════════════════
+   DESIGN TOKENS — e-diet
+   Warm Coral-Terracotta · Editorial DTC
+   Refs: hims.com · fllopi · hypedemo
+════════════════════════════════════════ */
+
+@theme {
+
+  /* ─── Terracotta / Primary ───
+     Earthy coral, not saturated — warm clay like hims warm sections */
+  --color-terra-50: #fef8f4;
+  --color-terra-100: #fdeee5;
+  --color-terra-200: #fad5c0;
+  --color-terra-300: #f5b394;
+  --color-terra-400: #e89068;
+  --color-terra-500: #c77b5a;
+  /* primary CTA */
+  --color-terra-600: #ad623f;
+  --color-terra-700: #8c4b2c;
+  --color-terra-800: #6e3820;
+  --color-terra-900: #4f2611;
+
+  /* ─── Peach / Pastel Accent ───
+     Light pastel layers, cards, badges */
+  --color-peach-50: #fffaf7;
+  --color-peach-100: #fff0e8;
+  --color-peach-200: #ffddc2;
+  /* fllopi color-six */
+  --color-peach-300: #ffbf96;
+  --color-peach-400: #faa162;
+  /* fllopi color-eighteen */
+  --color-peach-500: #e8854a;
+
+  /* ─── Cream / Canvas ───
+     Background layers — warm neutrals */
+  --color-cream-50: #fefdf9;
+  --color-cream-100: #fefaf3;
+  /* fllopi color-three */
+  --color-cream-200: #fbefe2;
+  /* fllopi color-eleven */
+  --color-cream-300: #f5e3d0;
+  --color-cream-400: #e8d3bc;
+  --color-cream-500: #dacaba;
+  /* fllopi color-twelve */
+
+  /* ─── Bark / Text ───
+     Warm dark browns (hims dark + fllopi near-black) */
+  --color-bark-50: #f9f5f2;
+  --color-bark-100: #f0e6de;
+  --color-bark-200: #d9c5b5;
+  --color-bark-300: #b89d88;
+  --color-bark-400: #9c7d66;
+  /* fllopi color-seven */
+  --color-bark-500: #7a736c;
+  /* fllopi color-seven */
+  --color-bark-600: #4a4444;
+  /* fllopi color-twenty */
+  --color-bark-700: #3e2f22;
+  /* fllopi color-four */
+  --color-bark-800: #241c14;
+  /* fllopi color-nine */
+  --color-bark-900: #1c0d00;
+  /* fllopi color-two — primary text */
+
+  /* ─── Onyx / Dark sections ───
+     For editorial dark blocks like hims hero */
+  --color-onyx-800: #1b140e;
+  --color-onyx-900: #0f0e0d;
+  /* fllopi color-thirteen */
+  --color-onyx-950: #080605;
+
+  /* ─── Semantic ─── */
+  --color-surface: #ffffff;
+  --color-canvas: #fefaf3;
+  --color-canvas-deep: #fbefe2;
+  --color-border: #e0d0c5;
+  /* fllopi color-eight */
+  --color-border-strong: #c8b0a0;
+
+  /* ─── Status ─── */
+  --color-success: #15803d;
+  --color-success-bg: #f0fdf4;
+  --color-error: #f42647;
+  --color-error-bg: #fff1f3;
+  --color-warning: #d97706;
+  --color-warning-bg: #fffbeb;
+
+  /* ─── Typography ─── */
+  --font-sans: 'Inter', 'Work Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Work Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Playfair Display', 'Georgia', ui-serif, serif;
+
+  /* ─── Radius (pill-friendly like hims) ─── */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-pill: 9999px;
+
+}
+
+/* ════════════════════════════════════════
+   ROOT — backward compat with existing templates
+   All scoped CSS vars in inline <style> blocks
+   point here so they pick up the new palette
+════════════════════════════════════════ */
+
+:root {
+  --app-bg: #fefaf3;
+  --surface: #ffffff;
+  --border: #e0d0c5;
+  --border-s: rgba(224, 208, 197, 0.6);
+  --text: #1c0d00;
+  --sub: #7a736c;
+  --muted: #9c7d66;
+  --accent: #c77b5a;
+  --card-r: 16px;
+
+  /* Legacy semantic names used in existing templates */
+  --blue: #2563eb;
+  --blue-l: #eff6ff;
+  --blue-b: #bfdbfe;
+  --green: #15803d;
+  --green-l: #f0fdf4;
+  --orange: #ad623f;
+  --orange-l: #fef8f4;
+  --purple: #6d28d9;
+  --teal: #0f766e;
+
+  --r: 12px;
+  --r-lg: 18px;
+  --r-xl: 24px;
+}
+
+/* ════════════════════════════════════════
+   COMPONENTS
+════════════════════════════════════════ */
+
+@layer components {
+
+  /* ─── Buttons (pill-shaped like hims) ─── */
+
+  /* Base shared styles — extend via multi-class */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s;
+  }
+
+  /* Dark pill — main CTA (hims style) */
+  .btn-dark {
+    @apply inline-flex items-center justify-center gap-2 font-semibold leading-none whitespace-nowrap cursor-pointer select-none transition-all duration-200 px-7 py-3.5 rounded-pill bg-bark-900 text-cream-100 hover:bg-bark-800 active:scale-[0.97] shadow-sm;
+  }
+
+  /* Terracotta pill — warm accent */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 font-semibold leading-none whitespace-nowrap cursor-pointer select-none transition-all duration-200 px-7 py-3.5 rounded-pill bg-terra-500 text-white hover:bg-terra-600 active:scale-[0.97] shadow-sm;
+  }
+
+  /* Ghost outline */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 font-semibold leading-none whitespace-nowrap cursor-pointer select-none transition-all duration-200 px-7 py-3.5 rounded-pill bg-transparent text-bark-900 border border-bark-900 hover:bg-bark-900 hover:text-cream-100 active:scale-[0.97];
+  }
+
+  /* Soft peach fill */
+  .btn-soft {
+    @apply inline-flex items-center justify-center gap-2 font-semibold leading-none whitespace-nowrap cursor-pointer select-none transition-all duration-200 px-6 py-3 rounded-pill bg-peach-200 text-bark-900 hover:bg-peach-300 active:scale-[0.97];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 font-semibold leading-none whitespace-nowrap cursor-pointer select-none transition-all duration-200 px-4 py-2.5 rounded-pill text-bark-600 hover:text-bark-900 hover:bg-cream-200;
+  }
+
+  .btn-lg {
+    @apply px-9 py-4 text-base;
+  }
+
+  .btn-sm {
+    @apply px-5 py-2.5 text-sm;
+  }
+
+  .btn-xs {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  /* ─── Cards ─── */
+
+  .card {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+  }
+
+  .card-hover {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+
+  .card-hover:hover {
+    box-shadow: 0 6px 32px rgba(28, 13, 0, 0.08);
+    border-color: var(--color-border-strong);
+  }
+
+  .card-warm {
+    @apply rounded-lg bg-cream-100 border border-cream-300 overflow-hidden;
+  }
+
+  .card-dark {
+    @apply rounded-lg bg-onyx-900 border border-onyx-800 overflow-hidden text-cream-100;
+  }
+
+  /* ─── Layout ─── */
+
+  .section {
+    @apply py-16 md:py-24;
+  }
+
+  .section-sm {
+    @apply py-10 md:py-16;
+  }
+
+  .section-dark {
+    @apply py-16 md:py-24 bg-onyx-900 text-cream-100;
+  }
+
+  .section-warm {
+    @apply py-16 md:py-24 bg-cream-100;
+  }
+
+  .section-canvas {
+    @apply py-16 md:py-24 bg-canvas;
+  }
+
+  .container-wide {
+    @apply max-w-[1280px] mx-auto px-5 md:px-8 lg:px-12;
+  }
+
+  .container-editorial {
+    @apply max-w-[1100px] mx-auto px-5 md:px-8 lg:px-12;
+  }
+
+  .container-narrow {
+    @apply max-w-2xl mx-auto px-5 md:px-8;
+  }
+
+  /* ─── Typography ─── */
+
+  /* Editorial serif headline — hims big hero style */
+  .heading-hero {
+    font-family: var(--font-serif);
+    @apply font-bold tracking-tight leading-[1.02] text-bark-900;
+    font-size: clamp(1.2rem, 5vw, 4rem);
+  }
+
+  /* Dark-bg serif headline */
+  .heading-hero-light {
+    font-family: var(--font-serif);
+    @apply font-bold tracking-tight leading-[1.02] text-cream-100;
+    font-size: clamp(2.4rem, 5.5vw, 4.5rem);
+  }
+
+  /* Section display — sans bold */
+  .heading-display {
+    @apply font-bold tracking-tight leading-[1.06] text-bark-900;
+    font-size: clamp(1.75rem, 3.5vw, 3rem);
+  }
+
+  .heading-section {
+    @apply text-2xl md:text-3xl font-bold tracking-tight leading-snug text-bark-900;
+  }
+
+  .heading-card {
+    @apply text-lg font-semibold leading-snug text-bark-900;
+  }
+
+  .text-body {
+    @apply text-bark-600 leading-relaxed;
+  }
+
+  .text-caption {
+    @apply text-sm text-bark-500 leading-relaxed;
+  }
+
+  .text-overline {
+    @apply text-xs font-semibold tracking-[0.15em] uppercase text-terra-500;
+  }
+
+  /* ─── Badges ─── */
+
+  .badge,
+  .badge-terra,
+  .badge-peach,
+  .badge-cream,
+  .badge-dark,
+  .badge-green,
+  .badge-error {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .badge-terra {
+    background: var(--color-terra-100);
+    color: var(--color-terra-700);
+  }
+
+  .badge-peach {
+    background: var(--color-peach-200);
+    color: var(--color-bark-800);
+  }
+
+  .badge-cream {
+    background: var(--color-cream-200);
+    color: var(--color-bark-700);
+  }
+
+  .badge-dark {
+    background: var(--color-bark-900);
+    color: var(--color-cream-100);
+  }
+
+  .badge-green {
+    background: #dcfce7;
+    color: #15803d;
+  }
+
+  .badge-error {
+    background: var(--color-error-bg);
+    color: var(--color-error);
+  }
+
+  /* ─── Form elements ─── */
+
+  .input {
+    @apply w-full px-4 py-3.5 bg-cream-100 border border-[--border] rounded-xl text-bark-900 placeholder-bark-400 text-sm font-medium focus:outline-none focus:border-terra-400 focus:ring-2 focus:ring-terra-100 transition-all duration-150;
+  }
+
+  .input-lg {
+    @apply w-full px-4 py-4 bg-cream-100 border border-cream-300 rounded-2xl text-bark-900 placeholder-bark-400 text-base font-medium focus:outline-none focus:border-terra-400 focus:ring-2 focus:ring-terra-100 transition-all duration-150;
+  }
+
+  .label {
+    @apply block text-sm font-semibold text-bark-800 mb-2;
+  }
+
+  /* ─── Divider ─── */
+  .divider {
+    @apply border-t border-[--border];
+  }
+
+  .divider-dark {
+    @apply border-t border-bark-700;
+  }
+
+  /* ─── Price ─── */
+  .price-display {
+    @apply text-2xl font-bold text-bark-900 tracking-tight;
+  }
+
+  .price-old {
+    @apply text-sm text-bark-400 line-through;
+  }
+
+  /* ─── Auth / Buy modal ─── */
+
+  .auth-modal-backdrop {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4 bg-bark-900/50 backdrop-blur-sm;
+  }
+
+  .auth-modal {
+    @apply bg-surface rounded-2xl w-full max-w-md border border-[--border];
+    box-shadow: 0 32px 96px rgba(28, 13, 0, 0.22);
+  }
+
+  /* ─── YMYL disclaimer ─── */
+  .disclaimer-strip {
+    @apply bg-cream-200 border border-cream-400 rounded-xl px-4 py-3 text-xs text-bark-500 leading-relaxed;
+  }
+}
+
+/* ════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════ */
 
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Canvas gradient — warm editorial background */
+  .gradient-canvas {
+    background: linear-gradient(160deg, #fefdf9 0%, #fefaf3 45%, #fbefe2 100%);
+  }
+
+  /* Dark-to-terra gradient for editorial blocks */
+  .gradient-editorial {
+    background: linear-gradient(135deg, #1c0d00 0%, #3e2f22 60%, #6e3820 100%);
+  }
+
+  /* Soft peach glow for CTAs */
+  .gradient-peach {
+    background: linear-gradient(135deg, #ffddc2 0%, #fbefe2 100%);
   }
 }

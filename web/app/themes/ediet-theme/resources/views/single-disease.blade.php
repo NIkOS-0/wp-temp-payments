@@ -258,7 +258,16 @@
               <div class="book-card-footer">
                 <div style="position: relative;">
                   @if(!empty($price_old))
-                    <div style="font-size: 13.5px; text-decoration: line-through; color: #94A3B8; margin-bottom: -2px;">{{ $price_old }} ₽</div>
+                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                      <span style="font-size: 13.5px; text-decoration: line-through; color: #94A3B8;">{{ $price_old }} ₽</span>
+                      @php 
+                        $p = (float)str_replace([' ', ','], ['', '.'], $price);
+                        $po = (float)str_replace([' ', ','], ['', '.'], $price_old);
+                      @endphp
+                      @if($po > 0 && $p < $po)
+                        <span style="background: #FEE2E2; border-radius: 4px; padding: 2px 6px; font-weight: 700; font-size: 10px; color: #991B1B;">−{{ round((1 - ($p / $po)) * 100) }}%</span>
+                      @endif
+                    </div>
                   @endif
                   <div class="book-card-price">{{ $price }} ₽</div>
                   <div class="book-card-delivery">{{ $delivery }}</div>

@@ -15,7 +15,7 @@ class SingleConsultation extends Composer
         $id = get_the_ID();
 
         return [
-            'consultation' => $this->getConsultationData($id),
+            'service'     => $this->getConsultationData($id),
             'author'      => $this->getAuthorData($id),
             'reviews'     => $this->getReviewsData($id),
             'cross_sells' => $this->getRecommendations($id),

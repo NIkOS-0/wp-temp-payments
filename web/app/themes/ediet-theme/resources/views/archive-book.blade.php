@@ -106,7 +106,16 @@
                 <div class="book-card-footer">
                   <div style="position: relative;">
                     @if(!empty($cs['price_old']))
-                      <div style="font-size: 13.5px; text-decoration: line-through; color: #94A3B8; margin-bottom: -2px;">{{ $cs['price_old'] }} ₽</div>
+                      <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                        <span style="font-size: 13.5px; text-decoration: line-through; color: #94A3B8;">{{ $cs['price_old'] }} ₽</span>
+                        @php 
+                          $p = (float)str_replace([' ', ','], ['', '.'], $cs['price']);
+                          $po = (float)str_replace([' ', ','], ['', '.'], $cs['price_old']);
+                        @endphp
+                        @if($po > 0 && $p < $po)
+                          <span style="background: #FEE2E2; border-radius: 4px; padding: 2px 6px; font-weight: 700; font-size: 10px; color: #991B1B;">−{{ round((1 - ($p / $po)) * 100) }}%</span>
+                        @endif
+                      </div>
                     @endif
                     @if($cs['price'])
                     <div class="book-card-price">{{ $cs['price'] }} ₽</div>

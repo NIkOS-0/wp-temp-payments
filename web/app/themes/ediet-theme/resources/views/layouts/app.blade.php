@@ -36,6 +36,13 @@
       @endif
     </div>
 
+    @include('partials.buy-modal')
+
+    @include('components.cookie-banner')
+    @if(is_singular(['book', 'course', 'consultation']))
+      @include('components.ymyl-popup')
+    @endif
+
     @php(do_action('get_footer'))
     @php(wp_footer())
   </body>

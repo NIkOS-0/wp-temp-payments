@@ -331,11 +331,14 @@
 
           <p class="book-delivery-note">{{ $book['delivery_note'] }}</p>
 
+          @php $buy_url = get_permalink(get_the_ID()); @endphp
           <div class="book-cta-row">
-            <button class="book-btn-buy">Купить сейчас</button>
-            <button class="book-btn-icon" title="Добавить в избранное">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 17L3 10.5C1.5 9 1.5 6.5 3 5C4.5 3.5 7 3.5 8.5 5L10 6.5L11.5 5C13 3.5 15.5 3.5 17 5C18.5 6.5 18.5 9 17 10.5L10 17Z" stroke="#333" stroke-width="1.5" stroke-linejoin="round"/></svg>
-            </button>
+            @if(is_user_logged_in())
+              <button class="book-btn-buy" onclick="window.location.href='{{ $buy_url }}'">Купить сейчас</button>
+            @else
+              <button class="book-btn-buy" onclick="window.edietOpenBuyModal('{{ $buy_url }}')">Купить сейчас</button>
+            @endif
+            @include('partials.favorite-btn', ['post_id' => get_the_ID(), 'class' => 'book-btn-icon w-[52px] h-[52px] rounded-[14px]'])
             <button class="book-btn-icon" title="Поделиться">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <circle cx="15" cy="3" r="2" stroke="#333" stroke-width="1.5"/><circle cx="15" cy="17" r="2" stroke="#333" stroke-width="1.5"/><circle cx="5" cy="10" r="2" stroke="#333" stroke-width="1.5"/><path d="M7 9L13 4.5M7 11L13 15.5" stroke="#333" stroke-width="1.5"/>
@@ -483,6 +486,10 @@
               @if(!empty($cs['badge']))
                 <span style="position: absolute; top: 12px; left: 12px; background: #EF4444; color: #fff; padding: 4px 12px; border-radius: 8px; font-weight: 700; font-size: 11px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">{{ $cs['badge'] }}</span>
               @endif
+              
+              <div class="absolute top-3 right-3 z-20" onclick="event.preventDefault();">
+                @include('partials.favorite-btn', ['post_id' => $cs['id'], 'class' => '!w-8 !h-8 bg-white/80 backdrop-blur-sm rounded-full shadow-sm'])
+              </div>
             </div>
             
             <div class="book-card-body">
@@ -494,7 +501,16 @@
               <div class="book-card-footer">
                 <div style="position: relative;">
                   @if(!empty($cs['price_old']))
-                    <div style="font-size: 13.5px; text-decoration: line-through; color: #94A3B8; margin-bottom: -2px;">{{ $cs['price_old'] }} ₽</div>
+                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                      <span style="font-size: 13.5px; text-decoration: line-through; color: #94A3B8;">{{ $cs['price_old'] }} ₽</span>
+                      @php 
+                        $p = (float)str_replace([' ', ','], ['', '.'], $cs['price']);
+                        $po = (float)str_replace([' ', ','], ['', '.'], $cs['price_old']);
+                      @endphp
+                      @if($po > 0 && $p < $po)
+                        <span style="background: #FEE2E2; border-radius: 4px; padding: 2px 6px; font-weight: 700; font-size: 10px; color: #991B1B;">−{{ round((1 - ($p / $po)) * 100) }}%</span>
+                      @endif
+                    </div>
                   @endif
                   <div class="book-card-price">{{ $cs['price'] }} ₽</div>
                   <div class="book-card-delivery">{{ $cs['delivery'] }}</div>

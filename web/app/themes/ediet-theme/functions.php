@@ -58,3 +58,17 @@ collect(['setup', 'filters', 'post-types', 'roles', 'fields', 'ajax-offers', 'pa
             );
         }
     });
+
+/*
+|--------------------------------------------------------------------------
+| Hide Admin Bar
+|--------------------------------------------------------------------------
+|
+| Hide WordPress admin bar for regular users (Customers, Subscribers, etc.)
+|
+*/
+add_action('after_setup_theme', function () {
+    if (!current_user_can('edit_posts')) {
+        show_admin_bar(false);
+    }
+});

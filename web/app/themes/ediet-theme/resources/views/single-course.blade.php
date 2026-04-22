@@ -348,9 +348,14 @@
           
           <div class="book-delivery-note">{{ $course['delivery_note'] }}</div>
 
+          @php $buy_url = get_permalink(get_the_ID()); @endphp
           <div class="book-cta-row">
-            <button class="book-btn-buy">Участвовать</button>
-            <div class="book-btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            @if(is_user_logged_in())
+              <button class="book-btn-buy" onclick="window.location.href='{{ $buy_url }}'">Участвовать</button>
+            @else
+              <button class="book-btn-buy" onclick="window.edietOpenBuyModal('{{ $buy_url }}')">Участвовать</button>
+            @endif
+            @include('partials.favorite-btn', ['post_id' => get_the_ID(), 'class' => 'book-btn-icon w-[52px] h-[52px] rounded-[14px]'])
           </div>
         </div>
       </section>
