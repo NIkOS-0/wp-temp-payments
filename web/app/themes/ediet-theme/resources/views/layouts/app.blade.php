@@ -21,7 +21,7 @@
         @include('sections.header')
       @endif
 
-      <main id="main" class="{{ is_singular('personal_offer') ? '' : 'main pt-20' }}">
+      <main id="main" class="{{ is_singular('personal_offer') ? '' : 'main' }}">
         @yield('content')
       </main>
 

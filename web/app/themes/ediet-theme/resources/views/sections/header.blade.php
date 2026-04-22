@@ -1,103 +1,396 @@
-<header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="site-header">
-  <div class="transition-all duration-300 border-b border-transparent" id="site-header-inner">
-    <div class="container-wide">
-      <div class="flex justify-between items-center h-20">
+@php
+  $ticker_enabled = function_exists('get_field') ? get_field('header_ticker_enabled', 'option') : true;
+  $ticker_items   = function_exists('get_field') ? (get_field('header_ticker_items', 'option') ?: []) : [];
+  $header_logo    = function_exists('get_field') ? get_field('header_logo', 'option') : '';
+  $cta_text       = function_exists('get_field') ? (get_field('header_cta_text', 'option') ?: 'Связаться с нами') : 'Связаться с нами';
+  $cta_url        = function_exists('get_field') ? (get_field('header_cta_url', 'option') ?: home_url('/')) : home_url('/');
 
-        {{-- Logo --}}
-        <a href="{{ home_url('/') }}" class="flex items-center gap-3 group shrink-0">
-          <div class="w-9 h-9 rounded-full bg-bark-900 flex items-center justify-center
-                      group-hover:bg-terra-500 transition-colors duration-200">
-            <span class="text-cream-100 font-black text-base leading-none">e</span>
-          </div>
-          <span class="text-xl font-black tracking-tighter text-bark-900 leading-none">
-            e-diet
+  // Default ticker items if none set
+  if (empty($ticker_items)) {
+    $ticker_items = [
+      ['text' => 'ОГРАНИЧЕННОЕ ПРЕДЛОЖЕНИЕ — СКИДКА 50% НА ВСЁ'],
+      ['text' => 'ПЕРСОНАЛЬНЫЕ ПРОТОКОЛЫ ПИТАНИЯ ОТ ВРАЧЕЙ'],
+      ['text' => 'КОНСУЛЬТАЦИИ ОНЛАЙН 24/7 · С 2019 ГОДА'],
+    ];
+  }
+@endphp
+
+<style>
+/* ── Header scoped ── */
+#site-header * { box-sizing: border-box; }
+#site-header a { text-decoration: none !important; }
+#site-header a:hover { text-decoration: none !important; }
+
+/* Ticker tape scroll */
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll 28s linear infinite;
+  white-space: nowrap;
+}
+.ticker-track:hover { animation-play-state: paused; }
+
+/* Primary nav links */
+#header-primary-nav a {
+  font-family: 'Inter', sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.6px;
+  color: #000;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+#header-primary-nav a:hover { color: var(--color-terra-500); }
+
+/* Secondary (top bar) nav links */
+#header-secondary-nav a {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: -0.6px;
+  color: rgba(255,255,255,0.82);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+#header-secondary-nav a:hover { color: #fff; }
+
+/* WP nav menu ul reset */
+#header-primary-nav ul,
+#header-secondary-nav ul {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex; align-items: center;
+}
+/* Primary */
+#header-primary-nav ul { gap: 32px; }
+/* Secondary */
+#header-secondary-nav ul { gap: 28px; }
+
+/* Hide sub-menus */
+#header-primary-nav .sub-menu,
+#header-secondary-nav .sub-menu { display: none; }
+
+/* Search bar */
+.hdr-search {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: #EAEAEA;
+  border-radius: 25px;
+  height: 40px;
+  padding: 0 6px 0 14px;
+  flex: 1;
+  max-width: 680px;
+}
+.hdr-search input[type="search"] {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: #333;
+  padding: 0 8px;
+  min-width: 0;
+}
+.hdr-search input[type="search"]::placeholder { color: #49454F; }
+.hdr-search button[type="submit"] {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  padding: 6px;
+  color: #49454F;
+  transition: color 0.15s;
+}
+.hdr-search button[type="submit"]:hover { color: var(--color-terra-500); }
+
+/* Contact button */
+.hdr-btn-contact {
+  background: #EAEAEA;
+  border: none;
+  border-radius: 25px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  color: #000;
+  height: 40px;
+  padding: 0 22px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  display: inline-flex; align-items: center;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.hdr-btn-contact:hover { background: var(--color-terra-500); color: #fff; }
+
+/* Account icon */
+.hdr-account-icon {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #1D1B20;
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+.hdr-account-icon:hover { color: var(--color-terra-500); }
+
+/* Top bar + main row collapse transition */
+.hdr-top-bar,
+.hdr-main-row {
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.28s ease,
+              visibility 0.3s ease;
+  overflow: hidden;
+  opacity: 1;
+  visibility: visible;
+}
+.hdr-top-bar { max-height: 45px; }
+.hdr-main-row { max-height: 100px; }
+.hdr-top-bar.collapsed,
+.hdr-main-row.collapsed {
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Favorites icon */
+.hdr-fav-btn {
+  position: relative;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #1D1B20;
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+.hdr-fav-btn:hover { color: var(--color-terra-500); }
+.hdr-fav-badge {
+  position: absolute;
+  top: 0; right: 0;
+  width: 17px; height: 17px;
+  background: var(--color-terra-500, #c77b5a);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hdr-top-bar { display: none !important; }
+  .hdr-main-row { padding: 0 16px; }
+  .hdr-search { display: none; }
+  .hdr-primary-strip { display: none; }
+  #mobile-menu-btn { display: flex !important; }
+}
+@media (min-width: 901px) {
+  #mobile-menu-btn { display: none; }
+}
+</style>
+
+<header id="site-header" class="fixed top-0 left-0 right-0 z-50" style="background:#fff; box-shadow: 0 1px 0 rgba(0,0,0,0.08);">
+
+  {{-- ══ ROW 1: Ticker + Secondary Nav ══ --}}
+  @if($ticker_enabled)
+  <div id="hdr-top-bar" class="hdr-top-bar" style="background:#000; height:45px; display:flex; align-items:center; justify-content:space-between; position:relative;">
+
+    {{-- Ticker tape (left-center) --}}
+    <div style="overflow:hidden; flex:1; height:100%; display:flex; align-items:center; position:relative;">
+      {{-- Fade edges --}}
+      <div style="position:absolute;left:0;top:0;bottom:0;width:60px;background:linear-gradient(to right,#000,transparent);z-index:2;pointer-events:none;"></div>
+      <div style="position:absolute;right:0;top:0;bottom:0;width:60px;background:linear-gradient(to left,#000,transparent);z-index:2;pointer-events:none;"></div>
+
+      <div class="ticker-track">
+        {{-- Duplicate items for seamless loop --}}
+        @foreach(array_merge($ticker_items, $ticker_items) as $item)
+          <span style="display:inline-flex;align-items:center;gap:16px;padding:0 32px;font-family:'Inter',sans-serif;font-size:14px;font-weight:400;letter-spacing:0.04em;color:#fff;">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.4);flex-shrink:0;"></span>
+            {{ $item['text'] }}
           </span>
-        </a>
-
-        {{-- Desktop Nav --}}
-        <nav class="hidden md:flex items-center gap-8">
-          @if(has_nav_menu('primary_navigation'))
-            {!! wp_nav_menu([
-              'theme_location' => 'primary_navigation',
-              'menu_class'     => 'flex items-center gap-8',
-              'container'      => false,
-              'echo'           => false,
-              'item_spacing'   => 'discard',
-              'walker'         => null,
-            ]) !!}
-          @endif
-        </nav>
-
-        {{-- Right actions --}}
-        <div class="hidden md:flex items-center gap-3">
-          {{-- Favorites count --}}
-          <button id="header-fav-btn"
-                  class="relative btn-ghost btn-sm p-2.5"
-                  aria-label="Избранное">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-            </svg>
-            <span id="fav-count"
-                  class="absolute -top-0.5 -right-0.5 w-4 h-4 text-[10px] font-bold
-                         bg-terra-500 text-white rounded-full hidden items-center justify-center">
-              0
-            </span>
-          </button>
-
-          @if(is_user_logged_in())
-            <a href="{{ home_url('/cabinet') }}"
-               class="btn-dark btn-sm text-sm">
-              Кабинет
-            </a>
-          @else
-            <button id="open-auth-modal"
-                    class="btn-dark btn-sm text-sm">
-              Войти
-            </button>
-          @endif
-        </div>
-
-        {{-- Mobile burger --}}
-        <button type="button" id="mobile-menu-btn"
-                class="md:hidden p-2 text-bark-700 hover:text-bark-900 transition-colors"
-                aria-label="Меню">
-          <svg class="h-6 w-6" id="burger-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
-          </svg>
-        </button>
-
+        @endforeach
       </div>
+    </div>
+
+    {{-- Secondary Nav (right) --}}
+    <div id="header-secondary-nav"
+         style="display:flex;align-items:center;height:100%;padding:0 24px;border-left:1px solid rgba(255,255,255,0.2);flex-shrink:0;">
+      @if(has_nav_menu('secondary_navigation'))
+        {!! wp_nav_menu([
+          'theme_location' => 'secondary_navigation',
+          'container'      => false,
+          'echo'           => false,
+          'item_spacing'   => 'discard',
+          'depth'          => 1,
+        ]) !!}
+      @else
+        <ul style="display:flex;gap:28px;list-style:none;margin:0;padding:0;">
+          <li><a href="{{ home_url('/') }}">О нас / Миссия</a></li>
+          <li><a href="{{ home_url('/') }}">Отзывы</a></li>
+          <li><a href="{{ home_url('/') }}">Контакты</a></li>
+          <li><a href="{{ home_url('/') }}">Партнерам</a></li>
+        </ul>
+      @endif
+    </div>
+
+  </div>
+  @endif
+
+  {{-- ══ ROW 2: Logo + Search + CTA + Account ══ --}}
+  <div id="hdr-main-row" class="hdr-main-row" style="height:80px; display:flex; align-items:center; gap:16px; padding:0 max(24px, calc((100vw - 1280px)/2 + 24px)); border-bottom:1px solid rgba(0,0,0,0.08);">
+
+    {{-- Logo --}}
+    <a href="{{ home_url('/') }}" class="shrink-0" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+      @if(!empty($header_logo))
+        <img src="{{ $header_logo }}" alt="{{ get_bloginfo('name') }}" style="height:38px;width:auto;object-fit:contain;">
+      @else
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:34px;height:34px;border-radius:50%;background:#1c0d00;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#fefaf3;font-weight:900;font-size:16px;line-height:1;">e</span>
+          </div>
+          <span style="font-family:'Inter',sans-serif;font-size:18px;font-weight:800;letter-spacing:-0.6px;color:#000;">e-diet</span>
+        </div>
+      @endif
+    </a>
+
+    {{-- Search Bar --}}
+    <form role="search" method="get" action="{{ home_url('/') }}" class="hdr-search" style="flex:1;max-width:680px;margin:0 auto;">
+      <input type="hidden" name="post_type[]" value="book">
+      <input type="hidden" name="post_type[]" value="course">
+      <input type="hidden" name="post_type[]" value="consultation">
+      <input type="search" name="s" placeholder="Поиск: книги, курсы, консультации…"
+             value="{{ get_search_query() }}" autocomplete="off">
+      <button type="submit" aria-label="Найти">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8" stroke-width="2"/>
+          <path d="M21 21l-4.35-4.35" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </form>
+
+    {{-- CTA Button --}}
+    <a href="{{ $cta_url }}" class="hdr-btn-contact">{{ $cta_text }}</a>
+
+    {{-- Favorites Icon --}}
+    <button id="header-fav-btn" class="hdr-fav-btn" aria-label="Избранное">
+      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+      </svg>
+      <span id="fav-count" class="hdr-fav-badge">0</span>
+    </button>
+
+    {{-- Account Icon --}}
+    @if(is_user_logged_in())
+      <a href="{{ home_url('/cabinet') }}" class="hdr-account-icon" aria-label="Кабинет">
+        <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/>
+        </svg>
+      </a>
+    @else
+      <button id="open-auth-modal" class="hdr-account-icon" aria-label="Войти">
+        <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/>
+        </svg>
+      </button>
+    @endif
+
+    {{-- Mobile burger --}}
+    <button type="button" id="mobile-menu-btn"
+            style="display:none;padding:8px;border:none;background:transparent;cursor:pointer;"
+            aria-label="Меню">
+      <svg width="24" height="24" fill="none" stroke="#000" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+
+  </div>
+
+  {{-- ══ ROW 3: Primary Navigation ══ --}}
+  <div class="hdr-primary-strip" style="height:44px; display:flex; align-items:center; justify-content:center; border-bottom:1px solid rgba(0,0,0,0.08);">
+    <div id="header-primary-nav">
+      @if(has_nav_menu('primary_navigation'))
+        {!! wp_nav_menu([
+          'theme_location' => 'primary_navigation',
+          'container'      => false,
+          'echo'           => false,
+          'item_spacing'   => 'discard',
+          'depth'          => 1,
+        ]) !!}
+      @else
+        <ul>
+          <li><a href="{{ home_url('/') }}">Заболевания</a></li>
+          <li><a href="{{ home_url('/') }}">Консультации</a></li>
+          <li><a href="{{ home_url('/') }}">Курсы</a></li>
+          <li><a href="{{ home_url('/') }}">Книги (МПО)</a></li>
+          <li><a href="{{ home_url('/') }}">Лекарства и методы</a></li>
+          <li><a href="{{ home_url('/') }}">Блог / База знаний</a></li>
+        </ul>
+      @endif
     </div>
   </div>
 
   {{-- Mobile menu --}}
   <div id="mobile-menu"
-       class="hidden md:hidden bg-surface border-b border-[--border] shadow-lg">
-    <div class="container-wide py-4 space-y-1">
+       style="display:none; background:#fff; border-top:1px solid rgba(0,0,0,0.08); box-shadow:0 8px 24px rgba(0,0,0,0.1);">
+    <div style="padding:16px 24px; display:flex; flex-direction:column; gap:4px;">
       @if(has_nav_menu('primary_navigation'))
         {!! wp_nav_menu([
           'theme_location' => 'primary_navigation',
-          'menu_class'     => 'space-y-1',
           'container'      => false,
           'echo'           => false,
+          'depth'          => 1,
         ]) !!}
       @endif
-      <div class="pt-4 border-t border-[--border]">
+
+      {{-- Mobile search --}}
+      <form role="search" method="get" action="{{ home_url('/') }}" class="hdr-search" style="margin-top:12px;max-width:100%;">
+        <input type="hidden" name="post_type[]" value="book">
+        <input type="hidden" name="post_type[]" value="course">
+        <input type="hidden" name="post_type[]" value="consultation">
+        <input type="search" name="s" placeholder="Поиск…" value="{{ get_search_query() }}" autocomplete="off">
+        <button type="submit" aria-label="Найти">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" stroke-width="2"/>
+            <path d="M21 21l-4.35-4.35" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </form>
+
+      <div style="padding-top:12px;border-top:1px solid rgba(0,0,0,0.08);margin-top:8px;">
         @if(is_user_logged_in())
-          <a href="{{ home_url('/cabinet') }}" class="btn-dark btn-sm w-full block text-center">
-            Кабинет
-          </a>
+          <a href="{{ home_url('/cabinet') }}" class="btn-dark btn-sm" style="display:block;text-align:center;">Кабинет</a>
         @else
-          <button id="open-auth-modal-mobile"
-                  class="btn-dark btn-sm w-full">
-            Войти
-          </button>
+          <button id="open-auth-modal-mobile" class="btn-dark btn-sm" style="width:100%;">Войти</button>
         @endif
       </div>
     </div>
   </div>
+
 </header>
+
+{{-- Spacer to account for the fixed header height --}}
+<div style="height:{{ $ticker_enabled ? '169px' : '124px' }};"></div>
 
 {{-- ════ AUTH MODAL ════ --}}
 @if(!is_user_logged_in())
@@ -187,20 +480,39 @@
   const NONCE = '{{ wp_create_nonce('ediet_auth_nonce') }}';
   const DEBUG = {{ (defined('WP_DEBUG') && WP_DEBUG) ? 'true' : 'false' }};
 
-  // ── Scroll behaviour ──
-  window.addEventListener('scroll', () => {
-    const inner = document.getElementById('site-header-inner');
-    if (window.scrollY > 20) {
-      inner.classList.add('bg-surface/95', 'backdrop-blur-md', 'shadow-sm', 'border-[--border]');
-    } else {
-      inner.classList.remove('bg-surface/95', 'backdrop-blur-md', 'shadow-sm', 'border-[--border]');
-    }
-  }, { passive: true });
-
   // ── Mobile menu ──
   document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
-    document.getElementById('mobile-menu').classList.toggle('hidden');
+    const menu = document.getElementById('mobile-menu');
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
   });
+
+  // ── Scroll: collapse/reveal top bar + main row ──
+  (function() {
+    const topBar = document.getElementById('hdr-top-bar');
+    const mainRow = document.getElementById('hdr-main-row');
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentY = window.scrollY;
+          if (currentY > lastY && currentY > 60) {
+            // Scrolling down — collapse both rows
+            topBar?.classList.add('collapsed');
+            mainRow?.classList.add('collapsed');
+          } else {
+            // Scrolling up — reveal both rows
+            topBar?.classList.remove('collapsed');
+            mainRow?.classList.remove('collapsed');
+          }
+          lastY = currentY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  })();
 
   // ── Favorites counter ──
   (function syncFavCount() {
@@ -210,8 +522,7 @@
       if (!cnt) return;
       if (ids.length > 0) {
         cnt.textContent = ids.length > 9 ? '9+' : ids.length;
-        cnt.classList.remove('hidden');
-        cnt.classList.add('flex');
+        cnt.style.display = 'flex';
       }
     } catch(e) {}
   })();
@@ -222,7 +533,7 @@
 
   // ── Auth modal ──
   @if(!is_user_logged_in())
-  const modal   = document.getElementById('auth-modal');
+  const modal = document.getElementById('auth-modal');
   if (!modal) return;
 
   const closeModal = () => {
@@ -242,11 +553,10 @@
 
   document.getElementById('open-auth-modal')?.addEventListener('click', () => openModal());
   document.getElementById('open-auth-modal-mobile')?.addEventListener('click', () => {
-    document.getElementById('mobile-menu').classList.add('hidden');
+    document.getElementById('mobile-menu').style.display = 'none';
     openModal();
   });
 
-  // Expose globally for buy modal trigger
   window.edietOpenAuthModal = openModal;
 
   // ── OTP logic ──
@@ -291,14 +601,12 @@
   function sendOtp() {
     userEmail = emailInput.value.trim();
     if (!userEmail) { showMsg(msg1, 'Введите email.', true); return; }
-
     post({ action: 'ediet_send_otp', email: userEmail }, res => {
       if (res.success) {
         stepEmail.classList.add('hidden');
         stepCode.classList.remove('hidden');
         document.getElementById('modal-email-display').textContent = userEmail;
         msg1.classList.add('hidden');
-
         if (DEBUG && res.data?.dev_code) {
           console.group('%c🔑 e-diet Auth Debug', 'color:#c77b5a;font-weight:bold;font-size:14px');
           console.log('OTP Code:  ', res.data.dev_code);
@@ -318,7 +626,6 @@
   verifyBtn.addEventListener('click', () => {
     const code = codeInput.value.replace(/\D/g, '');
     if (code.length < 6) { showMsg(msg2, 'Введите 6-значный код.', true); return; }
-
     post({ action: 'ediet_verify_otp', email: userEmail, code }, res => {
       if (res.success) {
         showMsg(msg2, 'Добро пожаловать!', false);

@@ -1,103 +1,607 @@
-<section class="section gradient-canvas overflow-hidden relative" id="hero-section">
-  <!-- Ambient Gradient Spots Center / Parallax -->
-  <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none mix-blend-multiply opacity-80">
-      <!-- Blob 1: Yellow -->
-      <div class="parallax-blob absolute w-[400px] h-[400px] md:w-[600px] md:h-[600px] rounded-full bg-[#fde68a] filter blur-[100px] opacity-70 transition-transform duration-700 ease-out" style="transform: translate(-10%, -15%);" data-orig-x="-10%" data-orig-y="-15%" data-speed="-0.03"></div>
-      
-      <!-- Blob 2: Light Blue -->
-      <div class="parallax-blob absolute w-[450px] h-[450px] md:w-[650px] md:h-[650px] rounded-full bg-[#bae6fd] filter blur-[120px] opacity-60 transition-transform duration-700 ease-out" style="transform: translate(15%, 10%);" data-orig-x="15%" data-orig-y="10%" data-speed="0.05"></div>
-      
-      <!-- Blob 3: Cyan -->
-      <div class="parallax-blob absolute w-[300px] h-[300px] md:w-[450px] md:h-[450px] rounded-full bg-[#e0f2fe] filter blur-[90px] opacity-90 transition-transform duration-700 ease-out" style="transform: translate(-20%, 25%);" data-orig-x="-20%" data-orig-y="25%" data-speed="-0.06"></div>
-  </div>
+@php
+  $eyebrow = $block['eyebrow'] ?? 'Персональное питание · с 2019';
+  $title_line_1 = $block['title_line_1'] ?? 'Возьмите здоровье';
+  $title_line_2_pre = $block['title_line_2_pre'] ?? 'под';
+  $title_line_2_italic = $block['title_line_2_italic'] ?? 'контроль';
+  $kicker = $block['kicker'] ?? 'Есть <em>решения</em> под ваш диагноз — персональные протоколы питания, составленные врачами‑нутрициологами на основе анализов и медицинской карты.';
+  $cta_1 = $block['cta_1'] ?? '';
+  $cta_2 = $block['cta_2'] ?? '';
+  
+  $trust_items = $block['trust_items'] ?? [
+      ['text' => '<strong>26 000+</strong>&nbsp;пациентов'],
+      ['text' => '<strong>4.9</strong>&nbsp;средняя оценка'],
+      ['text' => 'Сертифицированные&nbsp;<strong>врачи</strong>'],
+      ['text' => 'Возврат <strong>14 дней</strong>']
+  ];
+  
+  $badge_l_num = $block['badge_left_num'] ?? '26';
+  $badge_l_k = $block['badge_left_k'] ?? 'диагнозов';
+  $badge_l_v = $block['badge_left_v'] ?? 'под <em>ключ</em>';
+  
+  $badge_r_icon = $block['badge_right_icon'] ?? '⟡';
+  $badge_r_k = $block['badge_right_k'] ?? 'нутрициолог';
+  $badge_r_v = $block['badge_right_v'] ?? '<em>онлайн</em> 24/7';
+  
+  $seal_text = $block['seal_text'] ?? 'E‑DIET · ЗДОРОВЬЕ В ТАРЕЛКЕ · С 2019 ·';
+  $seal_center = $block['seal_center'] ?? 'e.';
+@endphp
 
-  <div class="container-wide grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center py-20 md:py-32 relative z-10">
-    <!-- Left: Content -->
-    <div class="max-w-2xl pt-8">
-      @if(!empty($block['title']))
-        <h1 class="heading-hero mb-6">
-          {!! nl2br(esc_html($block['title'])) !!}
-        </h1>
-      @endif
+<style>
+/* SCOPED HERO STYLES */
+#hero-wrapper {
+  --sage-deep:    #2F3D2A;
+  --sage:         #4A5E43;
+  --sage-light:   #6B8562;
+  --moss:         #8BA77F;
+  --cream:        #F5EFE2;
+  --cream-soft:   #EBE3D2;
+  --cream-muted:  #A89F8B;
+  --ink:          #2A1A10;
+  --ink-soft:     #3A2418;
+  --terracotta:   rgb(239,148,91);
+  --terracotta-soft: #F4B491;
+  --terracotta-deep: #D87A4A;
+  --gold-leaf:    #C9A84C;
+  --border:       rgba(42,26,16,0.10);
+  --border-strong:rgba(42,26,16,0.22);
+}
 
-      @if(!empty($block['subtitle']))
-        <div class="flex items-start gap-4 mb-10">
-          <div class="w-12 h-12 bg-peach-100 rounded-xl flex items-center justify-center shrink-0 mt-1 shadow-sm border border-peach-200">
-            <svg class="w-6 h-6 text-cream-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-          </div>
-          <p class="text-body text-bark-700 font-medium leading-snug">{!! nl2br(esc_html($block['subtitle'])) !!}</p>
-        </div>
-      @endif
+.hero {
+  min-height: 75vh;
+  position: relative;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  padding: 80px 32px 60px;
+  background: var(--cream);
+}
+.hero * { box-sizing:border-box; }
 
-      <div class="flex flex-col sm:flex-row gap-4">
-        @if(!empty($block['cta_1']))
-          <a href="{{ $block['cta_1']['url'] }}" class="btn-primary btn-lg">
-            {{ $block['cta_1']['title'] }}
-          </a>
+/* organic gradient mesh — iridescent, shifting blobs */
+.hero .mesh {
+  position: absolute; inset: 0; z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hero .blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  will-change: transform, background, filter;
+  mix-blend-mode: multiply;
+}
+.hero .blob.a {
+  width: 820px; height: 820px;
+  top: -200px; right: -140px;
+  background: conic-gradient(from 0deg,
+    rgba(120,210,210,0.55),
+    rgba(130,200,140,0.5),
+    rgba(120,210,210,0.55));
+  animation: hero-drift-a 22s ease-in-out infinite alternate,
+             hero-hue-a 14s linear infinite;
+}
+.hero .blob.b {
+  width: 680px; height: 680px;
+  bottom: -180px; left: -120px;
+  background: conic-gradient(from 180deg,
+    rgba(130,200,140,0.55),
+    rgba(120,210,210,0.5),
+    rgba(130,200,140,0.55));
+  animation: hero-drift-b 26s ease-in-out infinite alternate,
+             hero-hue-b 18s linear infinite;
+}
+.hero .blob.c {
+  width: 480px; height: 480px;
+  top: 38%; left: 48%;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(from 90deg,
+    rgba(120,210,210,0.45),
+    rgba(130,200,140,0.45),
+    rgba(120,210,210,0.45));
+  animation: hero-drift-c 30s ease-in-out infinite alternate,
+             hero-hue-c 16s linear infinite;
+}
+.hero .blob.d {
+  width: 360px; height: 360px;
+  top: 65%; right: 18%;
+  background: radial-gradient(circle, rgba(130,200,140,0.55) 0%, rgba(130,200,140,0) 65%);
+  animation: hero-drift-d 24s ease-in-out infinite alternate,
+             hero-pulse-d 7s ease-in-out infinite;
+}
+@keyframes hero-drift-a {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(-40px, 40px) scale(1.05); }
+  100% { transform: translate(-80px, 100px) scale(1.12); }
+}
+@keyframes hero-drift-b {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(60px, -30px) scale(1.08); }
+  100% { transform: translate(100px, -80px) scale(1.15); }
+}
+@keyframes hero-drift-c {
+  0%   { transform: translate(-50%, -50%) scale(1); }
+  50%  { transform: translate(-42%, -55%) scale(1.08); }
+  100% { transform: translate(-30%, -62%) scale(1.18); }
+}
+@keyframes hero-drift-d {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-60px, -50px) scale(1.2); }
+}
+@keyframes hero-hue-a { to { transform: rotate(360deg); filter: blur(90px) hue-rotate(25deg); } }
+@keyframes hero-hue-b {
+  0%   { filter: blur(90px) hue-rotate(0deg); }
+  50%  { filter: blur(100px) hue-rotate(-20deg); }
+  100% { filter: blur(90px) hue-rotate(0deg); }
+}
+@keyframes hero-hue-c {
+  0%   { filter: blur(90px) hue-rotate(0deg); }
+  50%  { filter: blur(110px) hue-rotate(30deg); }
+  100% { filter: blur(90px) hue-rotate(0deg); }
+}
+@keyframes hero-pulse-d {
+  0%,100% { opacity: 0.85; }
+  50%     { opacity: 0.45; }
+}
+
+/* ── INTERACTIVE CANVAS — floating seeds/leaves that react to cursor ── */
+.hero .bg-canvas {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none;
+}
+.hero .cursor-glow {
+  position: absolute;
+  width: 420px; height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(120,210,210,0.28) 0%, rgba(130,200,140,0.15) 40%, transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  left: 50%; top: 50%;
+  transition: opacity .6s ease;
+  opacity: 0;
+  z-index: 1;
+  mix-blend-mode: multiply;
+}
+.hero .grain {
+  position: absolute; inset: 0; z-index: 2;
+  pointer-events: none;
+  opacity: 0.08;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.hero-inner {
+  position: relative; z-index: 3;
+  max-width: 1280px; width:100%;
+  text-align: center;
+}
+.eyebrow-row {
+  display:flex; align-items:center; justify-content:center;
+  gap:18px; margin-bottom: 44px;
+  opacity:0; animation: hero-rise .9s ease .1s forwards;
+}
+.eyebrow-row .line-decor {
+  height:1px; width:56px; background: var(--border-strong);
+}
+.eyebrow-row .text-decor {
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+.eyebrow-row .leaf {
+  width: 14px; height: 14px;
+  color: var(--terracotta);
+}
+
+h1.hero-title-main {
+  font-family: 'Playfair Display', serif;
+  font-weight: 500;
+  font-size: clamp(54px, 8.2vw, 132px);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  max-width: 1200px;
+  margin: 0 auto;
+  text-wrap: balance;
+}
+h1.hero-title-main .line-1,
+h1.hero-title-main .line-2 {
+  display: block;
+  opacity:0; transform: translateY(30px);
+  animation: hero-rise 1.1s cubic-bezier(.2,.8,.2,1) forwards;
+}
+h1.hero-title-main .line-1 { animation-delay: .2s; }
+h1.hero-title-main .line-2 { animation-delay: .38s; }
+h1.hero-title-main em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink);
+  position: relative;
+}
+h1.hero-title-main em .uline {
+  position:absolute;
+  left:-2%; right:-2%;
+  bottom: -0.05em;
+  width: 104%;
+  height: 0.22em;
+  pointer-events:none;
+}
+h1.hero-title-main em .uline path {
+  stroke: var(--terracotta);
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: hero-draw 1.6s ease .9s forwards;
+}
+h1.hero-title-main .accent-dot {
+  display:inline-block;
+  width: 0.22em; height: 0.22em;
+  background: var(--terracotta);
+  border-radius:50%;
+  vertical-align: 0.12em;
+  margin-left: 0.08em;
+  transform: translateY(-0.02em);
+}
+.hero .kicker {
+  margin-top: 36px;
+  font-size: 18px;
+  color: var(--ink-soft);
+  opacity: 0.8;
+  font-weight: 400;
+  max-width: 640px;
+  margin-left:auto; margin-right:auto;
+  line-height: 1.65;
+  opacity:0; animation: hero-rise 1s ease .55s forwards;
+}
+.hero .kicker em {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--terracotta);
+}
+
+.hero-cta {
+  margin-top: 52px;
+  display:flex; gap:14px; align-items:center; justify-content:center;
+  flex-wrap: wrap;
+  opacity:0; animation: hero-rise 1s ease .7s forwards;
+}
+.hero-cta-btn-primary {
+  background: var(--ink);
+  color: var(--cream);
+  font-family: 'Instrument Sans', 'Inter', sans-serif;
+  font-size: 16px; font-weight: 500;
+  padding: 20px 38px;
+  border-radius: 100px;
+  border: none; cursor: pointer; text-decoration: none;
+  transition: background .25s, transform .15s, box-shadow .25s;
+  display: inline-flex; align-items: center; gap: 12px;
+  letter-spacing: 0.005em;
+  box-shadow: 0 8px 24px -8px rgba(28,36,25,0.28);
+}
+.hero-cta-btn-primary:hover {
+  background: var(--terracotta);
+  color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -10px rgba(239,148,91,0.45);
+}
+.hero-cta-btn-primary .arrow { transition: transform .25s; }
+.hero-cta-btn-primary:hover .arrow { transform: translateX(4px); }
+
+.hero-cta-btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  font-family: 'Instrument Sans', 'Inter', sans-serif;
+  font-size: 16px; font-weight: 500;
+  padding: 19px 32px;
+  border-radius: 100px;
+  border: 1.5px solid var(--ink);
+  cursor: pointer; text-decoration: none;
+  transition: all .25s;
+  display: inline-flex; align-items: center; gap: 12px;
+}
+.hero-cta-btn-secondary:hover {
+  background: var(--ink);
+  color: var(--cream);
+  transform: translateY(-2px);
+}
+.hero-cta-btn-secondary .pulse {
+  width: 8px; height: 8px; border-radius:50%;
+  background: var(--terracotta);
+  position: relative;
+}
+.hero-cta-btn-secondary .pulse::before {
+  content:'';
+  position: absolute; inset: -4px;
+  border-radius:50%;
+  background: var(--terracotta);
+  opacity: 0.5;
+  animation: hero-pulse 1.8s ease-out infinite;
+}
+
+.trust-row {
+  margin-top: 64px;
+  display:flex; gap: 40px; align-items:center; justify-content:center;
+  flex-wrap: wrap;
+  opacity:0; animation: hero-rise 1s ease .9s forwards;
+}
+.trust-item {
+  display:flex; align-items:center; gap:10px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  opacity: 0.75;
+}
+.trust-item .t-dot {
+  width:5px; height:5px; border-radius:50%;
+  background: var(--terracotta);
+}
+.trust-item strong {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--terracotta);
+  opacity: 1;
+}
+
+.hero-badge {
+  position: absolute;
+  z-index: 3;
+  background: rgba(245,239,226,0.75);
+  border: 1px solid var(--border-strong);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 16px 20px;
+  display:flex; align-items:center; gap: 14px;
+  opacity: 0;
+  animation: hero-rise 1.1s ease forwards;
+  box-shadow: 0 12px 30px -14px rgba(28,36,25,0.2);
+}
+.badge-l {
+  left: 4%; top: 36%;
+  transform: rotate(-4deg);
+  animation-delay: 1.2s;
+}
+.badge-r {
+  right: 4%; top: 46%;
+  transform: rotate(3deg);
+  animation-delay: 1.35s;
+}
+.hero-badge:hover { transform: rotate(0) translateY(-3px); transition: transform .3s; }
+
+.badge-circle {
+  width: 44px; height: 44px; border-radius:50%;
+  background: var(--ink); color: var(--cream);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 18px;
+  flex-shrink:0;
+}
+.badge-circle.alt { background: var(--terracotta); color: var(--ink); }
+.badge-text .k { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cream-muted); font-weight:500; line-height: 1; }
+.badge-text .v {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px; font-weight: 600; color: var(--ink);
+  letter-spacing: -0.01em; line-height: 1.1; margin-top: 2px;
+}
+.badge-text .v em { font-style: italic; font-weight: 400; color: var(--terracotta); }
+
+.scroll-hint {
+  position: absolute;
+  bottom: 32px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  font-size: 11px; letter-spacing: 0.22em; text-transform:uppercase;
+  color: var(--cream-muted);
+  opacity: 0; animation: hero-rise 1s ease 1.5s forwards;
+}
+.scroll-hint .line-v {
+  width: 1px; height: 36px;
+  background: linear-gradient(to bottom, var(--cream-muted), transparent);
+  position: relative;
+  overflow: hidden;
+}
+.scroll-hint .line-v::before {
+  content:'';
+  position:absolute; top:0; left:0;
+  width:100%; height: 12px;
+  background: var(--terracotta);
+  animation: hero-scroll-dot 2s ease-in-out infinite;
+}
+
+.hero-seal {
+  position: absolute;
+  right: 6%; top: 16%;
+  width: 92px; height: 92px;
+  z-index: 3;
+  opacity: 0;
+  animation: hero-rise 1s ease 1.1s forwards;
+}
+.hero-seal svg { width:100%; height:100%; }
+.hero-seal .rotor { animation: hero-rotate 20s linear infinite; transform-origin:center; }
+.seal-inner {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 22px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes hero-draw { to { stroke-dashoffset: 0; } }
+@keyframes hero-pulse {
+  0%   { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+@keyframes hero-scroll-dot {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(400%); }
+}
+@keyframes hero-rotate { to { transform: rotate(360deg); } }
+
+@media (max-width: 900px) {
+  .hero { padding: 120px 20px 80px; }
+  .hero-badge { display: none; }
+  .hero-seal { display: none; }
+  .trust-row { gap: 20px; }
+  .eyebrow-row .line-decor { width: 32px; }
+}
+@media (max-width: 600px) {
+  .hero-cta { flex-direction: column; width:100%; }
+  .hero-cta-btn-primary, .hero-cta-btn-secondary { width:100%; justify-content:center; }
+}
+</style>
+
+<div id="hero-wrapper">
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="mesh">
+      <div class="blob a"></div>
+      <div class="blob b"></div>
+      <div class="blob c"></div>
+      <div class="blob d"></div>
+    </div>
+    <!-- cursor-following glow -->
+    <div class="cursor-glow" id="cursorGlow"></div>
+    <div class="grain"></div>
+
+    <!-- floating badges -->
+    <div class="hero-badge badge-l">
+      <div class="badge-circle">{{ $badge_l_num }}</div>
+      <div class="badge-text">
+        <div class="k">{{ $badge_l_k }}</div>
+        <div class="v">{!! $badge_l_v !!}</div>
+      </div>
+    </div>
+
+    <div class="hero-badge badge-r">
+      <div class="badge-circle alt">{{ $badge_r_icon }}</div>
+      <div class="badge-text">
+        <div class="k">{{ $badge_r_k }}</div>
+        <div class="v">{!! $badge_r_v !!}</div>
+      </div>
+    </div>
+
+    <!-- rotating seal -->
+    <div class="hero-seal" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <defs>
+          <path id="circle-path" d="M 50, 50 m -36, 0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0" />
+        </defs>
+        <g class="rotor">
+          <text font-family="Instrument Sans, sans-serif" font-size="8.5" letter-spacing="2" fill="#2A1A10">
+            <textPath href="#circle-path">
+              {{ $seal_text }}
+            </textPath>
+          </text>
+        </g>
+      </svg>
+      <div class="seal-inner">{{ $seal_center }}</div>
+    </div>
+
+    <div class="hero-inner">
+      <div class="eyebrow-row">
+        <div class="line-decor"></div>
+        <svg class="leaf" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M10 1 C 4 6, 4 14, 10 19 C 16 14, 16 6, 10 1 Z M10 5 L10 17" stroke="currentColor" stroke-width="1" fill="none"/>
+        </svg>
+        <span class="text-decor">{{ $eyebrow }}</span>
+        <svg class="leaf" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M10 1 C 4 6, 4 14, 10 19 C 16 14, 16 6, 10 1 Z M10 5 L10 17" stroke="currentColor" stroke-width="1" fill="none"/>
+        </svg>
+        <div class="line-decor"></div>
+      </div>
+
+      <h1 class="hero-title-main">
+        <span class="line-1">{{ $title_line_1 }}</span>
+        <span class="line-2">{{ $title_line_2_pre }} <em>{{ $title_line_2_italic }}<svg class="uline" viewBox="0 0 300 10" preserveAspectRatio="none"><path d="M2 7 Q 50 1, 100 5 T 200 5 T 298 4"/></svg></em><span class="accent-dot"></span></span>
+      </h1>
+
+      <p class="kicker">
+        {!! $kicker !!}
+      </p>
+
+      <div class="hero-cta">
+        @if(!empty($cta_1) && !empty($cta_1['url']))
+        <a class="hero-cta-btn-primary" href="{{ $cta_1['url'] }}" target="{{ $cta_1['target'] ?? '_self' }}">
+          {{ $cta_1['title'] }}
+          <span class="arrow">→</span>
+        </a>
         @endif
-        @if(!empty($block['cta_2']))
-          <a href="{{ $block['cta_2']['url'] }}" class="btn-soft btn-lg">
-            {{ $block['cta_2']['title'] }}
-          </a>
+        @if(!empty($cta_2) && !empty($cta_2['url']))
+        <a class="hero-cta-btn-secondary" href="{{ $cta_2['url'] }}" target="{{ $cta_2['target'] ?? '_self' }}">
+          <span class="pulse"></span>
+          {{ $cta_2['title'] }}
+        </a>
+        @endif
+      </div>
+
+      <div class="trust-row">
+        @if(!empty($trust_items))
+            @foreach($trust_items as $item)
+                <div class="trust-item"><span class="t-dot"></span> {!! $item['text'] !!}</div>
+            @endforeach
         @endif
       </div>
     </div>
 
-    <!-- Right: Video Placeholder / Image -->
-    <div class="relative bg-cream-200 rounded-2xl aspect-[4/3] flex items-center justify-center overflow-hidden group shadow-lg border border-cream-300">
-
-      <!-- Image Cover Layout -->
-      <div id="hero-cover" class="absolute inset-0 w-full h-full flex items-center justify-center z-10 cursor-pointer"
-           onclick="document.getElementById('hero-cover').style.display='none'; document.getElementById('hero-video-wrapper').style.display='block';">
-          @if(!empty($block['background']['url']))
-            <img src="{{ $block['background']['url'] }}" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay hover:scale-105 transition-transform duration-700" alt="Hero Media">
-          @endif
-
-          @if(!empty($block['video']))
-            <!-- Play Button Wrapper -->
-            <div class="w-24 h-24 bg-cream-100/70 backdrop-blur-md rounded-full flex items-center justify-center cursor-pointer hover:bg-cream-100 transition-colors relative z-20 shadow-xl group-hover:scale-110 duration-300">
-              <svg class="w-10 h-10 text-bark-900 ml-1.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
-            </div>
-          @endif
-
-          <div class="absolute bottom-6 left-6 right-6 text-center z-20 bg-cream-100/40 backdrop-blur-md p-4 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
-            <p class="text-sm font-bold text-bark-900 leading-tight">"Мы не лечим симптомы. Мы ищем причину"<br><span class="font-semibold text-xs text-bark-700">— E-DIET</span></p>
-          </div>
-      </div>
-
-      <!-- Hidden Video Embed -->
-      @if(!empty($block['video']))
-        <div id="hero-video-wrapper" class="absolute inset-0 w-full h-full bg-cream-200 z-20" style="display: none;">
-          <div class="w-full h-full [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:absolute [&>iframe]:inset-0">
-            {!! $block['video'] !!}
-          </div>
-        </div>
-      @endif
-
+    <div class="scroll-hint">
+      <span>Прокрутите</span>
+      <div class="line-v"></div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const hero = document.getElementById("hero-section");
-    const blobs = document.querySelectorAll(".parallax-blob");
-    if(!hero || blobs.length === 0) return;
+  /* ─── Cursor-reactive glow + blob parallax ─── */
+  (function(){
+    const hero = document.getElementById('hero');
+    const glow = document.getElementById('cursorGlow');
+    if (!hero || !glow) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) return;
 
-    hero.addEventListener("mousemove", (e) => {
-      const rect = hero.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
+    const blobs = hero.querySelectorAll('.blob');
+    let targetX = 0, targetY = 0, curX = 0, curY = 0;
+    let raf = null;
 
-      blobs.forEach(blob => {
-        const speed = parseFloat(blob.getAttribute("data-speed"));
-        const xOffset = x * speed;
-        const yOffset = y * speed;
-        const origX = blob.getAttribute("data-orig-x");
-        const origY = blob.getAttribute("data-orig-y");
-        
-        blob.style.transform = `translate(calc(${origX} + ${xOffset}px), calc(${origY} + ${yOffset}px))`;
+    function tick(){
+      curX += (targetX - curX) * 0.08;
+      curY += (targetY - curY) * 0.08;
+      blobs.forEach((b, i) => {
+        const k = (i + 1) * 8;
+        b.style.setProperty('--px', (curX * k) + 'px');
+        b.style.setProperty('--py', (curY * k) + 'px');
+        // layer cursor shift on top of existing keyframe transform
+        b.style.translate = `${curX * k}px ${curY * k}px`;
       });
+      raf = requestAnimationFrame(tick);
+    }
+
+    hero.addEventListener('pointermove', (e) => {
+      const r = hero.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      targetX = (x / r.width  - 0.5);
+      targetY = (y / r.height - 0.5);
+      glow.style.opacity = '1';
+      glow.style.left = x + 'px';
+      glow.style.top  = y + 'px';
+      if (!raf) tick();
     });
-  });
+    hero.addEventListener('pointerleave', () => {
+      targetX = 0; targetY = 0;
+      glow.style.opacity = '0';
+    });
+  })();
 </script>

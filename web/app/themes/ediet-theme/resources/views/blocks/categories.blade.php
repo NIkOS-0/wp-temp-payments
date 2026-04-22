@@ -1,324 +1,274 @@
-<section class="section-warm overflow-hidden">
-  <div class="container-editorial">
+<section class="section-dark py-24 relative" style="background: var(--color-onyx-900); overflow: clip;">
+  <!-- Ambient background glow -->
+  <div class="absolute top-0 right-1/4 w-[600px] h-[600px] bg-onyx-800 rounded-full blur-[120px] opacity-30 pointer-events-none"></div>
+
+  <div class="container-editorial relative z-10">
+    <div class="text-xs font-semibold uppercase tracking-[0.18em] text-terra-500 mb-2">
+      Интерактивный навигатор
+    </div>
     @if(!empty($block['title']))
-      <h2 class="heading-display text-center text-balance mb-12">{{ $block['title'] }}</h2>
+      <h2 class="heading-hero-light mb-12">
+        {!! preg_replace('/(своё направление|свое направление)/ui', '<em class="italic text-terra-300 font-serif">$1</em>', $block['title']) !!}
+      </h2>
+    @else
+      <h2 class="heading-hero-light mb-12">найдите <em class="italic text-terra-300 font-serif">своё направление</em></h2>
     @endif
 
-    <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_500px] gap-12 md:gap-16 items-center">
-      <!-- Left: Wheel Interactive -->
-      <div id="wheel-container" class="relative w-full aspect-square max-w-[700px] mx-auto flex items-center justify-center">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-12 lg:gap-24 items-center mt-10 lg:mt-16">
+      
+      <!-- Left: Wheel Interactive SVG -->
+      <div id="wheel-container" class="relative w-full aspect-square max-w-[480px] lg:max-w-[640px] xl:max-w-[720px] mx-auto">
+        <svg class="w-full h-full overflow-visible" viewBox="0 0 400 400" id="wheelSvg">
+          <defs>
+            <!-- Global SVG Glow Filter -->
+            <filter id="wglow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="5" result="b"/>
+              <feMerge>
+                <feMergeNode in="b"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          
+          <!-- Dynamic Segments Injected Here -->
+          <g id="wheel-segments" class="origin-center"></g>
+          
+          <!-- Center Hub -->
+          <g class="pointer-events-none">
+            <circle cx="200" cy="200" r="68" fill="var(--color-onyx-950)" stroke="var(--color-terra-600)" stroke-width="1.5" stroke-opacity="0.4"/>
+            <text x="200" y="195" text-anchor="middle" font-family="'Playfair Display', serif" font-size="16" font-weight="700" fill="var(--color-cream-100)" letter-spacing="1">ЗДОРОВЬЕ</text>
+            <text x="200" y="213" text-anchor="middle" font-family="'Inter', sans-serif" font-size="10" font-weight="500" fill="var(--color-bark-400)">Выберите раздел</text>
+          </g>
 
-        @if(!empty($block['items']))
-          <canvas id="health-wheel" class="absolute inset-0 w-full h-full cursor-pointer touch-none z-10"></canvas>
-          <script>
-          document.addEventListener('DOMContentLoaded', () => {
-            const cats = [
-              @foreach($block['items'] as $index => $item)
-                {
-                  id: {{ $index + 1 }},
-                  short: "{{ addslashes($item->post_title) }}",
-                  iconUrl: "{{ get_field('hero_icon', $item->ID) ?: 'https://dev.e-diet.wiki/themes/ediet-theme/resources/images/logo.png' }}",
-                  color: "{{ get_field('wheel_color', $item->ID) ?: '#4aaee0' }}",
-                  url: "{{ get_permalink($item->ID) }}"
-                },
-              @endforeach
-            ];
-
-            const canvas = document.getElementById('health-wheel');
-            const container = document.getElementById('wheel-container');
-            const ctx = canvas.getContext('2d');
-
-            let W, H, CX, CY, MIN, R_IN, R_OUT, R_EXP;
-            const DPR = window.devicePixelRatio || 1;
-
-            function initCanvas() {
-                const rect = container.getBoundingClientRect();
-                W = rect.width || 300;
-                H = rect.height || 300;
-                canvas.width = W * DPR;
-                canvas.height = H * DPR;
-                canvas.style.width = W + 'px';
-                canvas.style.height = H + 'px';
-                ctx.scale(DPR, DPR);
-
-                CX = W / 2; CY = H / 2;
-                MIN = Math.min(W, H);
-                R_IN   = MIN * 0.16;
-                R_OUT  = MIN * 0.44;
-                R_EXP  = MIN * 0.055;
-            }
-            window.addEventListener('resize', initCanvas);
-            initCanvas();
-
-            const N = cats.length;
-            const SLICE = (2 * Math.PI) / N;
-            const GAP   = 0.022;
-
-            let hovered = -1;
-
-            function hexRgb(hex) {
-              hex = hex || '#4aaee0';
-              if (hex.length === 4) {
-                hex = '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
-              }
-              const r = parseInt(hex.slice(1,3), 16) || 0;
-              const g = parseInt(hex.slice(3,5), 16) || 0;
-              const b = parseInt(hex.slice(5,7), 16) || 0;
-              return [r,g,b];
-            }
-            function rgba(hex, a) {
-              const [r,g,b] = hexRgb(hex);
-              return `rgba(${r},${g},${b},${a})`;
-            }
-            function lighten(hex, amt) {
-              let [r,g,b] = hexRgb(hex);
-              r = Math.min(255, r + amt); g = Math.min(255, g + amt); b = Math.min(255, b + amt);
-              return `rgb(${r},${g},${b})`;
-            }
-
-            // Preload images
-            cats.forEach(c => {
-                const img = new Image();
-                img.src = c.iconUrl;
-                c.imgObj = img;
-            });
-
-            function drawSector(i, expandT) {
-              const cat = cats[i];
-              const startA = i * SLICE - Math.PI/2 + GAP/2;
-              const endA   = startA + SLICE - GAP;
-              const midA   = i * SLICE - Math.PI/2 + SLICE/2;
-
-              const ox = Math.cos(midA) * R_EXP * expandT;
-              const oy = Math.sin(midA) * R_EXP * expandT;
-
-              ctx.save();
-              ctx.translate(ox, oy);
-
-              ctx.beginPath();
-              ctx.moveTo(Math.cos(startA) * R_IN, Math.sin(startA) * R_IN);
-              ctx.arc(0, 0, R_OUT, startA, endA);
-              ctx.arc(0, 0, R_IN,  endA, startA, true);
-              ctx.closePath();
-
-              ctx.shadowColor = rgba(cat.color, 0.25);
-              ctx.shadowBlur  = 16;
-              ctx.shadowOffsetY = 4;
-
-              const grad = ctx.createRadialGradient(
-                Math.cos(midA)*(R_IN+R_OUT)*0.38, Math.sin(midA)*(R_IN+R_OUT)*0.38, 0,
-                0, 0, R_OUT
-              );
-              grad.addColorStop(0, lighten(cat.color, 55));
-              grad.addColorStop(0.5, cat.color);
-              grad.addColorStop(1, rgba(cat.color, 0.75));
-              ctx.fillStyle = grad;
-              ctx.fill();
-
-              ctx.shadowColor = 'transparent';
-              ctx.shadowBlur  = 0;
-              ctx.shadowOffsetY = 0;
-
-              ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-              ctx.lineWidth = 1.5;
-              ctx.stroke();
-
-              const emojiR = R_IN + (R_OUT - R_IN) * 0.58;
-              const ex = Math.cos(midA) * emojiR;
-              const ey = Math.sin(midA) * emojiR;
-
-              if (cat.imgObj && cat.imgObj.complete && cat.imgObj.naturalHeight !== 0) {
-                  const sSize = MIN * 0.14;
-                  ctx.drawImage(cat.imgObj, ex - sSize/2, ey - sSize/2, sSize, sSize);
-              }
-
-              const numR = R_OUT - MIN * 0.028;
-              ctx.font = `300 ${MIN * 0.044}px 'Inter', sans-serif`;
-              ctx.fillStyle = 'rgba(255,255,255,0.55)';
-              ctx.textAlign = 'center';
-              ctx.textBaseline = 'middle';
-              ctx.fillText(String(cat.id).padStart(2,'0'), Math.cos(midA)*numR, Math.sin(midA)*numR);
-
-              ctx.restore();
-            }
-
-            function drawOuterLabels() {
-              const labelR = R_OUT + MIN * 0.045;
-              cats.forEach((cat, i) => {
-                const midA = i * SLICE - Math.PI/2 + SLICE/2;
-                const lx = Math.cos(midA) * labelR;
-                const ly = Math.sin(midA) * labelR;
-
-                ctx.save();
-                ctx.translate(lx, ly);
-                let rot = midA + Math.PI/2;
-                if (midA > Math.PI/2 && midA < Math.PI*1.5) rot += Math.PI;
-                ctx.rotate(rot);
-
-                ctx.font = `700 ${MIN * 0.018}px 'Inter', sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = rgba(cat.color, 0.72);
-                ctx.fillText(cat.short.toUpperCase(), 0, 0);
-                ctx.restore();
-              });
-            }
-
-            function drawCenter(cat) {
-              ctx.beginPath();
-              ctx.arc(0, 0, R_IN * 0.97, 0, Math.PI*2);
-              ctx.shadowColor = 'rgba(0,0,0,0.05)';
-              ctx.shadowBlur = 20;
-              ctx.fillStyle = '#ffffff';
-              ctx.fill();
-              ctx.shadowBlur = 0;
-
-              ctx.beginPath();
-              ctx.arc(0, 0, R_IN * 0.87, 0, Math.PI*2);
-              ctx.strokeStyle = cat ? rgba(cat.color, 0.45) : 'rgba(200,210,230,0.5)';
-              ctx.lineWidth = 1.5;
-              ctx.setLineDash([3,5]);
-              ctx.stroke();
-              ctx.setLineDash([]);
-
-              if (cat) {
-                ctx.beginPath();
-                ctx.arc(0, 0, R_IN * 0.80, 0, Math.PI*2);
-                ctx.fillStyle = rgba(cat.color, 0.09);
-                ctx.fill();
-              }
-
-              if (cat && cat.imgObj && cat.imgObj.complete && cat.imgObj.naturalHeight !== 0) {
-                  const sSize = R_IN * 0.75;
-                  ctx.drawImage(cat.imgObj, -sSize/2, -R_IN * 0.1 - sSize/2, sSize, sSize);
-              } else if (!cat) {
-                  const sSize = R_IN * 0.6;
-                  ctx.font = `800 ${sSize}px 'Inter', sans-serif`;
-                  ctx.textAlign = 'center';
-                  ctx.textBaseline = 'middle';
-                  ctx.globalAlpha = 0.2;
-                  ctx.fillText('✚', 0, -R_IN * 0.1);
-                  ctx.globalAlpha = 1;
-              }
-
-              ctx.font = `800 ${MIN * 0.026}px 'Inter', sans-serif`;
-              ctx.textAlign = 'center';
-              ctx.textBaseline = 'middle';
-              ctx.fillStyle = cat ? cat.color : '#0f172a';
-              ctx.fillText(cat ? cat.short.toUpperCase() : 'ЗДОРОВЬЕ', 0, R_IN * 0.40);
-
-              ctx.font = `600 ${MIN * 0.017}px 'Inter', sans-serif`;
-              ctx.fillStyle = '#94a3b8';
-              ctx.fillText(cat ? `Раздел ${String(cat.id).padStart(2,'0')}` : 'Выберите раздел', 0, R_IN * 0.58);
-            }
-
-            const expandStates = new Array(N).fill(0);
-            let lastTime = 0;
-
-            function render(now) {
-              const dt = Math.min((now - lastTime) / 1000, 0.05);
-              lastTime = now;
-
-              for (let i = 0; i < N; i++) {
-                const target = i === hovered ? 1 : 0;
-                const speed = 8;
-                expandStates[i] += (target - expandStates[i]) * speed * dt;
-                if (Math.abs(expandStates[i] - target) <= 0.001) expandStates[i] = target;
-              }
-
-              ctx.clearRect(0, 0, W, H);
-
-              ctx.save();
-              ctx.translate(CX, CY);
-
-              for (let i = 0; i < N; i++) {
-                if (i !== hovered) drawSector(i, expandStates[i]);
-              }
-              if (hovered >= 0) drawSector(hovered, expandStates[hovered]);
-
-              drawOuterLabels();
-              drawCenter(hovered >= 0 ? cats[hovered] : null);
-
-              ctx.restore();
-              requestAnimationFrame(render);
-            }
-
-            function handleHit(mx, my) {
-              const dist = Math.sqrt(mx*mx + my*my);
-              if (dist < R_IN || dist > R_OUT + R_EXP * 1.2) {
-                return -1;
-              }
-              let angle = Math.atan2(my, mx) + Math.PI/2;
-              if (angle < 0) angle += 2 * Math.PI;
-              return Math.floor(angle / SLICE) % N;
-            }
-
-            canvas.addEventListener('mousemove', e => {
-              const rect = canvas.getBoundingClientRect();
-              const mx = e.clientX - rect.left - CX;
-              const my = e.clientY - rect.top  - CY;
-
-              const hit = handleHit(mx, my);
-              hovered = hit;
-              canvas.style.cursor = hit >= 0 ? 'pointer' : 'default';
-            });
-
-            canvas.addEventListener('mouseleave', () => { hovered = -1; });
-
-            canvas.addEventListener('click', e => {
-               const rect = canvas.getBoundingClientRect();
-               const mx = e.clientX - rect.left - CX;
-               const my = e.clientY - rect.top  - CY;
-               const hit = handleHit(mx, my);
-               if (hit >= 0) {
-                   window.location.href = cats[hit].url;
-               }
-            });
-
-            canvas.addEventListener('touchstart', e => {
-                if (e.touches.length > 0) {
-                    const rect = canvas.getBoundingClientRect();
-                    const mx = e.touches[0].clientX - rect.left - CX;
-                    const my = e.touches[0].clientY - rect.top  - CY;
-                    const hit = handleHit(mx, my);
-
-                    if (hit >= 0) {
-                       e.preventDefault();
-                       if (hovered === hit) {
-                           window.location.href = cats[hit].url;
-                       } else {
-                           hovered = hit;
-                       }
-                    } else {
-                       hovered = -1;
-                    }
-                }
-            }, {passive: false});
-
-            requestAnimationFrame(render);
-          });
-          </script>
-        @endif
+          <!-- Dynamic Labels Injected Here -->
+          <g id="wheel-labels" class="pointer-events-none"></g>
+        </svg>
       </div>
 
-      <!-- Right: Content -->
-      <div class="flex flex-col gap-6 w-full">
-        <div class="card-warm p-8 sm:p-12 relative overflow-hidden">
-          <div class="absolute -top-10 -right-10 w-40 h-40 bg-cream-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-          <svg class="absolute top-6 left-6 w-12 h-12 text-bark-300 opacity-50 pointer-events-none" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
-
-          <p class="text-body font-semibold relative z-10 pt-6">
-            Для начала найдите ваше направление на колесе слева. Кликнув по нему, вы перейдёте на страницу с детальными гайдами, протоколами питания и подборкой МПО, разработанными врачами интегративной медицины индивидуально под ваш запрос.
-          </p>
-        </div>
-
-        @if(empty($block['items']))
-          <div class="card p-4 border-l-4 border-terra-400">
-            <p class="text-sm font-bold text-bark-900">Справка для редактора:</p>
-            <p class="text-body text-sm mt-1">Добавьте нужные "Заболевания" в настройках секции в админке, чтобы они отобразились в виде интерактивных долек на колесе!</p>
+      <!-- Right: Content Info Box -->
+      <div class="relative w-full">
+        <div class="relative p-10 sm:p-12 border border-onyx-800 rounded-[28px] flex flex-col justify-between overflow-hidden shadow-2xl transition-all duration-300 min-h-[300px]" style="background: rgba(27, 20, 14, 0.45); backdrop-filter: blur(12px);">
+          
+          <!-- Decorative Glow inside card -->
+          <div class="absolute -top-12 -right-12 w-[240px] h-[240px] rounded-full pointer-events-none mix-blend-screen" style="background: radial-gradient(circle, rgba(232,144,104, 0.12) 0%, transparent 65%);"></div>
+          
+          <div class="relative z-10">
+            <div class="font-serif text-[64px] leading-none text-terra-500/20 mb-4 select-none opacity-50">"</div>
+            <div class="font-serif text-3xl font-bold text-cream-50 mb-4 tracking-tight" id="wTitle">
+              Выберите направление на колесе
+            </div>
+            <div class="text-[15.5px] text-bark-100/80 leading-[1.75] font-light" id="wText">
+              Кликните на любой сегмент колеса слева. Вы перейдёте на страницу с детальными гайдами, протоколами питания и подборкой МПО, разработанными врачами интегративной медицины индивидуально под ваш запрос.
+            </div>
           </div>
-        @endif
+
+          <div class="mt-10 relative z-10" id="wCta" style="display:none">
+            <a href="#" class="btn-primary" id="wLink" style="background: var(--color-terra-600); color: var(--color-cream-50); box-shadow: 0 4px 14px rgba(173,98,63,0.3);">
+              Смотреть раздел
+              <svg class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </a>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const cats = [
+    @if(!empty($block['items']))
+      @foreach($block['items'] as $index => $item)
+        {
+          id: {{ $index + 1 }},
+          short: "{{ addslashes($item->post_title) }}",
+          desc: "{{ addslashes(get_field('hero_desc', $item->ID) ?: '') }}",
+          color: "{{ get_field('wheel_color', $item->ID) ?: '#c77b5a' }}", 
+          url: "{{ get_permalink($item->ID) }}"
+        },
+      @endforeach
+    @endif
+  ];
+
+  // Fixed 10 segments to maintain layout consistency (36 degrees each)
+  const N = Math.max(10, cats.length);
+
+  const CX = 200, CY = 200;
+  const R_IN = 80, R_OUT = 180;
+  const GAP = 0.035; 
+  const SLICE = (2 * Math.PI) / N;
+
+  const segmentsGroup = document.getElementById('wheel-segments');
+  const labelsGroup = document.getElementById('wheel-labels');
+  
+  // UI Panels
+  const wTitle = document.getElementById('wTitle');
+  const wText = document.getElementById('wText');
+  const wCta = document.getElementById('wCta');
+  const wLink = document.getElementById('wLink');
+
+  function polarToCartesian(cx, cy, r, angle) {
+    return {
+      x: cx + r * Math.cos(angle),
+      y: cy + r * Math.sin(angle)
+    };
+  }
+
+  function createPath(startA, endA, popDist = 0) {
+    const midA = startA + (endA - startA) / 2;
+    const ox = Math.cos(midA) * popDist;
+    const oy = Math.sin(midA) * popDist;
+    
+    if(endA < startA) endA += Math.PI * 2;
+    
+    const p1 = polarToCartesian(CX + ox, CY + oy, R_IN, startA);
+    const p2 = polarToCartesian(CX + ox, CY + oy, R_OUT, startA);
+    const p3 = polarToCartesian(CX + ox, CY + oy, R_OUT, endA);
+    const p4 = polarToCartesian(CX + ox, CY + oy, R_IN, endA);
+    
+    const largeArc = endA - startA <= Math.PI ? "0" : "1";
+
+    return [
+      `M ${p1.x} ${p1.y}`,
+      `L ${p2.x} ${p2.y}`,
+      `A ${R_OUT} ${R_OUT} 0 ${largeArc} 1 ${p3.x} ${p3.y}`,
+      `L ${p4.x} ${p4.y}`,
+      `A ${R_IN} ${R_IN} 0 ${largeArc} 0 ${p1.x} ${p1.y}`,
+      "Z"
+    ].join(" ");
+  }
+
+  function rgbObj(hex) {
+     hex = hex.replace('#','');
+     if(hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+     if(hex.length !== 6) return {r:199,g:123,b:90}; 
+     return {
+       r: parseInt(hex.substring(0,2), 16),
+       g: parseInt(hex.substring(2,4), 16),
+       b: parseInt(hex.substring(4,6), 16)
+     };
+  }
+
+  // Generate 10 segments (or cats.length if more than 10)
+  for (let i = 0; i < N; i++) {
+    const cat = cats[i] || null; // Might be empty segment
+    let startA = i * SLICE - Math.PI/2 + GAP/2;
+    let endA = startA + SLICE - GAP;
+    
+    const color = cat ? rgbObj(cat.color) : {r: 30, g: 30, b: 30};
+
+    // Radial Gradient
+    const defs = document.querySelector('#wheelSvg defs');
+    const grad = document.createElementNS('http://www.w3.org/2000/svg', 'radialGradient');
+    grad.id = 'grad-segment-' + i;
+    grad.setAttribute('cx', '50%');
+    grad.setAttribute('cy', '50%');
+    grad.setAttribute('r', '50%');
+    
+    const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    stop1.setAttribute('offset', '0%');
+    stop1.setAttribute('stop-color', cat ? `rgba(${color.r},${color.g},${color.b}, 0.5)` : 'rgba(255,255,255,0.03)');
+    
+    const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    stop2.setAttribute('offset', '100%');
+    stop2.setAttribute('stop-color', cat ? `rgba(${color.r},${color.g},${color.b}, 0.08)` : 'rgba(255,255,255,0.0)');
+    
+    grad.appendChild(stop1);
+    grad.appendChild(stop2);
+    defs.appendChild(grad);
+
+    // Path
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', createPath(startA, endA, 0));
+    path.setAttribute('fill', `url(#grad-segment-${i})`);
+    path.setAttribute('stroke', cat ? `rgba(${color.r}, ${color.g}, ${color.b}, 0.3)` : 'rgba(255,255,255,0.05)');
+    path.setAttribute('stroke-width', '1.5');
+    path.style.transition = 'all 0.4s cubic-bezier(0.3, 0.8, 0.3, 1)';
+    path.style.transformOrigin = '200px 200px';
+
+    if (cat) {
+      path.setAttribute('class', 'cursor-pointer');
+
+      function lightUp() {
+        path.setAttribute('d', createPath(startA, endA, 8)); 
+        path.setAttribute('filter', 'url(#wglow)');
+        path.setAttribute('fill', `rgba(${color.r},${color.g},${color.b}, 0.35)`);
+        path.setAttribute('stroke', `rgba(${color.r}, ${color.g}, ${color.b}, 0.8)`);
+        
+        wTitle.innerHTML = cat.short;
+        wText.innerHTML  = cat.desc || 'Нажмите, чтобы ознакомиться с персональными протоколами и детальными рекомендациями.';
+        wCta.style.display = 'block';
+        wLink.href = cat.url;
+      }
+      
+      function lightDown() {
+        path.setAttribute('d', createPath(startA, endA, 0));
+        path.removeAttribute('filter');
+        path.setAttribute('fill', `url(#grad-segment-${i})`);
+        path.setAttribute('stroke', `rgba(${color.r}, ${color.g}, ${color.b}, 0.3)`);
+      }
+
+      path.addEventListener('mouseenter', lightUp);
+      path.addEventListener('mouseleave', lightDown);
+      path.addEventListener('click', () => { window.location.href = cat.url; });
+    }
+
+    segmentsGroup.appendChild(path);
+    
+    // Label Placement INSIDE the Petal
+    if (cat) {
+      const midA = startA + (endA - startA)/2;
+      const labelR = R_IN + (R_OUT - R_IN) * 0.5; // Exactly in the middle of the petal
+      
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      const lx = CX + labelR * Math.cos(midA);
+      const ly = CY + labelR * Math.sin(midA);
+      
+      // Rotate Text perpendicular to the arc (parallel to the radius line)
+      let rot = midA * (180/Math.PI);
+      if (rot > 90 && rot < 270) {
+         rot += 180;
+      }
+      
+      text.setAttribute('x', lx);
+      text.setAttribute('y', ly);
+      text.setAttribute('transform', `rotate(${rot}, ${lx}, ${ly})`);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('dominant-baseline', 'middle');
+      text.setAttribute('fill', `rgba(255,255,255, 0.7)`); // slightly brighter inside
+      text.style.fontSize = '10px'; // Made font slightly larger since it has more vertical room when aligned radially
+      text.style.fontWeight = '700';
+      text.style.letterSpacing = '0.5px';
+      text.style.fontFamily = "'Inter', sans-serif";
+      text.style.pointerEvents = 'none';
+      
+      // Breaking string into words if long
+      const words = cat.short.toUpperCase().split(' ');
+      if (words.length > 1) {
+          words.forEach((word, idx) => {
+              const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+              tspan.setAttribute('x', lx);
+              tspan.setAttribute('dy', idx === 0 ? '-0.5em' : '1.2em');
+              tspan.textContent = word;
+              text.appendChild(tspan);
+          });
+      } else {
+          text.textContent = cat.short.toUpperCase();
+      }
+
+      // Tie text brightness to path hover
+      path.addEventListener('mouseenter', () => {
+         text.setAttribute('fill', `rgba(255,255,255, 1)`);
+         text.style.filter = "drop-shadow(0px 2px 4px rgba(0,0,0,0.5))";
+      });
+      path.addEventListener('mouseleave', () => {
+         text.setAttribute('fill', `rgba(255,255,255, 0.7)`);
+         text.style.filter = "none";
+      });
+
+      labelsGroup.appendChild(text);
+    }
+  }
+});
+</script>

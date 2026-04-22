@@ -1,208 +1,331 @@
 @php
   $bid = $block['id'] ?? uniqid();
   $items = !empty($block['items']) ? $block['items'] : [];
+  $total = count($items);
 @endphp
 
-<section class="section-canvas">
-  <div class="container-editorial">
-    <!-- Header row -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-10">
-      <div>
-        <h2 class="heading-display text-balance">{!! !empty($block['title']) ? nl2br(esc_html($block['title'])) : 'Готовые планы оздоровления<br>(МПО) — Ваш личный «врач» в PDF' !!}</h2>
-        <p class="text-body mt-2">Доказательная медицина и биохакинг. Готовые инструкции, протоколы питания и БАДов.</p>
-      </div>
-      <!-- Stats -->
-      <div class="flex items-stretch bg-[var(--surface)] rounded-2xl overflow-hidden border border-[var(--border)] shadow-sm shrink-0 flex-wrap">
-        <div class="card p-5 text-center flex-1 min-w-[110px]">
-          <span class="block text-2xl font-bold text-bark-900 leading-none mb-1">99</span>
-          <span class="text-overline">планов МПО</span>
-        </div>
-        <div class="card p-5 text-center flex-1 min-w-[110px] border-l border-[var(--border)]">
-          <span class="block text-2xl font-bold text-bark-900 leading-none mb-1">12 400+</span>
-          <span class="text-overline">скачиваний</span>
-        </div>
-        <div class="card p-5 text-center flex-1 min-w-[130px] border-l border-[var(--border)]">
-          <span class="block text-2xl font-bold text-bark-900 leading-none mb-1">до 50 000 ₽</span>
-          <span class="text-overline">экономии на анализах</span>
-        </div>
-      </div>
-    </div>
+<style>
+/* ── Ambient Blobs ── */
+@keyframes fp-float-a {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33%      { transform: translate(40px,-30px) scale(1.06); }
+  66%      { transform: translate(-20px,20px) scale(0.96); }
+}
+@keyframes fp-float-b {
+  0%,100% { transform: translate(0,0) scale(1); }
+  40%      { transform: translate(-50px,25px) scale(1.08); }
+  70%      { transform: translate(30px,-15px) scale(0.94); }
+}
+@keyframes fp-float-c {
+  0%,100% { transform: translate(0,0) scale(1); }
+  50%      { transform: translate(20px,40px) scale(1.04); }
+}
+@keyframes fp-float-d {
+  0%,100% { transform: translate(0,0) scale(1); }
+  45%      { transform: translate(-30px,-20px) scale(1.07); }
+  80%      { transform: translate(15px,10px) scale(0.97); }
+}
+.fp-blob { position:absolute; border-radius:50%; filter:blur(90px); pointer-events:none; }
+.fp-blob-1 { width:540px; height:540px; top:-160px; left:-120px;
+  background:radial-gradient(circle, rgba(239,148,91,0.22) 0%, transparent 65%);
+  animation: fp-float-a 18s ease-in-out infinite; }
+.fp-blob-2 { width:420px; height:420px; bottom:-80px; right:8%;
+  background:radial-gradient(circle, rgba(239,148,91,0.16) 0%, transparent 65%);
+  animation: fp-float-b 22s ease-in-out infinite; }
+.fp-blob-3 { width:320px; height:320px; top:40%; left:38%;
+  background:radial-gradient(circle, rgba(47,61,42,0.13) 0%, transparent 65%);
+  animation: fp-float-c 26s ease-in-out infinite; }
+.fp-blob-4 { width:280px; height:280px; bottom:10%; left:20%;
+  background:radial-gradient(circle, rgba(239,148,91,0.10) 0%, transparent 65%);
+  animation: fp-float-d 20s ease-in-out infinite; }
+.fp-blob-br { width:360px; height:360px; bottom:-60px; right:-60px;
+  background:radial-gradient(circle, rgba(239,148,91,0.18) 0%, transparent 65%);
+  animation: fp-float-b 24s ease-in-out infinite reverse; }
+.fp-ring { position:absolute; border-radius:50%; border:1px solid rgba(239,148,91,0.09); pointer-events:none; }
+.fp-ring-1 { width:680px; height:680px; top:50%; left:50%; transform:translate(-50%,-50%); }
+.fp-ring-2 { width:860px; height:860px; top:50%; left:50%; transform:translate(-50%,-50%); opacity:.5; }
+.fp-grain {
+  position:absolute; inset:0; pointer-events:none; opacity:.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px 200px;
+}
+/* Shell */
+.fp-shell {
+  background: rgba(245,239,226,0.78);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(239,148,91,0.15);
+  border-radius: 32px;
+  box-shadow: 0 8px 40px rgba(42,26,16,0.07), 0 1px 0 rgba(255,255,255,0.7) inset;
+  padding: 3rem 2.5rem;
+}
+@media(min-width:1024px){ .fp-shell { padding: 3.5rem 3.5rem; } }
+/* Counter */
+.fp-counter { font-family:'Playfair Display',serif; font-size:1rem; color:var(--color-bark-400,#7a6550); letter-spacing:.04em; }
+.fp-counter strong { color:var(--color-bark-900,#2A1A10); font-size:1.25rem; }
+/* Nav arrow */
+.fp-arrow { display:inline-flex; align-items:center; justify-content:center;
+  width:44px; height:44px; border-radius:50%;
+  border:1.5px solid rgba(42,26,16,0.18); background:rgba(255,255,255,0.6);
+  cursor:pointer; transition:all .2s; flex-shrink:0; }
+.fp-arrow:hover { background:#2A1A10; border-color:#2A1A10; color:#F5EFE2; }
+.fp-arrow svg { transition: inherit; }
+.fp-arrow:hover svg { stroke:#F5EFE2; }
+/* Dots */
+.fp-dot { display:inline-block; border-radius:50px; border:none; padding:0; cursor:pointer; transition:all .3s; }
+.fp-dot--active { width:20px; height:6px; background:#2A1A10; }
+.fp-dot--idle   { width:6px;  height:6px; background:rgba(42,26,16,0.2); }
+</style>
 
-    <!-- Carousel -->
-    @if(count($items) > 0)
-    <div class="relative w-full" id="mpo-wrap-{{ $bid }}">
-      <div class="overflow-hidden rounded-sm -mx-2 px-2 pb-3" id="overflow-{{ $bid }}">
-        <div class="flex gap-4 transition-transform duration-500" id="track-{{ $bid }}" style="will-change:transform;">
+<!-- ── Ambient canvas ── -->
+<div class="relative overflow-hidden" style="background:linear-gradient(135deg,#f9f3e8 0%,#f0e8d4 50%,#ede0cc 100%);">
+  <!-- Blobs -->
+  <div class="fp-blob fp-blob-1"></div>
+  <div class="fp-blob fp-blob-2"></div>
+  <div class="fp-blob fp-blob-3"></div>
+  <div class="fp-blob fp-blob-4"></div>
+  <div class="fp-blob fp-blob-br"></div>
+  <!-- Rings -->
+  <div class="fp-ring fp-ring-1"></div>
+  <div class="fp-ring fp-ring-2"></div>
+  <!-- Grain -->
+  <div class="fp-grain"></div>
 
-          @foreach($items as $i => $item)
-          <div class="card-hover flex flex-col p-5 gap-3 flex-none w-[252px] cursor-pointer opacity-50 scale-[0.96] transition-all duration-300" data-i="{{ $i }}" id="mpo-card-{{ $bid }}-{{ $i }}">
-            <!-- Cover image -->
-            <div class="rounded-lg aspect-square overflow-hidden relative bg-cream-100">
-              <a href="{{ get_permalink($item->ID) }}" class="absolute inset-0 z-20" aria-label="{{ $item->post_title }}"></a>
-              <div class="absolute top-2 right-2 z-30">
-                @include('partials.favorite-btn', ['post_id' => $item->ID])
-              </div>
-              @if(has_post_thumbnail($item->ID))
-                {!! get_the_post_thumbnail($item->ID, 'large', ['class' => 'w-full h-full object-cover']) !!}
-              @else
-                <div class="w-full h-full flex items-center justify-center">
-                  <svg class="w-12 h-10 text-bark-300 opacity-45" viewBox="0 0 52 40" fill="none"><rect x="1" y="1" width="50" height="38" rx="4" stroke="currentColor" stroke-width="1.5"/><path d="M8 30 L18 18 L26 25 L34 14 L44 30" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/><circle cx="16" cy="13" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
-                </div>
-              @endif
-              @php $badge = function_exists('get_field') ? get_field('ps_card_badge', $item->ID) : ''; @endphp
-              @if($badge)
-                <span class="badge-terra absolute top-3 left-3 z-10">{{ $badge }}</span>
-              @endif
-              <span class="badge-cream absolute bottom-3 left-3 z-10">{{ get_post_type_object($item->post_type)->labels->singular_name ?? 'Гайд' }}</span>
+  <div class="container-editorial relative z-10 py-20 lg:py-28">
+    <div class="fp-shell">
+
+      <!-- ── Header ── -->
+      <div class="mb-10 lg:mb-12">
+        <div class="text-xs font-semibold uppercase tracking-[0.18em] text-terra-500 mb-3">
+          Доказательная медицина · Биохакинг
+        </div>
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+          <div class="max-w-xl">
+            <h2 class="text-[2.25rem] lg:text-[2.75rem] font-bold leading-[1.15] text-bark-900 font-serif mb-3" style="font-family:'Playfair Display',serif;">
+              {!! !empty($block['title'])
+                ? nl2br(esc_html($block['title']))
+                : 'Готовые планы оздоровления — ваш личный <em style="font-style:italic;color:var(--color-terra-500,#EF945B);">«врач» в PDF</em>'
+              !!}
+            </h2>
+            <p class="text-[15px] text-bark-600 leading-relaxed">
+              Протоколы питания и приёма БАДов, разработанные врачами интегративной медицины под конкретный запрос.
+            </p>
+          </div>
+          <!-- Stats -->
+          <div class="flex items-stretch rounded-2xl overflow-hidden border border-[rgba(42,26,16,0.1)] bg-white/60 shrink-0 flex-wrap shadow-sm">
+            <div class="px-5 py-4 text-center flex-1 min-w-[120px]">
+              <span class="block text-2xl font-bold text-bark-900 leading-none mb-1">17</span>
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-bark-400">книг</span>
             </div>
-
-            <!-- Title -->
-            <h3 class="heading-card truncate">{{ $item->post_title }}</h3>
-
-            <!-- Benefits list -->
-            <ul class="flex flex-col gap-1.5 flex-1">
-              @php
-                $benefits = function_exists('get_field') ? get_field('benefits', $item->ID) : null;
-              @endphp
-              @if(!empty($benefits) && is_array($benefits))
-                @foreach(array_slice($benefits, 0, 3) as $benefit)
-                  <li class="flex items-start gap-2 text-caption text-bark-600">
-                    <span class="w-4 h-4 rounded-full bg-cream-100 border border-[var(--border)] flex items-center justify-center shrink-0 mt-0.5">
-                      <svg viewBox="0 0 8 8" fill="none" class="w-2 h-2"><polyline points="1,4 3,6 7,2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </span>
-                    {{ $benefit['text'] ?? $benefit['title'] ?? 'Преимущество' }}
-                  </li>
-                @endforeach
-              @else
-                <li class="flex items-start gap-2 text-caption text-bark-600"><span class="w-4 h-4 rounded-full bg-cream-100 border border-[var(--border)] flex items-center justify-center shrink-0 mt-0.5"><svg viewBox="0 0 8 8" fill="none" class="w-2 h-2"><polyline points="1,4 3,6 7,2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Индивидуальное меню питания</li>
-                <li class="flex items-start gap-2 text-caption text-bark-600"><span class="w-4 h-4 rounded-full bg-cream-100 border border-[var(--border)] flex items-center justify-center shrink-0 mt-0.5"><svg viewBox="0 0 8 8" fill="none" class="w-2 h-2"><polyline points="1,4 3,6 7,2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Схема приема нутрицевтиков</li>
-                <li class="flex items-start gap-2 text-caption text-bark-600"><span class="w-4 h-4 rounded-full bg-cream-100 border border-[var(--border)] flex items-center justify-center shrink-0 mt-0.5"><svg viewBox="0 0 8 8" fill="none" class="w-2 h-2"><polyline points="1,4 3,6 7,2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Авторские протоколы восстановления</li>
-              @endif
-            </ul>
-
-            <!-- Footer: price + button -->
-            <div class="flex items-center justify-between pt-3 border-t border-[var(--border)] gap-2 mt-auto">
-              @php
-                $price_old = function_exists('get_field') ? get_field('book_price_old', $item->ID) : '';
-                $price     = function_exists('get_field') ? get_field('price', $item->ID) : '';
-              @endphp
-              <div>
-                @if(!empty($price_old))
-                  <div class="text-caption line-through text-bark-400">{{ $price_old }} ₽</div>
-                @endif
-                <div class="text-xl font-bold text-bark-900 leading-none">{{ $price }} ₽</div>
-                <div class="text-caption text-bark-400 mt-0.5">PDF · Доступ навсегда</div>
-              </div>
-              <a href="{{ get_permalink($item->ID) }}" class="btn-dark btn-sm whitespace-nowrap">КУПИТЬ</a>
+            <div class="px-5 py-4 text-center flex-1 min-w-[150px] border-l border-[rgba(42,26,16,0.08)]">
+              <span class="block text-2xl font-bold text-bark-900 leading-none mb-1">12 400+</span>
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-bark-400">скачиваний</span>
+            </div>
+            <div class="px-5 py-4 text-center flex-1 min-w-[120px] border-l border-[rgba(42,26,16,0.08)]">
+              <span class="block text-2xl font-bold text-bark-900 leading-none mb-1">11%</span>
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-bark-400">скидка</span>
             </div>
           </div>
-          @endforeach
-
         </div>
       </div>
 
-      <!-- Bottom controls -->
-      <div class="flex items-center justify-between mt-7 flex-wrap gap-5">
-        <div class="flex items-center gap-3">
-          <button class="btn-ghost p-2 rounded-full" id="prev-{{ $bid }}" aria-label="Назад">
-            <svg viewBox="0 0 14 14" fill="none" class="w-4 h-4"><path d="M9 2.5L4.5 7 9 11.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="flex gap-1.5 items-center" id="dots-{{ $bid }}"></div>
-          <button class="btn-ghost p-2 rounded-full" id="next-{{ $bid }}" aria-label="Вперёд">
-            <svg viewBox="0 0 14 14" fill="none" class="w-4 h-4"><path d="M5 2.5L9.5 7 5 11.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
+      <!-- ── Carousel ── -->
+      @if($total > 0)
+      <div class="relative w-full" id="mpo-wrap-{{ $bid }}">
+        <div class="overflow-hidden -mx-2 px-2 pb-3" id="overflow-{{ $bid }}">
+          <div class="flex gap-4 transition-transform duration-500" id="track-{{ $bid }}" style="will-change:transform;">
+
+            @foreach($items as $i => $item)
+            @php
+              $c_img      = get_the_post_thumbnail_url($item->ID, 'large') ?: '';
+              $c_price    = function_exists('get_field') ? (get_field('price', $item->ID) ?: '') : '';
+              $c_old      = function_exists('get_field') ? (get_field('book_price_old', $item->ID) ?: '') : '';
+              $c_delivery = function_exists('get_field') ? (get_field('book_delivery_note', $item->ID) ?: 'PDF · Доступ навсегда') : '';
+              $c_badge    = function_exists('get_field') ? (get_field('ps_card_badge', $item->ID) ?: '') : '';
+              $c_type     = get_post_type_object($item->post_type)->labels->singular_name ?? 'МПО';
+              $c_benefits = function_exists('get_field') ? (get_field('benefits', $item->ID) ?: []) : [];
+              $c_features = array_map(fn($b) => ['text' => $b['text'] ?? $b['title'] ?? ''], array_slice($c_benefits, 0, 3));
+              if (empty($c_features)) {
+                $c_features = [
+                  ['text' => 'Индивидуальное меню питания'],
+                  ['text' => 'Схема приема нутрицевтиков'],
+                  ['text' => 'Авторские протоколы восстановления'],
+                ];
+              }
+            @endphp
+            <div class="dtc-card dtc-card--carousel opacity-50 scale-[0.96] transition-all duration-300 cursor-pointer"
+                 data-i="{{ $i }}" id="mpo-card-{{ $bid }}-{{ $i }}">
+
+              <div class="dtc-card__img">
+                @if($c_img)
+                  <img src="{{ $c_img }}" alt="{{ esc_attr($item->post_title) }}">
+                @else
+                  <div class="dtc-card__cover">
+                    <div class="dtc-card__cover-title">{!! nl2br(esc_html($item->post_title)) !!}</div>
+                  </div>
+                @endif
+                @if($c_badge)
+                  <span class="dtc-card__badge">{{ $c_badge }}</span>
+                @endif
+                <div class="absolute top-3 right-3 z-20" onclick="event.stopPropagation();">
+                  @include('partials.favorite-btn', ['post_id' => $item->ID, 'class' => '!w-7 !h-7 bg-white/80 backdrop-blur-sm rounded-full shadow-sm'])
+                </div>
+                <a href="{{ get_permalink($item->ID) }}" class="absolute inset-0 z-10" aria-label="{{ $item->post_title }}"></a>
+              </div>
+
+              <div class="dtc-card__tags">
+                <span class="dtc-card__tag dtc-card__tag--plan">{{ $c_type }}</span>
+              </div>
+
+              <div class="dtc-card__body">
+                <h3 class="dtc-card__title">{{ $item->post_title }}</h3>
+                <div class="dtc-card__features">
+                  @foreach($c_features as $f)
+                    <div class="dtc-card__feature">
+                      <div class="dtc-card__check">
+                        <svg viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/></svg>
+                      </div>
+                      {{ $f['text'] }}
+                    </div>
+                  @endforeach
+                </div>
+                <div class="dtc-card__footer">
+                  <div class="dtc-card__price-block">
+                    @if($c_old)<span class="dtc-card__price-old">{{ $c_old }} ₽</span>@endif
+                    @if($c_price)<span class="dtc-card__price">{{ $c_price }} ₽</span>@endif
+                    <span class="dtc-card__delivery">{{ $c_delivery }}</span>
+                  </div>
+                  <a href="{{ get_permalink($item->ID) }}" class="dtc-card__btn" onclick="event.stopPropagation();">Купить</a>
+                </div>
+              </div>
+            </div>
+            @endforeach
+
+          </div>
         </div>
-        <a href="/products" class="btn-secondary">Смотреть все МПО</a>
+
+        <!-- ── Controls ── -->
+        <div class="flex items-center justify-between mt-8 flex-wrap gap-4">
+          <!-- Left: arrows + dots + counter -->
+          <div class="flex items-center gap-3">
+            <button class="fp-arrow" id="prev-{{ $bid }}" aria-label="Назад">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#2A1A10" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 3L5 8L10 13"/>
+              </svg>
+            </button>
+
+            <div class="flex items-center gap-1.5" id="dots-{{ $bid }}"></div>
+
+            <button class="fp-arrow" id="next-{{ $bid }}" aria-label="Вперёд">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#2A1A10" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 3L11 8L6 13"/>
+              </svg>
+            </button>
+
+            <div class="fp-counter ml-2" id="counter-{{ $bid }}">
+              <strong>01</strong> / {{ str_pad($total, 2, '0', STR_PAD_LEFT) }}
+            </div>
+          </div>
+
+          <!-- Right: all plans -->
+          <a href="/products"
+             class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-[rgba(42,26,16,0.25)] text-bark-900 text-sm font-semibold hover:bg-bark-900 hover:text-cream-50 hover:border-bark-900 transition-all duration-200">
+            Смотреть все планы
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 7h8M8 4l3 3-3 3"/>
+            </svg>
+          </a>
+        </div>
       </div>
-    </div>
 
-    <script>
-      (function() {
-        const track   = document.getElementById('track-{{ $bid }}');
-        if(!track) return;
+      <script>
+        (function() {
+          const track   = document.getElementById('track-{{ $bid }}');
+          if(!track) return;
 
-        const dotsEl  = document.getElementById('dots-{{ $bid }}');
-        const prevBtn = document.getElementById('prev-{{ $bid }}');
-        const nextBtn = document.getElementById('next-{{ $bid }}');
-        const cards   = Array.from(track.querySelectorAll('[data-i]'));
-        const N       = cards.length;
-        const CARD_W  = 252;
-        const GAP     = 16;
-        const PEEK    = 28;
+          const dotsEl   = document.getElementById('dots-{{ $bid }}');
+          const counterEl= document.getElementById('counter-{{ $bid }}');
+          const prevBtn  = document.getElementById('prev-{{ $bid }}');
+          const nextBtn  = document.getElementById('next-{{ $bid }}');
+          const cards    = Array.from(track.querySelectorAll('[data-i]'));
+          const N        = cards.length;
+          const TOTAL_PAD= '{{ str_pad($total, 2, "0", STR_PAD_LEFT) }}';
+          const CARD_W   = 252;
+          const GAP      = 16;
+          const PEEK     = 28;
 
-        let current = 0;
+          let current = 0;
 
-        function updateClasses() {
-          cards.forEach((c, i) => {
-            c.classList.remove('opacity-100', 'scale-100', 'opacity-[0.78]', 'scale-[0.97]', 'opacity-50', 'scale-[0.96]');
-            if (i === current) {
-              c.classList.add('opacity-100', 'scale-100');
-            } else if (i === current - 1 || i === current + 1) {
-              c.classList.add('opacity-[0.78]', 'scale-[0.97]');
-            } else {
-              c.classList.add('opacity-50', 'scale-[0.96]');
-            }
-          });
-        }
+          function pad(n) { return String(n+1).padStart(2,'0'); }
 
-        function buildDots() {
-          dotsEl.innerHTML = '';
-          for (let i = 0; i < N; i++) {
-            const d = document.createElement('button');
-            d.className = i === current
-              ? 'w-5 h-1.5 bg-bark-900 rounded-full border-0 cursor-pointer transition-all p-0'
-              : 'w-1.5 h-1.5 bg-bark-300 rounded-full border-0 cursor-pointer transition-all p-0';
-            d.addEventListener('click', () => goTo(i));
-            dotsEl.appendChild(d);
+          function updateClasses() {
+            cards.forEach((c, i) => {
+              c.classList.remove('opacity-100','scale-100','opacity-[0.78]','scale-[0.97]','opacity-50','scale-[0.96]');
+              if (i === current)                              c.classList.add('opacity-100','scale-100');
+              else if (i === current-1 || i === current+1)   c.classList.add('opacity-[0.78]','scale-[0.97]');
+              else                                            c.classList.add('opacity-50','scale-[0.96]');
+            });
           }
-        }
 
-        function goTo(idx, instant) {
-          if (idx < 0) idx = N - 1;
-          else if (idx >= N) idx = 0;
-          current = idx;
-
-          let maxOffset = (N * (CARD_W + GAP)) - track.parentElement.offsetWidth + PEEK;
-          if (maxOffset < 0) maxOffset = 0;
-
-          let offset = current * (CARD_W + GAP) - PEEK;
-          if (offset < 0) offset = 0;
-          if (offset > maxOffset) offset = maxOffset;
-
-          track.style.transition = instant ? 'none' : 'transform 0.5s cubic-bezier(0.77,0,0.175,1)';
-          track.style.transform = `translateX(-${offset}px)`;
-
-          updateClasses();
-
-          Array.from(dotsEl.children).forEach((d, i) => {
-            if (i === current) {
-              d.className = 'w-5 h-1.5 bg-bark-900 rounded-full border-0 cursor-pointer transition-all p-0';
-            } else {
-              d.className = 'w-1.5 h-1.5 bg-bark-300 rounded-full border-0 cursor-pointer transition-all p-0';
+          function buildDots() {
+            dotsEl.innerHTML = '';
+            for (let i = 0; i < N; i++) {
+              const d = document.createElement('button');
+              d.className = i === current ? 'fp-dot fp-dot--active' : 'fp-dot fp-dot--idle';
+              d.addEventListener('click', () => goTo(i));
+              dotsEl.appendChild(d);
             }
+          }
+
+          function updateCounter() {
+            if (counterEl) counterEl.innerHTML = `<strong>${pad(current)}</strong> / ${TOTAL_PAD}`;
+          }
+
+          function goTo(idx, instant) {
+            if (idx < 0) idx = N - 1;
+            else if (idx >= N) idx = 0;
+            current = idx;
+
+            let maxOffset = (N * (CARD_W + GAP)) - track.parentElement.offsetWidth + PEEK;
+            if (maxOffset < 0) maxOffset = 0;
+            let offset = current * (CARD_W + GAP) - PEEK;
+            if (offset < 0) offset = 0;
+            if (offset > maxOffset) offset = maxOffset;
+
+            track.style.transition = instant ? 'none' : 'transform 0.5s cubic-bezier(0.77,0,0.175,1)';
+            track.style.transform = `translateX(-${offset}px)`;
+
+            updateClasses();
+            updateCounter();
+
+            Array.from(dotsEl.children).forEach((d, i) => {
+              d.className = i === current ? 'fp-dot fp-dot--active' : 'fp-dot fp-dot--idle';
+            });
+          }
+
+          if(prevBtn) prevBtn.addEventListener('click', () => goTo(current - 1));
+          if(nextBtn) nextBtn.addEventListener('click', () => goTo(current + 1));
+
+          cards.forEach((c, i) => {
+            c.addEventListener('click', (e) => {
+              if(e.target.tagName.toLowerCase() !== 'a' && i !== current) {
+                goTo(i);
+                e.preventDefault();
+              }
+            });
           });
-        }
 
-        if(prevBtn) prevBtn.addEventListener('click', () => goTo(current - 1));
-        if(nextBtn) nextBtn.addEventListener('click', () => goTo(current + 1));
+          buildDots();
+          goTo(0, true);
+        })();
+      </script>
 
-        cards.forEach((c, i) => {
-          c.addEventListener('click', (e) => {
-            if(e.target.tagName.toLowerCase() !== 'a' && i !== current) {
-              goTo(i);
-              e.preventDefault();
-            }
-          });
-        });
+      @else
+        <div class="p-8 border-2 border-dashed border-[rgba(42,26,16,0.12)] rounded-2xl text-center">
+          <p class="text-body">В этом блоке пока нет продуктов. Выберите их в редакторе страницы.</p>
+        </div>
+      @endif
 
-        buildDots();
-        goTo(0, true);
-      })();
-    </script>
-    @else
-      <div class="p-8 border-2 border-dashed border-[var(--border)] rounded-2xl text-center">
-        <p class="text-body">В этом блоке пока нет продуктов. Выберите их в редакторе страницы.</p>
-      </div>
-    @endif
-  </div>
-</section>
+    </div><!-- /.fp-shell -->
+  </div><!-- /.container-editorial -->
+</div><!-- /.ambient canvas -->

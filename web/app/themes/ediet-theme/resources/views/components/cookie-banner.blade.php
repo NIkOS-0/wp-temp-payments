@@ -1,9 +1,9 @@
 @php $accepted = isset($_COOKIE['ediet_cookies_ok']); @endphp
 @if(!$accepted)
 <div id="cookie-banner"
-     class="fixed bottom-0 left-0 right-0 z-[200] p-4 md:p-6
-            translate-y-full transition-transform duration-500 ease-out"
-     style="will-change: transform;">
+     class="fixed bottom-0 left-0 right-0 z-[9999] p-4 md:p-6"
+     style="transform: translateY(110%); transition: transform 0.5s cubic-bezier(0.22,1,0.36,1); will-change: transform;">
+
   <div class="max-w-3xl mx-auto bg-bark-900 text-cream-100 rounded-xl shadow-2xl
               flex flex-col sm:flex-row items-start sm:items-center gap-4 px-6 py-5">
 
@@ -40,25 +40,22 @@
   const banner = document.getElementById('cookie-banner');
   if (!banner) return;
 
-  // Slide in after short delay
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      banner.style.transform = 'translateY(0)';
-    }, 800);
-  });
+  setTimeout(function() {
+    banner.style.transform = 'translateY(0)';
+  }, 800);
 
   function dismiss(accept) {
-    banner.style.transform = 'translateY(100%)';
+    banner.style.transform = 'translateY(110%)';
     if (accept) {
       const d = new Date();
       d.setFullYear(d.getFullYear() + 1);
       document.cookie = 'ediet_cookies_ok=1;path=/;expires=' + d.toUTCString();
     }
-    setTimeout(() => banner.remove(), 500);
+    setTimeout(function() { banner.remove(); }, 600);
   }
 
-  document.getElementById('cookie-accept')?.addEventListener('click', () => dismiss(true));
-  document.getElementById('cookie-decline')?.addEventListener('click', () => dismiss(false));
+  document.getElementById('cookie-accept')?.addEventListener('click', function() { dismiss(true); });
+  document.getElementById('cookie-decline')?.addEventListener('click', function() { dismiss(false); });
 })();
 </script>
 @endif

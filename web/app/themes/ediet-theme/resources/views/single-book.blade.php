@@ -8,18 +8,18 @@
 
   <style>
     :root {
-      --book-bg: #EFF2F6;
+      --book-bg: #F5EFE2;
       --book-white: #FFFFFF;
-      --book-text-dark: #0F172A;
-      --book-text-mid: #64748B;
-      --book-text-light: #757575;
-      --book-border: #DDE4EF;
-      --book-shadow: 0px 5px 10px rgba(100,120,180,0.13);
-      --book-radius-card: 28px;
-      --book-radius-btn: 14px;
+      --book-text-dark: #2A1A10;
+      --book-text-mid: #6a5040;
+      --book-text-light: #A89F8B;
+      --book-border: rgba(42,26,16,0.12);
+      --book-shadow: 0px 5px 20px rgba(42,26,16,0.08);
+      --book-radius-card: 24px;
+      --book-radius-btn: 50px;
     }
   
-    .bg-main { background: var(--book-bg); font-family: 'Inter', sans-serif; color: var(--book-text-dark); min-width: 1160px; }
+    .bg-main { background: var(--book-bg); font-family: 'Instrument Sans', 'Inter', sans-serif; color: var(--book-text-dark); min-width: 1160px; }
   
     .book-page {
       max-width: 1160px;
@@ -81,9 +81,9 @@
     .book-info { flex: 1; position: relative; display: flex; flex-direction: column; gap: 0; }
     .book-tags { display: flex; gap: 8px; margin-bottom: 8px; }
     .book-tag { padding: 2px 10px; border-radius: 50px; font-weight: 700; font-size: 10.5px; letter-spacing: 0.315px; }
-    .book-tag-pdf { background: #EFF6FF; border: 1px solid #BFDBFE; color: #1E40AF; }
+    .book-tag-pdf { background: #fde8d4; border: 1px solid #F4B491; color: #D87A4A; }
     .book-tag-verified { background: #DCFCE7; border: 1px solid #BBF7D0; color: #166534; }
-    .book-tag-default { background: #F1F5F9; border: 1px solid #E2E8F0; color: #475569; }
+    .book-tag-default { background: #EBE3D2; border: 1px solid rgba(42,26,16,0.15); color: #6a5040; }
   
     .book-product-title {
       font-family: 'Public Sans', sans-serif; font-weight: 700; font-size: 32px; line-height: 37px; letter-spacing: -1.2px; color: #0F172A; margin-bottom: 8px;
@@ -92,7 +92,7 @@
   
     /* Stats */
     .book-mini-stats {
-      display: flex; border: 1px solid rgba(210,225,248,0.8); border-radius: 16px; background: rgba(255,255,255,0.5); backdrop-filter: blur(2.5px);
+      display: flex; border: 1px solid rgba(42,26,16,0.12); border-radius: 16px; background: rgba(245,239,226,0.6); backdrop-filter: blur(2.5px);
       overflow: hidden; margin-bottom: 24px;
     }
     .book-stat-cell {
@@ -114,14 +114,15 @@
     .book-price-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
     .book-price-main { font-weight: 600; font-size: 36px; line-height: 44px; letter-spacing: -1.2px; color: #000; }
     .book-price-old { font-size: 18px; text-decoration: line-through; color: var(--book-text-light); }
-    .book-price-badge { background: #FEE2E2; border: 1px solid #FECACA; border-radius: 50px; padding: 3px 10px; font-weight: 700; font-size: 11px; color: #991B1B; }
+    .book-price-badge { background: #fde8d4; border: 1px solid #F4B491; border-radius: 50px; padding: 3px 10px; font-weight: 700; font-size: 11px; color: #D87A4A; }
     .book-delivery-note { font-weight: 200; font-size: 12px; letter-spacing: -0.4px; color: var(--book-text-light); margin-bottom: 16px; }
   
     /* CTA */
     .book-cta-row { display: flex; gap: 12px; }
     .book-btn-buy {
-      flex: 1; height: 52px; background: #000; border-radius: var(--book-radius-btn); border: none; color: #fff;
+      flex: 1; height: 52px; background: #2A1A10; border-radius: var(--book-radius-btn); border: none; color: #fff;
       font-weight: 700; font-size: 15px; letter-spacing: -0.2px; cursor: pointer; transition: opacity 0.15s;
+      font-family: 'Instrument Sans', sans-serif;
     }
     .book-btn-buy:hover { opacity: 0.85; }
     .book-btn-icon {
@@ -180,32 +181,16 @@
     .book-author-tags { display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .book-author-tag { background: #E7EEF1; border: 1px solid #BFBFBF; border-radius: 50px; padding: 5px 16px; font-weight: 600; font-size: 11px; color: var(--book-text-mid); white-space: nowrap; }
     .book-author-main { flex: 1; padding: 36px 40px; display: flex; flex-direction: column; justify-content: center; gap: 24px; }
-    .book-author-stats { display: flex; border: 1px solid rgba(210,225,248,0.8); border-radius: 16px; background: rgba(255,255,255,0.5); backdrop-filter: blur(2.5px); overflow: hidden; max-width: 574px; }
+    .book-author-stats { display: flex; border: 1px solid rgba(42,26,16,0.12); border-radius: 16px; background: rgba(245,239,226,0.6); backdrop-filter: blur(2.5px); overflow: hidden; max-width: 574px; }
     .book-author-heading { font-weight: 800; font-size: 22px; line-height: 27px; letter-spacing: -0.55px; color: var(--book-text-dark); }
     .book-author-bio { font-size: 14px; line-height: 25px; color: var(--book-text-mid); }
     .book-author-quote { border-left: 3px solid #E2E8F0; font-style: italic; font-size: 13.5px; line-height: 22px; color: var(--book-text-mid); border: 1px solid rgba(217,217,217,0.3); border-radius: 10px; padding: 10px 20px; }
   
     /* CROSS SELL */
-    .book-section-heading { font-family: 'Public Sans', sans-serif; font-weight: 700; font-size: 32px; line-height: 38px; letter-spacing: -1.2px; color: #000; padding: 12px 0 1px; }
-    .book-cards-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 21px; position: relative; }
-    .book-product-card { background: var(--book-white); border: 0.5px solid #B1B5C4; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.2s; text-decoration: none; }
-    .book-product-card:hover { box-shadow: 0 8px 24px rgba(100,120,180,0.18); }
-    .book-card-img { height: 295px; background: rgba(112,152,223,0.41); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    .book-card-img-overlay { position: absolute; inset: 0; background: rgba(151,151,151,0.2); box-shadow: inset 0 0 15px rgba(0,0,0,0.25); }
-    .book-card-book { width: 130px; height: 182px; background: linear-gradient(144.46deg, #5BB8E8 0%, #3A9BD5 100%); box-shadow: -6px 6px 18px rgba(0,0,0,0.25), 3px 0 0 rgba(0,0,0,0.1); border-radius: 4px 10px 10px 4px; position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 14px 12px; }
-    .book-card-book::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 9px; background: rgba(0,0,0,0.15); border-radius: 4px 0 0 4px; }
-    .book-card-book-title { font-weight: 700; font-size: 12px; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.2); padding-left: 10px; line-height: 1.3; }
-    .book-card-body { padding: 0 20px 16px; display: flex; flex-direction: column; flex: 1; }
-    .book-card-features { display: flex; flex-direction: column; gap: 6px; padding: 12px 0; flex: 1; }
-    .book-card-feature { display: flex; align-items: center; gap: 8px; font-weight: 200; font-size: 13px; color: #000; }
-    .book-card-check { width: 18px; height: 18px; background: #DCFCE7; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .book-card-check svg { width: 9px; height: 9px; }
-    .book-card-footer { border-top: 0.5px solid #D9D9D9; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;}
-    .book-card-price { font-weight: 600; font-size: 20px; letter-spacing: -0.4px; color: #000; }
-    .book-card-delivery { font-weight: 200; font-size: 12px; color: #DDE4EF; margin-top: 2px; }
-    .book-btn-card-buy { background: #000; color: #fff; border: none; border-radius: 10px; padding: 11.5px 18px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12.5px; cursor: pointer; transition: opacity 0.15s; }
-  
-    /* Navigation row like featured_products */
+    .book-section-heading { font-weight: 700; font-size: 32px; line-height: 38px; letter-spacing: -1.2px; color: #2A1A10; padding: 12px 0 1px; }
+    .book-cards-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; position: relative; }
+
+    /* Gallery nav */
     .mpo-nav-left { display: flex; align-items: center; gap: 12px; }
     .mpo-arrow { width: 38px; height: 38px; border-radius: 50%; background: var(--book-white); border: 1.5px solid var(--book-border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.18s; color: var(--book-text-dark); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
     .mpo-arrow svg { width: 14px; height: 14px; }
@@ -214,7 +199,7 @@
     .mpo-dots { display: flex; gap: 6px; align-items: center; }
     .mpo-dot { width: 7px; height: 7px; border-radius: 50%; background: #d1d5db; border: none; cursor: pointer; transition: all 0.28s; padding: 0; }
     .mpo-dot.on { background: var(--book-text-dark); width: 22px; border-radius: 4px; }
-  
+
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     .book-hero, .book-tabs-card, .book-author-card, .book-cards-row { animation: fadeInUp 0.45s ease both; }
     .book-tabs-card { animation-delay: 0.07s; }
@@ -471,54 +456,9 @@
       <!-- CROSS-SELL -->
       @if(count($cross_sells) > 0)
       <h2 class="book-section-heading">С этим покупают</h2>
-
       <div class="book-cards-row">
         @foreach($cross_sells as $cs)
-          <a href="{{ $cs['url'] }}" class="book-product-card" style="position: relative;">
-            <div class="book-card-img" style="{{ !empty($cs['image']) ? 'background-image: url('.$cs['image'].'); background-size: cover; background-position: center;' : '' }}">
-              @if(empty($cs['image']))
-                <div class="book-card-img-overlay"></div>
-                <div class="book-card-book" @if($cs['type_label'] === 'Курс') style="background: linear-gradient(135deg, #10B981 0%, #047857 100%)" @endif>
-                  <div class="book-card-book-title">{!! nl2br(esc_html($cs['title'])) !!}</div>
-                </div>
-              @endif
-              
-              @if(!empty($cs['badge']))
-                <span style="position: absolute; top: 12px; left: 12px; background: #EF4444; color: #fff; padding: 4px 12px; border-radius: 8px; font-weight: 700; font-size: 11px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;">{{ $cs['badge'] }}</span>
-              @endif
-              
-              <div class="absolute top-3 right-3 z-20" onclick="event.preventDefault();">
-                @include('partials.favorite-btn', ['post_id' => $cs['id'], 'class' => '!w-8 !h-8 bg-white/80 backdrop-blur-sm rounded-full shadow-sm'])
-              </div>
-            </div>
-            
-            <div class="book-card-body">
-              <div class="book-card-features">
-                @foreach($cs['features'] as $f)
-                  <div class="book-card-feature"><div class="book-card-check"><svg viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/></svg></div>{{ $f['text'] ?? $f['title'] ?? 'Полезный материал' }}</div>
-                @endforeach
-              </div>
-              <div class="book-card-footer">
-                <div style="position: relative;">
-                  @if(!empty($cs['price_old']))
-                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
-                      <span style="font-size: 13.5px; text-decoration: line-through; color: #94A3B8;">{{ $cs['price_old'] }} ₽</span>
-                      @php 
-                        $p = (float)str_replace([' ', ','], ['', '.'], $cs['price']);
-                        $po = (float)str_replace([' ', ','], ['', '.'], $cs['price_old']);
-                      @endphp
-                      @if($po > 0 && $p < $po)
-                        <span style="background: #FEE2E2; border-radius: 4px; padding: 2px 6px; font-weight: 700; font-size: 10px; color: #991B1B;">−{{ round((1 - ($p / $po)) * 100) }}%</span>
-                      @endif
-                    </div>
-                  @endif
-                  <div class="book-card-price">{{ $cs['price'] }} ₽</div>
-                  <div class="book-card-delivery">{{ $cs['delivery'] }}</div>
-                </div>
-                <button class="book-btn-card-buy">{{ $cs['type_label'] === 'Курс' ? 'Участвовать' : 'Купить' }}</button>
-              </div>
-            </div>
-          </a>
+          @include('partials.dtc-card', ['item' => $cs])
         @endforeach
       </div>
       @endif

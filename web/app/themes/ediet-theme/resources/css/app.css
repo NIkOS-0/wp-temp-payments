@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap');
 @import "tailwindcss" theme(static);
 
 @source "../../app/**/*.php";
@@ -6,82 +7,79 @@
 
 /* ════════════════════════════════════════
    DESIGN TOKENS — e-diet
-   Warm Coral-Terracotta · Editorial DTC
-   Refs: hims.com · fllopi · hypedemo
+   Ink · Cream · Terracotta · Sage
 ════════════════════════════════════════ */
 
 @theme {
 
-  /* ─── Terracotta / Primary ───
-     Earthy coral, not saturated — warm clay like hims warm sections */
-  --color-terra-50: #fef8f4;
-  --color-terra-100: #fdeee5;
-  --color-terra-200: #fad5c0;
-  --color-terra-300: #f5b394;
-  --color-terra-400: #e89068;
-  --color-terra-500: #c77b5a;
-  /* primary CTA */
-  --color-terra-600: #ad623f;
-  --color-terra-700: #8c4b2c;
-  --color-terra-800: #6e3820;
-  --color-terra-900: #4f2611;
+  /* ─── Bark → Ink scale (dark chocolate) ─── */
+  --color-bark-50: #f7f4f1;
+  --color-bark-100: #EBE3D2;
+  --color-bark-200: #d5c9b5;
+  --color-bark-300: #bca898;
+  --color-bark-400: #A89F8B;
+  --color-bark-500: #8a7060;
+  --color-bark-600: #6a5040;
+  --color-bark-700: #4a3020;
+  --color-bark-800: #3A2418;
+  --color-bark-900: #2A1A10;
 
-  /* ─── Peach / Pastel Accent ───
-     Light pastel layers, cards, badges */
-  --color-peach-50: #fffaf7;
-  --color-peach-100: #fff0e8;
-  --color-peach-200: #ffddc2;
-  /* fllopi color-six */
-  --color-peach-300: #ffbf96;
-  --color-peach-400: #faa162;
-  /* fllopi color-eighteen */
-  --color-peach-500: #e8854a;
+  /* ─── Terra → Terracotta scale ─── */
+  --color-terra-50: #fef6ef;
+  --color-terra-100: #fde8d4;
+  --color-terra-200: #fad0aa;
+  --color-terra-300: #f5b888;
+  --color-terra-400: #F4B491;
+  --color-terra-500: #EF945B;
+  --color-terra-600: #D87A4A;
+  --color-terra-700: #b85e30;
+  --color-terra-800: #8c4220;
+  --color-terra-900: #612a12;
 
-  /* ─── Cream / Canvas ───
-     Background layers — warm neutrals */
-  --color-cream-50: #fefdf9;
-  --color-cream-100: #fefaf3;
-  /* fllopi color-three */
-  --color-cream-200: #fbefe2;
-  /* fllopi color-eleven */
-  --color-cream-300: #f5e3d0;
-  --color-cream-400: #e8d3bc;
-  --color-cream-500: #dacaba;
-  /* fllopi color-twelve */
+  /* ─── Cream / Canvas ─── */
+  --color-cream-50: #fdfcf9;
+  --color-cream-100: #F5EFE2;
+  --color-cream-200: #EBE3D2;
+  --color-cream-300: #ddd2be;
+  --color-cream-400: #ccc0a8;
+  --color-cream-500: #A89F8B;
 
-  /* ─── Bark / Text ───
-     Warm dark browns (hims dark + fllopi near-black) */
-  --color-bark-50: #f9f5f2;
-  --color-bark-100: #f0e6de;
-  --color-bark-200: #d9c5b5;
-  --color-bark-300: #b89d88;
-  --color-bark-400: #9c7d66;
-  /* fllopi color-seven */
-  --color-bark-500: #7a736c;
-  /* fllopi color-seven */
-  --color-bark-600: #4a4444;
-  /* fllopi color-twenty */
-  --color-bark-700: #3e2f22;
-  /* fllopi color-four */
-  --color-bark-800: #241c14;
-  /* fllopi color-nine */
-  --color-bark-900: #1c0d00;
-  /* fllopi color-two — primary text */
+  /* ─── Peach → Terracotta-soft ─── */
+  --color-peach-50: #fef9f5;
+  --color-peach-100: #fde8d4;
+  --color-peach-200: #fad0aa;
+  --color-peach-300: #F4B491;
+  --color-peach-400: #EF945B;
+  --color-peach-500: #D87A4A;
 
-  /* ─── Onyx / Dark sections ───
-     For editorial dark blocks like hims hero */
-  --color-onyx-800: #1b140e;
-  --color-onyx-900: #0f0e0d;
-  /* fllopi color-thirteen */
-  --color-onyx-950: #080605;
+  /* ─── Sage / Secondary ─── */
+  --color-sage-50: #f2f5f0;
+  --color-sage-100: #dce8d8;
+  --color-sage-200: #b9d1b3;
+  --color-sage-300: #8BA77F;
+  --color-sage-400: #6B8562;
+  --color-sage-500: #4A5E43;
+  --color-sage-600: #2F3D2A;
+  --color-sage-700: #233020;
+  --color-sage-800: #172017;
+  --color-sage-900: #0c100c;
+
+  /* ─── Gold ─── */
+  --color-gold-400: #d4a94a;
+  --color-gold-500: #C9A84C;
+  --color-gold-600: #a88734;
+
+  /* ─── Onyx → Ink deep ─── */
+  --color-onyx-800: #2A1A10;
+  --color-onyx-900: #1e1209;
+  --color-onyx-950: #140c05;
 
   /* ─── Semantic ─── */
   --color-surface: #ffffff;
-  --color-canvas: #fefaf3;
-  --color-canvas-deep: #fbefe2;
-  --color-border: #e0d0c5;
-  /* fllopi color-eight */
-  --color-border-strong: #c8b0a0;
+  --color-canvas: #F5EFE2;
+  --color-canvas-deep: #EBE3D2;
+  --color-border: rgba(42, 26, 16, 0.10);
+  --color-border-strong: rgba(42, 26, 16, 0.22);
 
   /* ─── Status ─── */
   --color-success: #15803d;
@@ -92,11 +90,11 @@
   --color-warning-bg: #fffbeb;
 
   /* ─── Typography ─── */
-  --font-sans: 'Inter', 'Work Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Work Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Instrument Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Instrument Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-serif: 'Playfair Display', 'Georgia', ui-serif, serif;
 
-  /* ─── Radius (pill-friendly like hims) ─── */
+  /* ─── Radius ─── */
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -104,34 +102,30 @@
   --radius-xl: 24px;
   --radius-2xl: 32px;
   --radius-pill: 9999px;
-
 }
 
 /* ════════════════════════════════════════
-   ROOT — backward compat with existing templates
-   All scoped CSS vars in inline <style> blocks
-   point here so they pick up the new palette
+   ROOT — CSS vars for non-Tailwind templates
 ════════════════════════════════════════ */
 
 :root {
-  --app-bg: #fefaf3;
+  --app-bg: #F5EFE2;
   --surface: #ffffff;
-  --border: #e0d0c5;
-  --border-s: rgba(224, 208, 197, 0.6);
-  --text: #1c0d00;
-  --sub: #7a736c;
-  --muted: #9c7d66;
-  --accent: #c77b5a;
+  --border: rgba(42, 26, 16, 0.10);
+  --border-s: rgba(42, 26, 16, 0.06);
+  --text: #2A1A10;
+  --sub: #3A2418;
+  --muted: #A89F8B;
+  --accent: #EF945B;
   --card-r: 16px;
 
-  /* Legacy semantic names used in existing templates */
   --blue: #2563eb;
   --blue-l: #eff6ff;
   --blue-b: #bfdbfe;
   --green: #15803d;
   --green-l: #f0fdf4;
-  --orange: #ad623f;
-  --orange-l: #fef8f4;
+  --orange: #D87A4A;
+  --orange-l: #fef6ef;
   --purple: #6d28d9;
   --teal: #0f766e;
 
@@ -146,9 +140,8 @@
 
 @layer components {
 
-  /* ─── Buttons (pill-shaped like hims) ─── */
+  /* ─── Buttons ─── */
 
-  /* Base shared styles — extend via multi-class */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -162,24 +155,20 @@
     transition: all 0.2s;
   }
 
-  /* Dark pill — main CTA (hims style) */
   .btn-dark {
     @apply inline-flex items-center justify-center gap-2 font-semibold leading-none whitespace-nowrap cursor-pointer select-none transition-all duration-200 px-7 py-3.5 rounded-pill bg-bark-900 text-cream-100 hover:bg-bark-800 active:scale-[0.97] shadow-sm;
   }
 
-  /* Terracotta pill — warm accent */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 font-semibold leading-none whitespace-nowrap cursor-pointer select-none transition-all duration-200 px-7 py-3.5 rounded-pill bg-terra-500 text-white hover:bg-terra-600 active:scale-[0.97] shadow-sm;
   }
 
-  /* Ghost outline */
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 font-semibold leading-none whitespace-nowrap cursor-pointer select-none transition-all duration-200 px-7 py-3.5 rounded-pill bg-transparent text-bark-900 border border-bark-900 hover:bg-bark-900 hover:text-cream-100 active:scale-[0.97];
   }
 
-  /* Soft peach fill */
   .btn-soft {
-    @apply inline-flex items-center justify-center gap-2 font-semibold leading-none whitespace-nowrap cursor-pointer select-none transition-all duration-200 px-6 py-3 rounded-pill bg-peach-200 text-bark-900 hover:bg-peach-300 active:scale-[0.97];
+    @apply inline-flex items-center justify-center gap-2 font-semibold leading-none whitespace-nowrap cursor-pointer select-none transition-all duration-200 px-6 py-3 rounded-pill bg-terra-100 text-bark-900 hover:bg-terra-200 active:scale-[0.97];
   }
 
   .btn-ghost {
@@ -216,7 +205,7 @@
   }
 
   .card-hover:hover {
-    box-shadow: 0 6px 32px rgba(28, 13, 0, 0.08);
+    box-shadow: 0 6px 32px rgba(42, 26, 16, 0.09);
     border-color: var(--color-border-strong);
   }
 
@@ -251,34 +240,40 @@
   }
 
   .container-wide {
-    @apply max-w-[1280px] mx-auto px-5 md:px-8 lg:px-12;
+    @apply mx-auto px-5 md:px-8 lg:px-12;
+    width: 80vw;
+    max-width: 1600px;
+    min-width: min(100%, 1200px);
   }
 
   .container-editorial {
-    @apply max-w-[1100px] mx-auto px-5 md:px-8 lg:px-12;
+    @apply mx-auto px-5 md:px-8 lg:px-12;
+    width: 74vw;
+    max-width: 1600px;
+    min-width: min(100%, 1050px);
   }
 
   .container-narrow {
-    @apply max-w-2xl mx-auto px-5 md:px-8;
+    @apply mx-auto px-5 md:px-8;
+    width: 50vw;
+    max-width: 900px;
+    min-width: min(100%, 700px);
   }
 
   /* ─── Typography ─── */
 
-  /* Editorial serif headline — hims big hero style */
   .heading-hero {
     font-family: var(--font-serif);
     @apply font-bold tracking-tight leading-[1.02] text-bark-900;
     font-size: clamp(1.2rem, 5vw, 4rem);
   }
 
-  /* Dark-bg serif headline */
   .heading-hero-light {
     font-family: var(--font-serif);
     @apply font-bold tracking-tight leading-[1.02] text-cream-100;
     font-size: clamp(2.4rem, 5.5vw, 4.5rem);
   }
 
-  /* Section display — sans bold */
   .heading-display {
     @apply font-bold tracking-tight leading-[1.06] text-bark-900;
     font-size: clamp(1.75rem, 3.5vw, 3rem);
@@ -366,7 +361,6 @@
     @apply block text-sm font-semibold text-bark-800 mb-2;
   }
 
-  /* ─── Divider ─── */
   .divider {
     @apply border-t border-[--border];
   }
@@ -375,7 +369,6 @@
     @apply border-t border-bark-700;
   }
 
-  /* ─── Price ─── */
   .price-display {
     @apply text-2xl font-bold text-bark-900 tracking-tight;
   }
@@ -392,7 +385,7 @@
 
   .auth-modal {
     @apply bg-surface rounded-2xl w-full max-w-md border border-[--border];
-    box-shadow: 0 32px 96px rgba(28, 13, 0, 0.22);
+    box-shadow: 0 32px 96px rgba(42, 26, 16, 0.22);
   }
 
   /* ─── YMYL disclaimer ─── */
@@ -402,8 +395,282 @@
 }
 
 /* ════════════════════════════════════════
+   DTC PRODUCT CARD — universal component
+   Used in: singles, archives, cabinet, featured_products
+════════════════════════════════════════ */
+
+@layer components {
+
+  .dtc-card {
+    background: #ffffff;
+    border: 1px solid rgba(42, 26, 16, 0.10);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.25s, transform 0.25s;
+    text-decoration: none;
+    color: #2A1A10;
+    font-family: 'Instrument Sans', 'Inter', sans-serif;
+  }
+
+  .dtc-card:hover {
+    box-shadow: 0 14px 44px rgba(42, 26, 16, 0.11);
+    transform: translateY(-3px);
+  }
+
+  /* Image — portrait by default */
+  .dtc-card__img {
+    aspect-ratio: 3/4;
+    background: #EBE3D2;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .dtc-card__img img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Fallback book/course cover */
+  .dtc-card__cover {
+    width: 110px;
+    height: 154px;
+    background: linear-gradient(144deg, #5BB8E8 0%, #3A9BD5 100%);
+    box-shadow: -6px 6px 20px rgba(0, 0, 0, 0.22), 3px 0 0 rgba(0, 0, 0, 0.1);
+    border-radius: 4px 10px 10px 4px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 12px 10px;
+  }
+
+  .dtc-card__cover::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 4px 0 0 4px;
+  }
+
+  .dtc-card__cover-title {
+    font-weight: 700;
+    font-size: 10px;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    padding-left: 9px;
+    line-height: 1.3;
+  }
+
+  /* Badge overlay */
+  .dtc-card__badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 10;
+    background: #D87A4A;
+    color: #fff;
+    padding: 4px 11px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 10.5px;
+    letter-spacing: 0.2px;
+  }
+
+  /* Tags row */
+  .dtc-card__tags {
+    display: flex;
+    gap: 6px;
+    padding: 13px 15px 0;
+    flex-wrap: wrap;
+  }
+
+  .dtc-card__tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 11px;
+    border-radius: 50px;
+    font-size: 10.5px;
+    font-weight: 600;
+  }
+
+  .dtc-card__tag--plan {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+  }
+
+  .dtc-card__tag--course {
+    background: #fde8d4;
+    color: #D87A4A;
+    border: 1px solid #F4B491;
+  }
+
+  .dtc-card__tag--doctor {
+    background: #EBE3D2;
+    color: #3A2418;
+    border: 1px solid rgba(42, 26, 16, 0.15);
+  }
+
+  .dtc-card__tag--sale {
+    background: #fde8d4;
+    color: #D87A4A;
+    border: 1px solid #F4B491;
+  }
+
+  /* Body */
+  .dtc-card__body {
+    padding: 10px 15px 15px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 9px;
+  }
+
+  .dtc-card__title {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.35;
+    color: #2A1A10;
+    letter-spacing: -0.2px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .dtc-card__features {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    flex: 1;
+  }
+
+  .dtc-card__feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 12px;
+    color: #6a5040;
+    line-height: 1.45;
+  }
+
+  .dtc-card__check {
+    width: 17px;
+    height: 17px;
+    background: #dcfce7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .dtc-card__check svg {
+    width: 9px;
+    height: 9px;
+  }
+
+  .dtc-card__footer {
+    border-top: 1px solid rgba(42, 26, 16, 0.10);
+    padding-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .dtc-card__price-block {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dtc-card__price {
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.4px;
+    color: #2A1A10;
+  }
+
+  .dtc-card__price-old {
+    font-size: 11.5px;
+    text-decoration: line-through;
+    color: #A89F8B;
+  }
+
+  .dtc-card__delivery {
+    font-size: 10.5px;
+    color: #A89F8B;
+    margin-top: 1px;
+  }
+
+  .dtc-card__btn {
+    background: #2A1A10;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 9px 17px;
+    font-family: 'Instrument Sans', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 11.5px;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .dtc-card__btn:hover {
+    opacity: 0.82;
+    transform: scale(0.97);
+  }
+
+  /* Carousel variant — fixed width, square-ish image */
+  .dtc-card--carousel {
+    width: 252px;
+    flex: none;
+    border-radius: 16px;
+  }
+
+  .dtc-card--carousel .dtc-card__img {
+    aspect-ratio: auto;
+    height: 252px;
+  }
+
+  .dtc-card--carousel .dtc-card__title {
+    font-size: 13.5px;
+  }
+}
+
+/* ════════════════════════════════════════
    UTILITIES
 ════════════════════════════════════════ */
+
+/* ── DTC card: force-strip underlines from WP/theme global styles ── */
+a.dtc-card,
+a.dtc-card:hover,
+a.dtc-card:visited,
+a.dtc-card:focus,
+a.dtc-card h1,
+a.dtc-card h2,
+a.dtc-card h3,
+a.dtc-card h4,
+a.dtc-card p,
+a.dtc-card span,
+a.dtc-card div {
+  text-decoration: none !important;
+}
 
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
@@ -423,18 +690,15 @@
     text-wrap: pretty;
   }
 
-  /* Canvas gradient — warm editorial background */
   .gradient-canvas {
-    background: linear-gradient(160deg, #fefdf9 0%, #fefaf3 45%, #fbefe2 100%);
+    background: linear-gradient(160deg, #fdfcf9 0%, #F5EFE2 45%, #EBE3D2 100%);
   }
 
-  /* Dark-to-terra gradient for editorial blocks */
   .gradient-editorial {
-    background: linear-gradient(135deg, #1c0d00 0%, #3e2f22 60%, #6e3820 100%);
+    background: linear-gradient(135deg, #2A1A10 0%, #3A2418 60%, #4a3020 100%);
   }
 
-  /* Soft peach glow for CTAs */
   .gradient-peach {
-    background: linear-gradient(135deg, #ffddc2 0%, #fbefe2 100%);
+    background: linear-gradient(135deg, #fad0aa 0%, #EBE3D2 100%);
   }
 }

@@ -15,41 +15,125 @@
                     "display": "block",
                     "sub_fields": [
                         {
-                            "key": "field_hero_title",
-                            "label": "Заголовок",
-                            "name": "title",
-                            "type": "text"
+                            "key": "field_hero_eyebrow",
+                            "label": "Eyebrow Text (Надзаголовок)",
+                            "name": "eyebrow",
+                            "type": "text",
+                            "default_value": "Персональное питание · с 2019"
                         },
                         {
-                            "key": "field_hero_subtitle",
-                            "label": "Подзаголовок",
-                            "name": "subtitle",
-                            "type": "textarea"
+                            "key": "field_hero_title_l1",
+                            "label": "Заголовок: Первая строка",
+                            "name": "title_line_1",
+                            "type": "text",
+                            "default_value": "Возьмите здоровье"
+                        },
+                        {
+                            "key": "field_hero_title_l2_pre",
+                            "label": "Заголовок: Вторая строка (Начало)",
+                            "name": "title_line_2_pre",
+                            "type": "text",
+                            "default_value": "под"
+                        },
+                        {
+                            "key": "field_hero_title_l2_ital",
+                            "label": "Заголовок: Выделенное слово (Italic + Подчеркивание)",
+                            "name": "title_line_2_italic",
+                            "type": "text",
+                            "default_value": "контроль"
+                        },
+                        {
+                            "key": "field_hero_kicker",
+                            "label": "Описание (Под заголовком)",
+                            "name": "kicker",
+                            "type": "textarea",
+                            "default_value": "Есть решения под ваш диагноз — персональные протоколы питания, составленные врачами-нутрициологами на основе анализов и медицинской карты."
                         },
                         {
                             "key": "field_hero_cta_1",
-                            "label": "Кнопка 1",
+                            "label": "Основная кнопка (Найти мой диагноз)",
                             "name": "cta_1",
                             "type": "link"
                         },
                         {
                             "key": "field_hero_cta_2",
-                            "label": "Кнопка 2",
+                            "label": "Вторая кнопка (Срочная консультация)",
                             "name": "cta_2",
                             "type": "link"
                         },
                         {
-                            "key": "field_hero_bg",
-                            "label": "Фоновое Изображение (Превью)",
-                            "name": "background",
-                            "type": "image",
-                            "return_format": "array"
+                            "key": "field_hero_trust",
+                            "label": "Элементы доверия (Trust Items)",
+                            "name": "trust_items",
+                            "type": "repeater",
+                            "sub_fields": [
+                                {
+                                    "key": "field_hero_trust_text",
+                                    "label": "Текст",
+                                    "name": "text",
+                                    "type": "text",
+                                    "instructions": "Используйте <strong> для выделения."
+                                }
+                            ],
+                            "button_label": "Добавить"
                         },
                         {
-                            "key": "field_hero_video",
-                            "label": "Видео (Ссылка YouTube/Vimeo)",
-                            "name": "video",
-                            "type": "oembed"
+                            "key": "field_hero_bg_l_num",
+                            "label": "Левый Бейдж: Число/Значок",
+                            "name": "badge_left_num",
+                            "type": "text",
+                            "default_value": "26"
+                        },
+                        {
+                            "key": "field_hero_bg_l_k",
+                            "label": "Левый Бейдж: Текст сверху",
+                            "name": "badge_left_k",
+                            "type": "text",
+                            "default_value": "диагнозов"
+                        },
+                        {
+                            "key": "field_hero_bg_l_v",
+                            "label": "Левый Бейдж: Текст снизу",
+                            "name": "badge_left_v",
+                            "type": "text",
+                            "default_value": "под <em>ключ</em>",
+                            "instructions": "Используйте <em> для наклонного текста"
+                        },
+                        {
+                            "key": "field_hero_bg_r_icon",
+                            "label": "Правый Бейдж: Иконка/Символ",
+                            "name": "badge_right_icon",
+                            "type": "text",
+                            "default_value": "⟡"
+                        },
+                        {
+                            "key": "field_hero_bg_r_k",
+                            "label": "Правый Бейдж: Текст сверху",
+                            "name": "badge_right_k",
+                            "type": "text",
+                            "default_value": "нутрициолог"
+                        },
+                        {
+                            "key": "field_hero_bg_r_v",
+                            "label": "Правый Бейдж: Текст снизу",
+                            "name": "badge_right_v",
+                            "type": "text",
+                            "default_value": "<em>онлайн</em> 24/7",
+                            "instructions": "Используйте <em> для наклонного текста"
+                        },
+                        {
+                            "key": "field_hero_seal",
+                            "label": "Вращающаяся Печать: Текст по кругу",
+                            "name": "seal_text",
+                            "type": "text",
+                            "default_value": "E‑DIET · ЗДОРОВЬЕ В ТАРЕЛКЕ · С 2019 ·"
+                        },
+                        {
+                            "key": "field_hero_seal_cent",
+                            "label": "Вращающаяся Печать: Текст в центре",
+                            "name": "seal_center",
+                            "type": "text",
+                            "default_value": "e."
                         }
                     ]
                 },

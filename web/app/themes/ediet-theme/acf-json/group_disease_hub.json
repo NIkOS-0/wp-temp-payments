@@ -3,26 +3,20 @@
     "title": "Контент Для Карточки Заболевания",
     "fields": [
         {
-            "key": "field_dh_hero_icon",
-            "label": "Иконка на Колесе / Hero (PNG/SVG)",
-            "name": "hero_icon",
-            "type": "image",
-            "return_format": "url",
-            "instructions": "Загрузите PNG или SVG с прозрачным фоном."
-        },
-        {
             "key": "field_dh_wheel_color",
             "label": "Цвет на колесе (HEX)",
             "name": "wheel_color",
             "type": "color_picker",
-            "default_value": "#4aaee0"
+            "default_value": "#4aaee0",
+            "fields": []
         },
         {
             "key": "field_dh_hero_eyebrow",
             "label": "Отрасль (Eyebrow)",
             "name": "hero_eyebrow",
             "type": "text",
-            "default_value": "Гепатология · Гастроэнтерология"
+            "default_value": "Гепатология · Гастроэнтерология",
+            "fields": []
         },
         {
             "key": "field_dh_hero_title",
@@ -30,13 +24,15 @@
             "name": "hero_title",
             "type": "textarea",
             "instructions": "Оберните слово в <em>слово</em>, чтобы выделить его синим цветом.",
-            "default_value": "Болезни печени\nи <em>ЖКТ</em>"
+            "default_value": "Болезни печени\nи <em>ЖКТ</em>",
+            "fields": []
         },
         {
             "key": "field_dh_hero_desc",
             "label": "Краткое описание",
             "name": "hero_desc",
-            "type": "textarea"
+            "type": "textarea",
+            "fields": []
         },
         {
             "key": "field_dh_hero_stats",
@@ -65,7 +61,8 @@
                     "type": "text",
                     "instructions": "hex или var(--orange)"
                 }
-            ]
+            ],
+            "fields": []
         },
         {
             "key": "field_dh_doctors",
@@ -75,7 +72,8 @@
             "post_type": [
                 "doctor"
             ],
-            "return_format": "object"
+            "return_format": "object",
+            "fields": []
         },
         {
             "key": "field_dh_clinics",
@@ -86,14 +84,16 @@
                 "clinic",
                 "laboratory"
             ],
-            "return_format": "object"
+            "return_format": "object",
+            "fields": []
         },
         {
             "key": "field_dh_lead_magnet",
             "label": "Лид-Магнит (документ)",
             "name": "lead_magnet_file",
             "type": "file",
-            "return_format": "url"
+            "return_format": "url",
+            "fields": []
         }
     ],
     "location": [

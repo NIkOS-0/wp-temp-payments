@@ -1,0 +1,63 @@
+{
+    "key": "group_header_settings",
+    "title": "Настройки Хедера (Шапка)",
+    "fields": [
+        {
+            "key": "field_header_logo",
+            "label": "Логотип (изображение)",
+            "name": "header_logo",
+            "type": "image",
+            "return_format": "url",
+            "instructions": "PNG или SVG с прозрачным фоном. Если не загружено — используется текстовый логотип."
+        },
+        {
+            "key": "field_header_ticker_enabled",
+            "label": "Показывать бегущую строку",
+            "name": "header_ticker_enabled",
+            "type": "true_false",
+            "default_value": 1,
+            "ui": 1
+        },
+        {
+            "key": "field_header_ticker_items",
+            "label": "Элементы бегущей строки",
+            "name": "header_ticker_items",
+            "type": "repeater",
+            "layout": "table",
+            "button_label": "Добавить элемент",
+            "sub_fields": [
+                {
+                    "key": "field_header_ticker_text",
+                    "label": "Текст",
+                    "name": "text",
+                    "type": "text",
+                    "default_value": "ОГРАНИЧЕННОЕ ПРЕДЛОЖЕНИЕ — СКИДКА 50% НА ВСЁ"
+                }
+            ]
+        },
+        {
+            "key": "field_header_cta_text",
+            "label": "Текст кнопки 'Связаться'",
+            "name": "header_cta_text",
+            "type": "text",
+            "default_value": "Связаться с нами"
+        },
+        {
+            "key": "field_header_cta_url",
+            "label": "Ссылка кнопки 'Связаться'",
+            "name": "header_cta_url",
+            "type": "url",
+            "default_value": "/contact"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "options_page",
+                "operator": "==",
+                "value": "acf-options"
+            }
+        ]
+    ],
+    "active": true
+}
