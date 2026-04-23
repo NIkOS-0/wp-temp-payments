@@ -16,12 +16,21 @@
 @endphp
 
 <style>
-/* ── Header scoped ── */
+/* ══════════════════════════════════════════════════════════════════
+   HEADER · e-diet · terra / bark / cream
+══════════════════════════════════════════════════════════════════ */
+#site-header,
 #site-header * { box-sizing: border-box; }
+#site-header { transition: background 0.35s ease; }
 #site-header a { text-decoration: none !important; }
 #site-header a:hover { text-decoration: none !important; }
 
-/* Ticker tape scroll */
+#site-header {
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+}
+
+/* ── Ticker tape ─────────────────────────────────────── */
 @keyframes ticker-scroll {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -34,119 +43,288 @@
 }
 .ticker-track:hover { animation-play-state: paused; }
 
-/* Primary nav links */
-#header-primary-nav a {
-  font-family: 'Inter', sans-serif;
-  font-size: 17px;
-  font-weight: 400;
-  letter-spacing: -0.6px;
-  color: #000;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color 0.15s;
+.hdr-top-bar {
+  background: linear-gradient(90deg, #1e1209 0%, #2A1A10 50%, #1e1209 100%);
 }
-#header-primary-nav a:hover { color: var(--color-terra-500); }
+.hdr-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 32px;
+  font-family: 'Instrument Sans', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(245, 239, 226, 0.9);
+}
+.hdr-ticker-dot {
+  display: inline-block;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--color-terra-400);
+  flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(239, 148, 91, 0.6);
+}
 
-/* Secondary (top bar) nav links */
+/* ── Secondary nav (top bar) ─────────────────────────── */
+#header-secondary-nav {
+  border-left: 1px solid rgba(245, 239, 226, 0.12);
+}
 #header-secondary-nav a {
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
-  font-weight: 400;
-  letter-spacing: -0.6px;
-  color: rgba(255,255,255,0.82);
-  text-decoration: none;
+  font-family: 'Instrument Sans', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: rgba(245, 239, 226, 0.72);
   white-space: nowrap;
   transition: color 0.15s;
 }
-#header-secondary-nav a:hover { color: #fff; }
+#header-secondary-nav a:hover { color: var(--color-terra-300); }
 
-/* WP nav menu ul reset */
-#header-primary-nav ul,
-#header-secondary-nav ul {
-  list-style: none;
-  margin: 0; padding: 0;
-  display: flex; align-items: center;
+/* ── Main row (white) ────────────────────────────────── */
+.hdr-main-row {
+  position: relative;
+  background: #ffffff;
 }
-/* Primary */
-#header-primary-nav ul { gap: 32px; }
-/* Secondary */
-#header-secondary-nav ul { gap: 28px; }
+/* Short centered divider between main-row and primary-strip */
+.hdr-main-row::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 80vw;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(42, 26, 16, 0.18) 50%,
+    transparent 100%);
+  pointer-events: none;
+}
 
-/* Hide sub-menus */
-#header-primary-nav .sub-menu,
-#header-secondary-nav .sub-menu { display: none; }
+/* ── Logo ────────────────────────────────────────────── */
+.hdr-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.hdr-brand__mark {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #EF945B 0%, #D87A4A 100%);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 18px rgba(216, 122, 74, 0.32);
+}
+.hdr-brand__mark span {
+  color: #fff; font-weight: 900; font-size: 17px; line-height: 1;
+}
+.hdr-brand__text {
+  font-family: 'Instrument Sans', 'Inter', sans-serif;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  color: var(--color-bark-900);
+}
+.hdr-brand__text em { font-style: normal; color: var(--color-terra-500); }
 
-/* Search bar */
+/* ── Search bar ──────────────────────────────────────── */
 .hdr-search {
   display: flex;
   align-items: center;
   gap: 0;
-  background: #EAEAEA;
-  border-radius: 25px;
-  height: 40px;
-  padding: 0 6px 0 14px;
+  background: var(--color-cream-100);
+  border: 1px solid rgba(42, 26, 16, 0.08);
+  border-radius: 9999px;
+  height: 42px;
+  padding: 0 6px 0 16px;
   flex: 1;
   max-width: 680px;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.hdr-search:focus-within {
+  border-color: var(--color-terra-400);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(244, 180, 145, 0.25);
 }
 .hdr-search input[type="search"] {
   flex: 1;
   background: transparent;
   border: none;
   outline: none;
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
-  color: #333;
+  font-family: 'Instrument Sans', 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--color-bark-900);
   padding: 0 8px;
   min-width: 0;
 }
-.hdr-search input[type="search"]::placeholder { color: #49454F; }
+.hdr-search input[type="search"]::placeholder {
+  color: var(--color-bark-500);
+  opacity: 0.8;
+}
 .hdr-search button[type="submit"] {
-  background: transparent;
+  background: var(--color-bark-900);
+  color: var(--color-cream-100);
   border: none;
+  border-radius: 9999px;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  padding: 6px;
-  color: #49454F;
-  transition: color 0.15s;
+  width: 32px; height: 32px;
+  transition: background 0.15s, transform 0.12s;
 }
-.hdr-search button[type="submit"]:hover { color: var(--color-terra-500); }
+.hdr-search button[type="submit"]:hover {
+  background: var(--color-terra-500);
+  transform: scale(1.05);
+}
+.hdr-search button[type="submit"] svg { width: 16px; height: 16px; }
 
-/* Contact button */
+/* ── CTA button ──────────────────────────────────────── */
 .hdr-btn-contact {
-  background: #EAEAEA;
+  background: var(--color-terra-500);
   border: none;
-  border-radius: 25px;
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: -0.3px;
-  color: #000;
-  height: 40px;
+  border-radius: 9999px;
+  font-family: 'Instrument Sans', 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  color: #fff;
+  height: 42px;
   padding: 0 22px;
   cursor: pointer;
-  text-decoration: none;
   white-space: nowrap;
-  display: inline-flex; align-items: center;
-  transition: background 0.15s, color 0.15s;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
   flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(216, 122, 74, 0.28);
 }
-.hdr-btn-contact:hover { background: var(--color-terra-500); color: #fff; }
+.hdr-btn-contact:hover {
+  background: var(--color-terra-600);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(216, 122, 74, 0.36);
+}
+.hdr-btn-contact:active { transform: translateY(0); }
 
-/* Account icon */
-.hdr-account-icon {
-  width: 40px; height: 40px;
+/* ── Icon buttons (fav, account) ─────────────────────── */
+.hdr-icon-btn,
+.hdr-account-icon,
+.hdr-fav-btn {
+  position: relative;
+  width: 42px; height: 42px;
   border-radius: 50%;
-  background: transparent;
-  border: none;
+  background: var(--color-cream-100);
+  border: 1px solid rgba(42, 26, 16, 0.08);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  color: #1D1B20;
-  transition: color 0.15s;
+  color: var(--color-bark-900);
+  transition: color 0.15s, background 0.15s, border-color 0.15s, transform 0.12s;
   flex-shrink: 0;
 }
-.hdr-account-icon:hover { color: var(--color-terra-500); }
+.hdr-account-icon:hover,
+.hdr-fav-btn:hover {
+  color: #fff;
+  background: var(--color-terra-500);
+  border-color: var(--color-terra-500);
+  transform: translateY(-1px);
+}
+.hdr-fav-badge {
+  position: absolute;
+  top: -2px; right: -2px;
+  min-width: 18px; height: 18px;
+  padding: 0 5px;
+  background: var(--color-terra-500);
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 700;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
 
-/* Top bar + main row collapse transition */
+/* ── Primary strip · FROSTED GLASS with rounded bottom ── */
+.hdr-primary-strip {
+  position: relative;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(253, 252, 249, 0.5);
+  -webkit-backdrop-filter: saturate(170%) blur(22px);
+  backdrop-filter: saturate(170%) blur(22px);
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+  box-shadow:
+    0 14px 32px rgba(42, 26, 16, 0.08),
+    0 2px 6px rgba(42, 26, 16, 0.04);
+  /* subtle inner highlight at the rounded bottom */
+  overflow: visible;
+}
+/* Soft top-edge gleam so frosted layer reads as a separate pane */
+.hdr-primary-strip::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 16%; right: 16%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.9) 50%,
+    transparent 100%);
+  pointer-events: none;
+}
+
+/* ── Primary nav links ───────────────────────────────── */
+#header-primary-nav a {
+  font-family: 'Instrument Sans', 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.15px;
+  color: var(--color-bark-800);
+  white-space: nowrap;
+  padding: 8px 4px;
+  position: relative;
+  transition: color 0.15s;
+}
+#header-primary-nav a::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  width: 70%;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-terra-500);
+  transition: transform 0.2s ease;
+}
+#header-primary-nav a:hover { color: var(--color-terra-500); }
+#header-primary-nav a:hover::after,
+#header-primary-nav .current-menu-item > a::after,
+#header-primary-nav .current-menu-ancestor > a::after {
+  transform: translateX(-50%) scaleX(1);
+}
+#header-primary-nav .current-menu-item > a,
+#header-primary-nav .current-menu-ancestor > a {
+  color: var(--color-terra-600);
+  font-weight: 600;
+}
+
+/* ── WP nav menu ul reset ────────────────────────────── */
+#header-primary-nav ul,
+#header-secondary-nav ul {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex; align-items: center;
+}
+#header-primary-nav ul   { gap: 36px; }
+#header-secondary-nav ul { gap: 26px; }
+#header-primary-nav .sub-menu,
+#header-secondary-nav .sub-menu { display: none; }
+
+/* ── Collapse transitions (scroll behaviour preserved) ── */
 .hdr-top-bar,
 .hdr-main-row {
   transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
@@ -156,7 +334,7 @@
   opacity: 1;
   visibility: visible;
 }
-.hdr-top-bar { max-height: 45px; }
+.hdr-top-bar  { max-height: 45px; }
 .hdr-main-row { max-height: 100px; }
 .hdr-top-bar.collapsed,
 .hdr-main-row.collapsed {
@@ -165,65 +343,146 @@
   visibility: hidden;
 }
 
-/* Favorites icon */
-.hdr-fav-btn {
-  position: relative;
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  color: #1D1B20;
-  transition: color 0.15s;
-  flex-shrink: 0;
-}
-.hdr-fav-btn:hover { color: var(--color-terra-500); }
-.hdr-fav-badge {
-  position: absolute;
-  top: 0; right: 0;
-  width: 17px; height: 17px;
-  background: var(--color-terra-500, #c77b5a);
-  color: #fff;
-  border-radius: 50%;
-  font-size: 10px;
-  font-weight: 700;
+/* ── Mobile burger (default hidden on desktop) ───────── */
+#mobile-menu-btn {
   display: none;
+  width: 44px; height: 44px;
+  padding: 0;
+  border: 1px solid rgba(42, 26, 16, 0.1);
+  border-radius: 12px;
+  background: var(--color-cream-100);
+  color: var(--color-bark-900);
   align-items: center;
   justify-content: center;
-  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+#mobile-menu-btn:hover {
+  background: var(--color-bark-900);
+  border-color: var(--color-bark-900);
+  color: var(--color-cream-100);
 }
 
-/* Responsive */
+/* ══════════════════════════════════════════════════════
+   MOBILE · sandwich at the top
+══════════════════════════════════════════════════════ */
 @media (max-width: 900px) {
   .hdr-top-bar { display: none !important; }
-  .hdr-main-row { padding: 0 16px; }
-  .hdr-search { display: none; }
-  .hdr-primary-strip { display: none; }
-  #mobile-menu-btn { display: flex !important; }
+  .hdr-primary-strip {
+    /* Mobile keeps the rounded frosted "chin" via the main row */
+    display: none !important;
+  }
+  .hdr-main-row {
+    height: 64px !important;
+    padding: 0 14px !important;
+    gap: 10px !important;
+    background: #ffffff;
+    /* Apply the header rounded-bottom "chin" to main-row on mobile */
+    border-bottom-left-radius: 22px;
+    border-bottom-right-radius: 22px;
+    box-shadow:
+      0 10px 26px rgba(42, 26, 16, 0.08),
+      0 2px 6px rgba(42, 26, 16, 0.04);
+  }
+  .hdr-main-row::after { display: none; }
+
+  /* Reorder: [burger] [logo-center] [account] */
+  #mobile-menu-btn { display: inline-flex !important; order: 0; }
+  .hdr-brand      { order: 1; flex: 1; justify-content: center; }
+  .hdr-search     { display: none !important; }
+  .hdr-btn-contact{ display: none !important; }
+  .hdr-fav-btn    { display: none !important; }
+  .hdr-account-icon { order: 3; }
+
+  /* Smaller brand on mobile */
+  .hdr-brand__mark { width: 32px; height: 32px; }
+  .hdr-brand__mark span { font-size: 15px; }
+  .hdr-brand__text { font-size: 17px; }
 }
 @media (min-width: 901px) {
   #mobile-menu-btn { display: none; }
 }
+
+/* ══════════════════════════════════════════════════════
+   MOBILE MENU PANEL — restyled
+══════════════════════════════════════════════════════ */
+#mobile-menu {
+  background: var(--color-cream-50, #fdfcf9);
+  border-top: 1px solid rgba(42, 26, 16, 0.06);
+  box-shadow: 0 14px 32px rgba(42, 26, 16, 0.08);
+  border-bottom-left-radius: 22px;
+  border-bottom-right-radius: 22px;
+}
+#mobile-menu ul {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 2px;
+}
+#mobile-menu li a {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-bark-900);
+  transition: background 0.15s, color 0.15s;
+}
+#mobile-menu li a:hover {
+  background: rgba(239, 148, 91, 0.12);
+  color: var(--color-terra-600);
+}
+
+/* ── Search autocomplete dropdown ────────────────── */
+.hdr-suggest-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.12s;
+  text-decoration: none;
+  color: #2A1A10;
+}
+.hdr-suggest-item:hover { background: rgba(42,26,16,0.04); }
+.hdr-suggest-item:focus { background: rgba(42,26,16,0.06); outline: none; }
+.hdr-suggest-thumb {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: #EBE3D2; object-fit: cover; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; overflow: hidden;
+}
+.hdr-suggest-thumb img { width:100%; height:100%; object-fit:cover; border-radius:10px; }
+.hdr-suggest-type {
+  font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 50px;
+  background: #EBE3D2; color: #6a5040; display: inline-block; margin-bottom: 2px;
+}
+.hdr-suggest-title {
+  font-size: 13px; font-weight: 600; line-height: 1.3; color: #2A1A10;
+}
+.hdr-suggest-price {
+  font-size: 12px; font-weight: 700; color: #2A1A10; margin-left: auto; flex-shrink: 0;
+}
+.hdr-suggest-loading {
+  padding: 16px; text-align: center; font-size: 12.5px; color: #A89F8B;
+}
 </style>
 
-<header id="site-header" class="fixed top-0 left-0 right-0 z-50" style="background:#fff; box-shadow: 0 1px 0 rgba(0,0,0,0.08);">
+<header id="site-header" class="fixed top-0 left-0 right-0 z-50" style="background:#ffffff;">
 
   {{-- ══ ROW 1: Ticker + Secondary Nav ══ --}}
   @if($ticker_enabled)
-  <div id="hdr-top-bar" class="hdr-top-bar" style="background:#000; height:45px; display:flex; align-items:center; justify-content:space-between; position:relative;">
+  <div id="hdr-top-bar" class="hdr-top-bar" style="height:45px; display:flex; align-items:center; justify-content:space-between; position:relative;">
 
     {{-- Ticker tape (left-center) --}}
     <div style="overflow:hidden; flex:1; height:100%; display:flex; align-items:center; position:relative;">
       {{-- Fade edges --}}
-      <div style="position:absolute;left:0;top:0;bottom:0;width:60px;background:linear-gradient(to right,#000,transparent);z-index:2;pointer-events:none;"></div>
-      <div style="position:absolute;right:0;top:0;bottom:0;width:60px;background:linear-gradient(to left,#000,transparent);z-index:2;pointer-events:none;"></div>
+      <div style="position:absolute;left:0;top:0;bottom:0;width:60px;background:linear-gradient(to right,#2A1A10,transparent);z-index:2;pointer-events:none;"></div>
+      <div style="position:absolute;right:0;top:0;bottom:0;width:60px;background:linear-gradient(to left,#2A1A10,transparent);z-index:2;pointer-events:none;"></div>
 
       <div class="ticker-track">
         {{-- Duplicate items for seamless loop --}}
         @foreach(array_merge($ticker_items, $ticker_items) as $item)
-          <span style="display:inline-flex;align-items:center;gap:16px;padding:0 32px;font-family:'Inter',sans-serif;font-size:14px;font-weight:400;letter-spacing:0.04em;color:#fff;">
-            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.4);flex-shrink:0;"></span>
+          <span class="hdr-ticker-item">
+            <span class="hdr-ticker-dot"></span>
             {{ $item['text'] }}
           </span>
         @endforeach
@@ -232,7 +491,7 @@
 
     {{-- Secondary Nav (right) --}}
     <div id="header-secondary-nav"
-         style="display:flex;align-items:center;height:100%;padding:0 24px;border-left:1px solid rgba(255,255,255,0.2);flex-shrink:0;">
+         style="display:flex;align-items:center;height:100%;padding:0 24px;flex-shrink:0;">
       @if(has_nav_menu('secondary_navigation'))
         {!! wp_nav_menu([
           'theme_location' => 'secondary_navigation',
@@ -242,7 +501,7 @@
           'depth'          => 1,
         ]) !!}
       @else
-        <ul style="display:flex;gap:28px;list-style:none;margin:0;padding:0;">
+        <ul>
           <li><a href="{{ home_url('/') }}">О нас / Миссия</a></li>
           <li><a href="{{ home_url('/') }}">Отзывы</a></li>
           <li><a href="{{ home_url('/') }}">Контакты</a></li>
@@ -255,35 +514,54 @@
   @endif
 
   {{-- ══ ROW 2: Logo + Search + CTA + Account ══ --}}
-  <div id="hdr-main-row" class="hdr-main-row" style="height:80px; display:flex; align-items:center; gap:16px; padding:0 max(24px, calc((100vw - 1280px)/2 + 24px)); border-bottom:1px solid rgba(0,0,0,0.08);">
+  <div id="hdr-main-row" class="hdr-main-row" style="height:80px; display:flex; align-items:center; gap:16px; padding:0 max(24px, calc((100vw - 1280px)/2 + 24px));">
+
+    {{-- Mobile burger (appears on small screens, hidden on desktop via CSS) --}}
+    <button type="button" id="mobile-menu-btn" aria-label="Меню">
+      <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
 
     {{-- Logo --}}
-    <a href="{{ home_url('/') }}" class="shrink-0" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+    <a href="{{ home_url('/') }}" class="hdr-brand">
       @if(!empty($header_logo))
         <img src="{{ $header_logo }}" alt="{{ get_bloginfo('name') }}" style="height:38px;width:auto;object-fit:contain;">
       @else
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div style="width:34px;height:34px;border-radius:50%;background:#1c0d00;display:flex;align-items:center;justify-content:center;">
-            <span style="color:#fefaf3;font-weight:900;font-size:16px;line-height:1;">e</span>
-          </div>
-          <span style="font-family:'Inter',sans-serif;font-size:18px;font-weight:800;letter-spacing:-0.6px;color:#000;">e-diet</span>
-        </div>
+        <span class="hdr-brand__mark"><span>e</span></span>
+        <span class="hdr-brand__text">e-diet<em>.</em></span>
       @endif
     </a>
 
     {{-- Search Bar --}}
-    <form role="search" method="get" action="{{ home_url('/') }}" class="hdr-search" style="flex:1;max-width:680px;margin:0 auto;">
+    <form role="search" method="get" action="{{ home_url('/') }}" class="hdr-search" style="margin:0 auto;position:relative;">
       <input type="hidden" name="post_type[]" value="book">
       <input type="hidden" name="post_type[]" value="course">
       <input type="hidden" name="post_type[]" value="consultation">
-      <input type="search" name="s" placeholder="Поиск: книги, курсы, консультации…"
+      <input type="search" id="hdr-search-input" name="s"
+             placeholder="Поиск: книги, курсы, консультации…"
              value="{{ get_search_query() }}" autocomplete="off">
       <button type="submit" aria-label="Найти">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <circle cx="11" cy="11" r="8" stroke-width="2"/>
           <path d="M21 21l-4.35-4.35" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </button>
+
+      {{-- Autocomplete dropdown --}}
+      <div id="hdr-search-dropdown"
+           style="display:none;position:absolute;top:calc(100% + 8px);left:0;right:0;
+                  background:#fff;border-radius:18px;border:1px solid rgba(42,26,16,0.12);
+                  box-shadow:0 16px 48px rgba(42,26,16,0.14);overflow:hidden;z-index:999;">
+        <div id="hdr-search-items"></div>
+        <div id="hdr-search-footer"
+             style="display:none;padding:10px 14px;border-top:1px solid rgba(42,26,16,0.08);text-align:center;">
+          <a id="hdr-search-all" href="#"
+             style="font-size:12.5px;font-weight:600;color:#EF945B;text-decoration:none;">
+            Смотреть все результаты →
+          </a>
+        </div>
+      </div>
     </form>
 
     {{-- CTA Button --}}
@@ -291,7 +569,7 @@
 
     {{-- Favorites Icon --}}
     <button id="header-fav-btn" class="hdr-fav-btn" aria-label="Избранное">
-      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
               d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
       </svg>
@@ -301,33 +579,24 @@
     {{-- Account Icon --}}
     @if(is_user_logged_in())
       <a href="{{ home_url('/cabinet') }}" class="hdr-account-icon" aria-label="Кабинет">
-        <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                 d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/>
         </svg>
       </a>
     @else
       <button id="open-auth-modal" class="hdr-account-icon" aria-label="Войти">
-        <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                 d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/>
         </svg>
       </button>
     @endif
 
-    {{-- Mobile burger --}}
-    <button type="button" id="mobile-menu-btn"
-            style="display:none;padding:8px;border:none;background:transparent;cursor:pointer;"
-            aria-label="Меню">
-      <svg width="24" height="24" fill="none" stroke="#000" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-      </svg>
-    </button>
-
   </div>
 
-  {{-- ══ ROW 3: Primary Navigation ══ --}}
-  <div class="hdr-primary-strip" style="height:44px; display:flex; align-items:center; justify-content:center; border-bottom:1px solid rgba(0,0,0,0.08);">
+  {{-- ══ ROW 3: Primary Navigation · frosted glass, rounded bottom ══ --}}
+  <div class="hdr-primary-strip">
     <div id="header-primary-nav">
       @if(has_nav_menu('primary_navigation'))
         {!! wp_nav_menu([
@@ -390,7 +659,7 @@
 </header>
 
 {{-- Spacer to account for the fixed header height --}}
-<div style="height:{{ $ticker_enabled ? '169px' : '124px' }};"></div>
+<div style="height:{{ $ticker_enabled ? '169px' : '125px' }};"></div>
 
 {{-- ════ AUTH MODAL ════ --}}
 @if(!is_user_logged_in())
@@ -488,7 +757,8 @@
 
   // ── Scroll: collapse/reveal top bar + main row ──
   (function() {
-    const topBar = document.getElementById('hdr-top-bar');
+    const header  = document.getElementById('site-header');
+    const topBar  = document.getElementById('hdr-top-bar');
     const mainRow = document.getElementById('hdr-main-row');
     let lastY = window.scrollY;
     let ticking = false;
@@ -501,10 +771,12 @@
             // Scrolling down — collapse both rows
             topBar?.classList.add('collapsed');
             mainRow?.classList.add('collapsed');
+            header.style.background = 'transparent';
           } else {
             // Scrolling up — reveal both rows
             topBar?.classList.remove('collapsed');
             mainRow?.classList.remove('collapsed');
+            header.style.background = '#ffffff';
           }
           lastY = currentY;
           ticking = false;
@@ -646,5 +918,122 @@
     msg1.classList.add('hidden');
   });
   @endif
+
+  // ── Live search autocomplete ──────────────────────────────────────────
+  (function () {
+    const input    = document.getElementById('hdr-search-input');
+    const dropdown = document.getElementById('hdr-search-dropdown');
+    const items    = document.getElementById('hdr-search-items');
+    const footer   = document.getElementById('hdr-search-footer');
+    const allLink  = document.getElementById('hdr-search-all');
+    const AJAX     = '{{ admin_url('admin-ajax.php') }}';
+
+    if (!input || !dropdown) return;
+
+    let timer = null;
+    let lastQ = '';
+    let current = -1;
+    let suggestionLinks = [];
+
+    function openDrop() { dropdown.style.display = 'block'; }
+    function closeDrop() { dropdown.style.display = 'none'; current = -1; }
+
+    function buildSearchUrl(q) {
+      return '/?post_type%5B%5D=book&post_type%5B%5D=course&post_type%5B%5D=consultation&s=' + encodeURIComponent(q);
+    }
+
+    function renderItems(data, q) {
+      if (!data.length) {
+        items.innerHTML = '<div class="hdr-suggest-loading">Ничего не найдено</div>';
+        footer.style.display = 'none';
+        return;
+      }
+
+      items.innerHTML = data.map((r, i) => {
+        const thumb = r.image
+          ? `<div class="hdr-suggest-thumb"><img src="${r.image}" alt=""></div>`
+          : `<div class="hdr-suggest-thumb">📄</div>`;
+        return `<a href="${r.url}" class="hdr-suggest-item" tabindex="0" data-i="${i}">
+          ${thumb}
+          <div style="flex:1;min-width:0;">
+            <div class="hdr-suggest-type">${r.label}</div>
+            <div class="hdr-suggest-title">${r.title}</div>
+          </div>
+          ${r.price ? `<div class="hdr-suggest-price">${r.price}</div>` : ''}
+        </a>`;
+      }).join('');
+
+      allLink.href = buildSearchUrl(q);
+      footer.style.display = 'block';
+
+      suggestionLinks = Array.from(items.querySelectorAll('.hdr-suggest-item'));
+    }
+
+    function fetchSuggestions(q) {
+      items.innerHTML = '<div class="hdr-suggest-loading">Поиск…</div>';
+      footer.style.display = 'none';
+      openDrop();
+
+      fetch(`${AJAX}?action=ediet_search&q=${encodeURIComponent(q)}`)
+        .then(r => r.json())
+        .then(data => renderItems(data, q))
+        .catch(() => { items.innerHTML = '<div class="hdr-suggest-loading">Ошибка загрузки</div>'; });
+    }
+
+    input.addEventListener('input', () => {
+      const q = input.value.trim();
+      if (q === lastQ) return;
+      lastQ = q;
+      current = -1;
+
+      clearTimeout(timer);
+      if (q.length < 2) { closeDrop(); return; }
+
+      timer = setTimeout(() => fetchSuggestions(q), 280);
+    });
+
+    // Keyboard navigation inside dropdown
+    input.addEventListener('keydown', (e) => {
+      if (dropdown.style.display === 'none') return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        current = Math.min(current + 1, suggestionLinks.length - 1);
+        suggestionLinks[current]?.focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        current = Math.max(current - 1, -1);
+        if (current === -1) input.focus();
+        else suggestionLinks[current]?.focus();
+      } else if (e.key === 'Escape') {
+        closeDrop();
+        input.blur();
+      }
+    });
+
+    // Keep focus inside dropdown for arrow nav
+    dropdown.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        current = Math.min(current + 1, suggestionLinks.length - 1);
+        suggestionLinks[current]?.focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        current = Math.max(current - 1, -1);
+        if (current === -1) input.focus();
+        else suggestionLinks[current]?.focus();
+      } else if (e.key === 'Escape') {
+        closeDrop(); input.focus();
+      }
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!input.closest('form').contains(e.target)) closeDrop();
+    });
+
+    input.addEventListener('focus', () => {
+      if (input.value.trim().length >= 2 && lastQ) openDrop();
+    });
+  })();
 })();
 </script>

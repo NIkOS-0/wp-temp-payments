@@ -31,6 +31,7 @@ class SingleBook extends Composer
             'title'          => get_the_title($id),
             'top_labels'     => get_field('book_top_labels', $id) ?: [],
             'image_badge'    => get_field('book_image_badge', $id) ?: '',
+            'image_badge_bg' => get_field('book_image_badge_bg', $id) ?: '#B8B8B8',
             'subtitle'       => get_field('book_subtitle', $id) ?: '',
             'stats'          => get_field('book_stats', $id) ?: [],
             'features'       => get_field('book_features', $id) ?: [],

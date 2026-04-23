@@ -5,421 +5,468 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap');
 
-/* ═══ TOKENS ═══ */
-:root {
-  --app-bg:    #eef2f7;
-  --surface:   #ffffff;
-  --border:    #dde4ef;
-  --border-s:  rgba(221,228,239,0.6);
-  --text:      #0d1526;
-  --sub:       #5b6a82;
-  --muted:     #8fa0bb;
-  --blue:      #2563eb;
-  --blue-l:    #eff6ff;
-  --blue-b:    #bfdbfe;
-  --green:     #15803d;
-  --green-l:   #f0fdf4;
-  --orange:    #c2410c;
-  --orange-l:  #fff7ed;
-  --purple:    #6d28d9;
-  --teal:      #0f766e;
-  --r:         12px;
-  --r-lg:      18px;
-  --r-xl:      24px;
-}
+@php
+  $baseUrl      = strtok($_SERVER['REQUEST_URI'], '?');
+  $activeCats   = !empty($_GET['category']) ? explode(',', sanitize_text_field($_GET['category'])) : [];
+  $activePrices = !empty($_GET['price'])    ? explode(',', sanitize_text_field($_GET['price']))    : [];
+  $activeTypes  = !empty($_GET['type'])     ? explode(',', sanitize_text_field($_GET['type']))     : [];
+  $sortVal      = sanitize_text_field($_GET['sort'] ?? '');
 
-.prod-page {
-  background: var(--app-bg);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  color: var(--text);
-  font-size: 14px;
-  line-height: 1.6;
-  padding: 0 40px 100px;
-  max-width: 1240px; 
-  margin: 0 auto;
-}
+  $priceOptions = [
+    'up_to_2000'   => 'До 2 000 ₽',
+    '2000_to_5000' => '2 000–5 000 ₽',
+    'over_5000'    => 'Свыше 5 000 ₽',
+  ];
+  $typeOptions = [
+    'consultation' => 'Консультации',
+    'course'       => 'Курсы',
+    'book'         => 'Книги / МПО',
+  ];
+@endphp
 
-@media(max-width: 768px) {
-  .prod-page { padding: 0 20px 80px; }
-}
+<div style="background:#F5EFE2;min-height:100vh;font-family:'Instrument Sans','Inter',sans-serif;color:#2A1A10;">
+<div class="container-editorial py-8 pb-24">
 
-.prod-page a { text-decoration: none; color: inherit; }
+  {{-- ── BREADCRUMB ── --}}
+  <nav class="flex items-center gap-1.5 text-xs mb-8" style="color:#A89F8B;">
+    <a href="/" style="color:#A89F8B;" class="hover:text-terra-500 transition-colors duration-150">Главная</a>
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.5;"><path d="M3.5 1.5L6.5 5L3.5 8.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span style="color:#2A1A10;font-weight:500;">Каталог продуктов</span>
+  </nav>
 
-/* ═══ BREADCRUMB ═══ */
-.breadcrumb {
-  display: flex; align-items: center; gap: 6px;
-  padding: 18px 0 0; font-size: 11.5px; color: var(--muted);
-}
-.breadcrumb a { color: var(--muted); transition: color 0.15s; }
-.breadcrumb a:hover { color: var(--blue); }
-.breadcrumb .sep { font-size: 10px; }
-.breadcrumb .cur { color: var(--text); font-weight: 500; }
-
-/* ═══ SECTION UTILS ═══ */
-.sec-head {
-  display: flex; align-items: baseline; justify-content: space-between;
-  margin-bottom: 16px;
-}
-.sec-title { font-size: 18px; font-weight: 800; letter-spacing: -0.025em; }
-.sec-sub { font-size: 13px; color: var(--sub); margin-top: 2px; }
-
-/* ═══ HERO ═══ */
-.hero {
-  margin-top: 20px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-xl);
-  padding: 36px 40px 36px;
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 40px;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset, 0 4px 24px rgba(0,0,0,0.04);
-}
-@media(max-width: 1024px) {
-  .hero { grid-template-columns: 1fr; }
-}
-.hero::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: linear-gradient(90deg, var(--orange) 0%, #f97316 40%, var(--blue) 100%);
-}
-.hero-bg-icon {
-  position: absolute; right: 360px; top: 50%;
-  transform: translateY(-50%);
-  font-size: 160px; opacity: 0.04;
-  pointer-events: none; user-select: none; line-height: 1;
-}
-
-.hero-title {
-  font-size: clamp(26px, 3vw, 38px);
-  font-weight: 900; letter-spacing: -0.035em; line-height: 1.08;
-  margin-bottom: 14px;
-}
-.hero-title em { font-style: italic; color: var(--blue); }
-.hero-desc {
-  font-size: 13.5px; color: var(--sub); line-height: 1.75;
-  max-width: 500px; margin-bottom: 22px;
-}
-
-/* ═══ TAG FILTER BAR ═══ */
-.tag-bar {
-  display: flex; gap: 7px; flex-wrap: wrap;
-  padding: 14px 18px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  margin-bottom: 0;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-}
-.tag-pill {
-  font-size: 12.5px; font-weight: 500;
-  background: var(--app-bg); border: 1.5px solid var(--border);
-  border-radius: 50px; padding: 5px 14px; display: inline-block;
-  color: var(--sub); cursor: pointer; transition: all 0.15s;
-  white-space: nowrap; text-decoration: none;
-}
-.tag-pill:hover { border-color: var(--blue-b); color: var(--text); }
-.tag-pill.on {
-  background: var(--blue); border-color: var(--blue);
-  color: #fff; font-weight: 600;
-}
-
-/* ═══ CATALOG LAYOUT ═══ */
-.catalog-wrap {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 20px;
-  align-items: start;
-}
-@media(max-width: 900px) {
-  .catalog-wrap { grid-template-columns: 1fr; }
-}
-
-/* Filter sidebar */
-.filter-panel {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r-lg); padding: 20px;
-  position: sticky; top: 90px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-}
-.filter-head { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
-.filter-reset { font-size: 11px; font-weight: 500; color: var(--blue); text-decoration: none; letter-spacing: 0; text-transform: none; }
-.filter-reset:hover { text-decoration: underline; }
-.filter-group { margin-bottom: 18px; }
-.fg-label { font-size: 10.5px; font-weight: 700; color: var(--muted); margin-bottom: 8px; letter-spacing: 0.06em; text-transform: uppercase; }
-.fo {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 12.5px; color: var(--sub); padding: 5px 0;
-  cursor: pointer; border-radius: 6px;
-  transition: color 0.14s;
-  user-select: none; text-decoration: none;
-}
-.fo:hover { color: var(--text); }
-.fo.on { color: var(--text); font-weight: 600; }
-.fo-box {
-  width: 16px; height: 16px; border-radius: 5px;
-  border: 1.5px solid var(--border); flex-shrink: 0;
-  background: var(--app-bg); display: flex; align-items: center; justify-content: center;
-  font-size: 9px; color: #fff; transition: all 0.14s;
-}
-.fo.on .fo-box { background: var(--blue); border-color: var(--blue); }
-.fo-count { margin-left: auto; font-size: 11px; color: var(--muted); }
-.filter-divider { height: 1px; background: var(--border); margin: 14px 0; }
-
-/* ═══ MPO GRID ═══ */
-.mpo-sort-bar {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 14px; padding: 0 2px;
-}
-.mpo-count { font-size: 12.5px; color: var(--sub); }
-.mpo-count strong { color: var(--text); font-weight: 700; }
-.sort-select {
-  padding: 6px 12px; border-radius: 8px; border: 1.5px solid var(--border);
-  background: var(--surface); font-family: inherit; font-size: 12.5px;
-  color: var(--text); cursor: pointer; outline: none;
-}
-
-.mpo-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-}
-@media(max-width: 1200px) { .mpo-grid { grid-template-columns: repeat(2, 1fr); } }
-@media(max-width: 640px) { .mpo-grid { grid-template-columns: 1fr; } }
-
-/* BOOK & COURSE CARDS */
-.book-product-card { background: #FFFFFF; border: 0.5px solid #B1B5C4; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.2s; text-decoration: none; }
-.book-product-card:hover { box-shadow: 0 8px 24px rgba(100,120,180,0.18); }
-.book-card-img { height: 260px; background: rgba(112,152,223,0.41); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.book-card-img-overlay { position: absolute; inset: 0; background: rgba(151,151,151,0.2); box-shadow: inset 0 0 15px rgba(0,0,0,0.25); }
-.book-card-book { width: 130px; height: 182px; background: linear-gradient(144.46deg, #5BB8E8 0%, #3A9BD5 100%); box-shadow: -6px 6px 18px rgba(0,0,0,0.25), 3px 0 0 rgba(0,0,0,0.1); border-radius: 4px 10px 10px 4px; position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 14px 12px; }
-.book-card-book::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 9px; background: rgba(0,0,0,0.15); border-radius: 4px 0 0 4px; }
-.book-card-book-title { font-weight: 700; font-size: 12px; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.2); padding-left: 10px; line-height: 1.3; }
-.book-card-body { padding: 0 20px 16px; display: flex; flex-direction: column; flex: 1; }
-.book-card-features { display: flex; flex-direction: column; gap: 6px; padding: 12px 0; flex: 1; }
-.book-card-feature { display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 11.5px; color: var(--sub); line-height: 1.35; }
-.book-card-check { width: 18px; height: 18px; background: #DCFCE7; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;}
-.book-card-check svg { width: 9px; height: 9px; }
-.book-card-footer { border-top: 0.5px solid #D9D9D9; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto;}
-.book-card-price { font-weight: 800; font-size: 18px; letter-spacing: -0.4px; color: var(--text); }
-.book-card-delivery { font-weight: 400; font-size: 10.5px; color: #64748B; margin-top: 2px; }
-.book-btn-card-buy { background: var(--text); color: #fff; border: none; border-radius: 10px; padding: 9px 16px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12.5px; cursor: pointer; transition: background 0.18s; white-space: nowrap; }
-.book-btn-card-buy:hover { background: var(--blue); }
-
-/* CONSULT CARDS */
-.consult-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-lg); padding: 18px; display: flex; flex-direction: column; gap: 11px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.03); text-decoration: none; color: inherit; }
-.consult-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-.cc-rec { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; background: #dcfce7; color: #166534; border-radius: 50px; padding: 2px 8px; width: fit-content; }
-.cc-doc { display: flex; align-items: center; gap: 11px; }
-.cc-avatar { width: 44px; height: 44px; border-radius: 12px; background: var(--app-bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; overflow:hidden;}
-.cc-avatar img { width: 100%; height: 100%; object-fit: cover;}
-.cc-name { font-size: 13.5px; font-weight: 700; }
-.cc-spec { font-size: 11px; color: var(--blue); font-weight: 600; }
-.cc-exp { font-size: 10.5px; color: var(--muted); }
-.cc-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto;}
-.cc-tag { font-size: 10.5px; font-weight: 500; background: var(--app-bg); border: 1px solid var(--border); border-radius: 50px; padding: 3px 9px; color: var(--sub); }
-.cc-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border); margin-top: auto;}
-.cc-price { font-size: 16px; font-weight: 800; letter-spacing: -0.02em;}
-.cc-price-sub { font-size: 10.5px; color: var(--muted); }
-.cc-btn { background: var(--text); color: #fff; border: none; padding: 8px 16px; border-radius: 9px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.18s; }
-.cc-btn:hover { background: var(--blue); }
-</style>
-
-<div class="prod-page">
-  <!-- ── BREADCRUMB ── -->
-  <div class="breadcrumb">
-    <a href="/">Главная</a><span class="sep">›</span>
-    <span class="cur">Каталог продуктов</span>
-  </div>
-
-  <!-- ── HERO ── -->
-  <div class="hero">
-    <div class="hero-bg-icon">🏥</div>
-    <div>
-      <h1 class="hero-title">Каталог <em>продуктов</em></h1>
-      <p class="hero-desc">Здесь собраны все наши продукты: от индивидуальных консультаций специалистов до детальных курсов и готовых планов питания (МПО).</p>
+  {{-- ── HERO ── --}}
+  <div class="relative bg-white rounded-3xl overflow-hidden mb-6" style="border:1px solid rgba(42,26,16,0.10);box-shadow:0 4px 24px rgba(42,26,16,0.06);">
+    <div class="absolute top-0 left-0 right-0" style="height:2px;background:linear-gradient(90deg,#EF945B 0%,#D87A4A 45%,#EBE3D2 100%);"></div>
+    <div class="px-8 py-8 lg:px-12 lg:py-10">
+      <p class="text-overline mb-3">Доказательная медицина · Нутрициология</p>
+      <h1 style="font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,40px);font-weight:700;color:#2A1A10;line-height:1.15;letter-spacing:-0.02em;margin-bottom:12px;">
+        Каталог <em style="font-style:italic;color:#EF945B;">продуктов</em>
+      </h1>
+      <p style="font-size:14px;color:#6a5040;line-height:1.75;max-width:520px;">
+        Консультации специалистов интегративной медицины, авторские курсы по здоровью и готовые планы питания — всё для вашего оздоровления.
+      </p>
     </div>
   </div>
 
-  <!-- ── TAG FILTER ── -->
-  <div style="margin-top:24px;">
-    <div class="tag-bar">
-      <a href="{{ strtok($_SERVER["REQUEST_URI"], '?') }}" class="tag-pill {{ empty($_GET['category']) ? 'on' : '' }}">Все направления</a>
-      @php $activeCategoriesPill = !empty($_GET['category']) ? explode(',', $_GET['category']) : []; @endphp
-      @foreach($categories as $cat)
-         <a href="?category={{ $cat->slug }}{{ !empty($_GET['price']) ? '&price='.$_GET['price'] : '' }}{{ !empty($_GET['sort']) ? '&sort='.$_GET['sort'] : '' }}" class="tag-pill {{ in_array($cat->slug, $activeCategoriesPill) ? 'on' : '' }}">{{ $cat->name }}</a>
-      @endforeach
-    </div>
+  {{-- ── CATEGORY PILL BAR ── --}}
+  @php
+    $pillBase = array_filter([
+      !empty($activePrices) ? 'price=' . implode(',', $activePrices) : '',
+      !empty($activeTypes)  ? 'type='  . implode(',', $activeTypes)  : '',
+      ($sortVal && $sortVal !== 'hierarchy') ? 'sort=' . $sortVal : '',
+    ]);
+  @endphp
+  <div id="pill-bar" class="flex flex-wrap gap-2 mb-6">
+    <a href="{{ $baseUrl . (!empty($pillBase) ? '?' . implode('&', $pillBase) : '') }}"
+       class="prod-pill {{ empty($activeCats) ? 'prod-pill--on' : '' }}">Все направления</a>
+    @foreach($categories as $cat)
+      @php
+        $pillParams = array_filter([
+          'category=' . $cat->slug,
+          !empty($activePrices) ? 'price=' . implode(',', $activePrices) : '',
+          !empty($activeTypes)  ? 'type='  . implode(',', $activeTypes)  : '',
+          ($sortVal && $sortVal !== 'hierarchy') ? 'sort=' . $sortVal : '',
+        ]);
+      @endphp
+      <a href="?{{ implode('&', $pillParams) }}"
+         class="prod-pill {{ in_array($cat->slug, $activeCats) ? 'prod-pill--on' : '' }}">
+        {{ $cat->name }}
+      </a>
+    @endforeach
   </div>
 
-  <!-- ── CATALOG ── -->
-  <div class="sec-head" style="margin-top:32px;">
-    <div>
-      <div class="sec-title">📋 Каталог продуктов</div>
-      <div class="sec-sub">Выберите необходимый вам продукт или консультацию</div>
-    </div>
-  </div>
+  {{-- ── CATALOG ── --}}
+  <div class="flex flex-col lg:flex-row gap-5 items-start">
 
-  <div class="catalog-wrap">
-    
-    <!-- Sidebar filters -->
-    <div class="filter-panel">
-      <form action="{{ strtok($_SERVER["REQUEST_URI"], '?') }}" method="GET">
-        <div class="filter-head">
-          Фильтры
-          <a href="{{ strtok($_SERVER["REQUEST_URI"], '?') }}" class="filter-reset">Сбросить</a>
-        </div>
+    {{-- ── SIDEBAR ── --}}
+    <aside class="w-full lg:w-[230px] shrink-0 lg:sticky" style="top:84px;" id="filter-sidebar">
+      <form id="filter-form" action="{{ $baseUrl }}" method="GET">
+        <div class="bg-white rounded-2xl overflow-hidden" style="border:1px solid rgba(42,26,16,0.10);box-shadow:0 2px 12px rgba(42,26,16,0.05);">
 
-        <div class="filter-group">
-          <div class="fg-label">Направление (Диагноз)</div>
-          @php $activeCategories = !empty($_GET['category']) ? explode(',', sanitize_text_field($_GET['category'])) : []; @endphp
-          @foreach($categories as $cat)
-            @php $isActive = in_array($cat->slug, $activeCategories); @endphp
-            <label class="fo {{ $isActive ? 'on' : '' }}">
-              <input type="checkbox" name="category" value="{{ $cat->slug }}" class="hidden" {{ $isActive ? 'checked' : '' }}>
-              <div class="fo-box">{{ $isActive ? '✓' : '' }}</div>{{ $cat->name }}<span class="fo-count">{{ $cat->count }}</span>
-            </label>
-          @endforeach
-        </div>
+          {{-- Header --}}
+          <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid rgba(42,26,16,0.08);">
+            <span style="font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#2A1A10;">Фильтры</span>
+            <a href="{{ $baseUrl }}" class="filter-reset" style="font-size:11px;font-weight:600;color:#EF945B;text-decoration:none;">Сбросить</a>
+          </div>
 
-        <div class="filter-divider"></div>
+          <div class="px-5 py-4 flex flex-col gap-5">
 
-        <div class="filter-group">
-           <div class="fg-label">Цена</div>
-           @php $activePrices = !empty($_GET['price']) ? explode(',', sanitize_text_field($_GET['price'])) : []; @endphp
-           
-           <label class="fo {{ in_array('up_to_2000', $activePrices) ? 'on' : '' }}">
-             <input type="checkbox" name="price" value="up_to_2000" class="hidden" {{ in_array('up_to_2000', $activePrices) ? 'checked' : '' }}>
-             <div class="fo-box">{{ in_array('up_to_2000', $activePrices) ? '✓' : '' }}</div>До 2 000 ₽
-           </label>
-           
-           <label class="fo {{ in_array('2000_to_5000', $activePrices) ? 'on' : '' }}">
-             <input type="checkbox" name="price" value="2000_to_5000" class="hidden" {{ in_array('2000_to_5000', $activePrices) ? 'checked' : '' }}>
-             <div class="fo-box">{{ in_array('2000_to_5000', $activePrices) ? '✓' : '' }}</div>2 000–5 000 ₽
-           </label>
-           
-           <label class="fo {{ in_array('over_5000', $activePrices) ? 'on' : '' }}">
-             <input type="checkbox" name="price" value="over_5000" class="hidden" {{ in_array('over_5000', $activePrices) ? 'checked' : '' }}>
-             <div class="fo-box">{{ in_array('over_5000', $activePrices) ? '✓' : '' }}</div>Свыше 5 000 ₽
-           </label>
-        </div>
+            {{-- Type --}}
+            <div>
+              <p class="filter-group-label">Тип продукта</p>
+              @foreach($typeOptions as $val => $label)
+                @php $isOn = in_array($val, $activeTypes); @endphp
+                <label class="filter-row {{ $isOn ? 'filter-row--on' : '' }}">
+                  <input type="checkbox" name="type" value="{{ $val }}" class="sr-only" {{ $isOn ? 'checked' : '' }}>
+                  <span class="filter-box">
+                    @if($isOn)
+                      <svg viewBox="0 0 9 9" fill="none" width="9" height="9"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    @endif
+                  </span>
+                  {{ $label }}
+                </label>
+              @endforeach
+            </div>
 
-        <div class="filter-divider"></div>
+            <div style="height:1px;background:rgba(42,26,16,0.08);"></div>
 
-        <div class="filter-group hidden">
-          <div class="fg-label">Сортировка (через JS)</div>
-          @php $sortVal = $_GET['sort'] ?? ''; @endphp
-          <input type="hidden" name="sort" class="hidden-sort" value="{{ $sortVal }}">
+            {{-- Category --}}
+            <div>
+              <p class="filter-group-label">Направление</p>
+              @foreach($categories as $cat)
+                @php $isOn = in_array($cat->slug, $activeCats); @endphp
+                <label class="filter-row {{ $isOn ? 'filter-row--on' : '' }}">
+                  <input type="checkbox" name="category" value="{{ $cat->slug }}" class="sr-only" {{ $isOn ? 'checked' : '' }}>
+                  <span class="filter-box">
+                    @if($isOn)
+                      <svg viewBox="0 0 9 9" fill="none" width="9" height="9"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    @endif
+                  </span>
+                  {{ $cat->name }}
+                  @if($cat->count > 0)
+                    <span class="ml-auto" style="font-size:11px;color:#A89F8B;">{{ $cat->count }}</span>
+                  @endif
+                </label>
+              @endforeach
+            </div>
+
+            <div style="height:1px;background:rgba(42,26,16,0.08);"></div>
+
+            {{-- Price --}}
+            <div>
+              <p class="filter-group-label">Цена</p>
+              @foreach($priceOptions as $val => $label)
+                @php $isOn = in_array($val, $activePrices); @endphp
+                <label class="filter-row {{ $isOn ? 'filter-row--on' : '' }}">
+                  <input type="checkbox" name="price" value="{{ $val }}" class="sr-only" {{ $isOn ? 'checked' : '' }}>
+                  <span class="filter-box">
+                    @if($isOn)
+                      <svg viewBox="0 0 9 9" fill="none" width="9" height="9"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    @endif
+                  </span>
+                  {{ $label }}
+                </label>
+              @endforeach
+            </div>
+
+          </div>
+
+          {{-- Non-JS submit --}}
+          <div class="px-5 pb-5">
+            <button type="submit" style="width:100%;padding:10px;background:#2A1A10;color:#F5EFE2;border:none;border-radius:50px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;" onmouseover="this.style.opacity='.82'" onmouseout="this.style.opacity='1'">
+              Применить
+            </button>
+          </div>
+
         </div>
       </form>
-    </div>
+    </aside>
 
-    <!-- MPO cards / Main Content -->
-    <div class="mpo-grid-wrap">
-      <div class="mpo-sort-bar">
-        <div class="mpo-count">Показано <strong>{{ count($products) }}</strong> элементов</div>
-        <select class="sort-select">
-          <option value="hierarchy" {{ $sortVal === '' || $sortVal === 'hierarchy' ? 'selected' : '' }}>По иерархии</option>
-          <option value="price_asc" {{ $sortVal === 'price_asc' ? 'selected' : '' }}>По цене ↑</option>
+    {{-- ── PRODUCTS AREA ── --}}
+    <div class="flex-1 min-w-0" id="products-area">
+
+      {{-- Sort bar --}}
+      <div class="flex items-center justify-between mb-4 px-1">
+        <p id="products-count" style="font-size:12.5px;color:#6a5040;">
+          @if($totalProducts > 0)
+            @php $from = ($currentPage - 1) * $perPage + 1; $to = min($currentPage * $perPage, $totalProducts); @endphp
+            Показано <strong style="color:#2A1A10;font-weight:700;">{{ $from }}–{{ $to }}</strong> из <strong style="color:#2A1A10;font-weight:700;">{{ $totalProducts }}</strong>
+          @else
+            Ничего не найдено
+          @endif
+        </p>
+        <select id="sort-select" style="padding:7px 14px;border-radius:50px;border:1.5px solid rgba(42,26,16,0.18);background:#fff;font-family:inherit;font-size:12.5px;color:#2A1A10;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;padding-right:28px;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' stroke='%232A1A10' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 10px center;">
+          <option value="hierarchy" {{ $sortVal === '' || $sortVal === 'hierarchy' ? 'selected' : '' }}>По типу</option>
+          <option value="price_asc"  {{ $sortVal === 'price_asc'  ? 'selected' : '' }}>По цене ↑</option>
           <option value="price_desc" {{ $sortVal === 'price_desc' ? 'selected' : '' }}>По цене ↓</option>
         </select>
       </div>
 
-      <div class="mpo-grid">
+      {{-- Products grid --}}
+      <div id="products-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
         @if(count($products) > 0)
           @foreach($products as $product)
             @if($product['post_type'] === 'consultation')
-              @include('partials.card-consultation', ['item' => $product])
-            @elseif($product['post_type'] === 'course')
-              @include('partials.card-course', ['item' => $product])
-            @elseif($product['post_type'] === 'book')
-              @include('partials.card-book', ['item' => $product])
+              <div style="grid-column:1 / -1;">
+                @include('partials.card-consultation', ['item' => $product])
+              </div>
+            @else
+              <div>
+                @include('partials.card-' . $product['post_type'], ['item' => $product])
+              </div>
             @endif
           @endforeach
         @else
-          <div style="grid-column: 1 / -1; padding: 40px; text-align: center; border: 2px dashed var(--border); border-radius: var(--r-lg); color: var(--sub);">
-            По вашему запросу ничего не найдено.
+          <div style="grid-column:1 / -1;padding:48px 24px;text-align:center;border:2px dashed rgba(42,26,16,0.12);border-radius:20px;">
+            <p style="color:#A89F8B;font-size:14px;margin-bottom:12px;">По вашему запросу ничего не найдено.</p>
+            <a href="{{ $baseUrl }}" class="filter-reset" style="font-size:13px;font-weight:600;color:#EF945B;text-decoration:none;">Сбросить фильтры</a>
           </div>
         @endif
       </div>
+
+      {{-- Pagination --}}
+      @if($totalPages > 1)
+        @php
+          // Build page items with ellipsis
+          $pageItems = [];
+          if ($totalPages <= 7) {
+              $pageItems = range(1, $totalPages);
+          } else {
+              $pageItems[] = 1;
+              if ($currentPage > 3) $pageItems[] = '…';
+              for ($i = max(2, $currentPage - 1); $i <= min($totalPages - 1, $currentPage + 1); $i++) {
+                  $pageItems[] = $i;
+              }
+              if ($currentPage < $totalPages - 2) $pageItems[] = '…';
+              $pageItems[] = $totalPages;
+          }
+
+          // URL builder for page links (preserves active filters)
+          $buildPageUrl = function(int $page) use ($activeCats, $activePrices, $activeTypes, $sortVal, $baseUrl): string {
+              $p = array_filter([
+                  !empty($activeCats)   ? 'category=' . implode(',', $activeCats)   : '',
+                  !empty($activePrices) ? 'price='    . implode(',', $activePrices) : '',
+                  !empty($activeTypes)  ? 'type='     . implode(',', $activeTypes)  : '',
+                  ($sortVal && $sortVal !== 'hierarchy') ? 'sort=' . $sortVal       : '',
+                  $page > 1             ? 'paged='    . $page                       : '',
+              ]);
+              return $baseUrl . (!empty($p) ? '?' . implode('&', $p) : '');
+          };
+        @endphp
+
+        <nav id="pagination" class="flex items-center justify-center gap-1.5 mt-8 flex-wrap">
+          {{-- Prev --}}
+          @if($currentPage > 1)
+            <a href="{{ $buildPageUrl($currentPage - 1) }}" class="page-btn page-btn--arrow" data-page="{{ $currentPage - 1 }}">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2L4 7L9 12"/></svg>
+              Назад
+            </a>
+          @endif
+
+          {{-- Pages --}}
+          @foreach($pageItems as $item)
+            @if($item === '…')
+              <span class="page-ellipsis">…</span>
+            @else
+              <a href="{{ $buildPageUrl($item) }}"
+                 class="page-btn {{ $item === $currentPage ? 'page-btn--on' : '' }}"
+                 data-page="{{ $item }}">{{ $item }}</a>
+            @endif
+          @endforeach
+
+          {{-- Next --}}
+          @if($currentPage < $totalPages)
+            <a href="{{ $buildPageUrl($currentPage + 1) }}" class="page-btn page-btn--arrow" data-page="{{ $currentPage + 1 }}">
+              Далее
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2L10 7L5 12"/></svg>
+            </a>
+          @endif
+        </nav>
+      @endif
+
     </div>
+    {{-- /.products-area --}}
+
   </div>
+  {{-- /.flex catalog --}}
+
+</div>
 </div>
 
+<style>
+/* ── Pill filter bar ── */
+.prod-pill {
+  display: inline-flex; align-items: center;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 12.5px; font-weight: 500;
+  border: 1.5px solid rgba(42,26,16,0.15);
+  background: #EBE3D2; color: #6a5040;
+  cursor: pointer; transition: all 0.15s;
+  text-decoration: none; white-space: nowrap;
+}
+.prod-pill:hover { border-color: rgba(42,26,16,0.30); color: #2A1A10; }
+.prod-pill--on { background: #2A1A10; border-color: #2A1A10; color: #F5EFE2; font-weight: 600; }
+
+/* ── Sidebar filter rows ── */
+.filter-group-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: #A89F8B; margin-bottom: 10px;
+}
+.filter-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12.5px; color: #6a5040;
+  padding: 5px 0; cursor: pointer; border-radius: 8px;
+  transition: color 0.14s; user-select: none;
+}
+.filter-row:hover { color: #2A1A10; }
+.filter-row--on { color: #2A1A10; font-weight: 600; }
+.filter-box {
+  width: 16px; height: 16px; border-radius: 5px;
+  border: 1.5px solid rgba(42,26,16,0.20); flex-shrink: 0;
+  background: #EBE3D2; display: flex; align-items: center; justify-content: center;
+  transition: all 0.14s;
+}
+.filter-row--on .filter-box { background: #2A1A10; border-color: #2A1A10; }
+
+/* ── Pagination ── */
+.page-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  min-width: 36px; height: 36px; border-radius: 50%;
+  font-size: 13px; font-weight: 600;
+  border: 1.5px solid rgba(42,26,16,0.15);
+  background: #fff; color: #6a5040;
+  text-decoration: none; transition: all 0.15s; cursor: pointer; white-space: nowrap;
+}
+.page-btn:hover { border-color: rgba(42,26,16,0.30); color: #2A1A10; }
+.page-btn--on { background: #2A1A10; border-color: #2A1A10; color: #F5EFE2; }
+.page-btn--arrow { border-radius: 50px; padding: 0 14px; font-size: 12.5px; }
+.page-ellipsis {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; font-size: 13px; color: #A89F8B;
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  #products-grid { grid-template-columns: 1fr !important; }
+  #products-grid > div { grid-column: 1 / -1 !important; }
+}
+@media (max-width: 640px) {
+  #products-grid { grid-template-columns: 1fr !important; }
+}
+</style>
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    function refreshFilters(url) {
-        window.history.pushState({}, '', url);
-        const grid = document.querySelector('.mpo-grid');
-        if (grid) grid.style.opacity = '0.5';
-        
-        fetch(url)
-            .then(res => res.text())
-            .then(html => {
-                const doc = new DOMParser().parseFromString(html, 'text/html');
-                
-                const parts = ['.tag-bar', '.catalog-wrap'];
-                parts.forEach(selector => {
-                    const oldEl = document.querySelector(selector);
-                    const newEl = doc.querySelector(selector);
-                    if (oldEl && newEl) {
-                        oldEl.innerHTML = newEl.innerHTML;
-                    }
-                });
-            })
-            .catch(err => {
-                if (grid) grid.style.opacity = '1';
-                console.error(err);
-            });
+(function () {
+  function buildParams(paged) {
+    const form = document.getElementById('filter-form');
+    if (!form) return new URLSearchParams();
+
+    const cats   = Array.from(form.querySelectorAll('input[name="category"]:checked')).map(e => e.value);
+    const prices = Array.from(form.querySelectorAll('input[name="price"]:checked')).map(e => e.value);
+    const types  = Array.from(form.querySelectorAll('input[name="type"]:checked')).map(e => e.value);
+    const sort   = (document.getElementById('sort-select') || {}).value || 'hierarchy';
+
+    const p = new URLSearchParams();
+    if (cats.length)   p.set('category', cats.join(','));
+    if (prices.length) p.set('price',    prices.join(','));
+    if (types.length)  p.set('type',     types.join(','));
+    if (sort && sort !== 'hierarchy') p.set('sort', sort);
+    if (paged && paged > 1)           p.set('paged', paged);
+    return p;
+  }
+
+  function updateFilterVisuals() {
+    document.querySelectorAll('#filter-form .filter-row').forEach(row => {
+      const cb   = row.querySelector('input[type="checkbox"]');
+      const box  = row.querySelector('.filter-box');
+      if (!cb || !box) return;
+      const isOn = cb.checked;
+      row.classList.toggle('filter-row--on', isOn);
+      box.innerHTML = isOn
+        ? '<svg viewBox="0 0 9 9" fill="none" width="9" height="9"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>'
+        : '';
+    });
+  }
+
+  function scrollToProducts() {
+    const area = document.getElementById('products-area');
+    if (!area) return;
+    const top = area.getBoundingClientRect().top + window.scrollY - 96;
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  }
+
+  function refreshPage(url, scroll) {
+    window.history.pushState({}, '', url);
+
+    const grid = document.getElementById('products-grid');
+    if (grid) grid.style.opacity = '0.35';
+
+    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      .then(r => r.text())
+      .then(html => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+
+        // Replace products area (grid + sort bar)
+        const oldArea = document.getElementById('products-area');
+        const newArea = doc.getElementById('products-area');
+        if (oldArea && newArea) oldArea.innerHTML = newArea.innerHTML;
+
+        // Sync sidebar checkboxes from new server state
+        const newSidebar = doc.getElementById('filter-sidebar');
+        const oldForm    = document.getElementById('filter-form');
+        if (oldForm && newSidebar) {
+          oldForm.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            const selector = `input[name="${cb.name}"][value="${CSS.escape(cb.value)}"]`;
+            const newCb = newSidebar.querySelector(selector);
+            if (newCb) cb.checked = newCb.checked;
+          });
+          updateFilterVisuals();
+        }
+
+        // Replace pill-bar
+        const oldPill = document.getElementById('pill-bar');
+        const newPill = doc.getElementById('pill-bar');
+        if (oldPill && newPill) oldPill.innerHTML = newPill.innerHTML;
+
+        if (scroll) scrollToProducts();
+      })
+      .catch(err => {
+        const g = document.getElementById('products-grid');
+        if (g) g.style.opacity = '1';
+        console.error(err);
+      });
+  }
+
+  // ── Checkbox change (delegated) ──
+  document.addEventListener('change', function (e) {
+    if (e.target.type === 'checkbox' && e.target.closest('#filter-form')) {
+      updateFilterVisuals();
+      const params = buildParams();
+      const url = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+      refreshPage(url);
+      return;
+    }
+    // Sort select
+    if (e.target.id === 'sort-select') {
+      const params = buildParams();
+      const url = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+      refreshPage(url);
+    }
+  });
+
+  // ── Pagination, pill & reset clicks (delegated) ──
+  document.addEventListener('click', function (e) {
+    // Pagination
+    const pageBtn = e.target.closest('.page-btn[data-page]');
+    if (pageBtn) {
+      e.preventDefault();
+      const page = parseInt(pageBtn.getAttribute('data-page'), 10);
+      const params = buildParams(page);
+      const url = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+      refreshPage(url, true);
+      return;
     }
 
-    document.addEventListener('change', function(e) {
-        if (e.target.closest('.filter-panel') || e.target.classList.contains('sort-select')) {
-            const form = document.querySelector('.filter-panel form');
-            if (!form) return;
-            
-            const categories = Array.from(form.querySelectorAll('input[name="category"]:checked')).map(el => el.value);
-            const prices = Array.from(form.querySelectorAll('input[name="price"]:checked')).map(el => el.value);
-            
-            const sortSelect = document.querySelector('.sort-select');
-            const sort = sortSelect ? sortSelect.value : 'hierarchy';
-            
-            const params = new URLSearchParams();
-            if (categories.length) params.set('category', categories.join(','));
-            if (prices.length) params.set('price', prices.join(','));
-            if (sort && sort !== 'hierarchy') params.set('sort', sort);
-            
-            let url = window.location.pathname;
-            if (params.toString()) url += '?' + params.toString();
-            
-            refreshFilters(url);
-        }
-    });
+    // Category pills
+    const pill = e.target.closest('.prod-pill');
+    if (pill) {
+      e.preventDefault();
+      refreshPage(pill.getAttribute('href'), false);
+      return;
+    }
 
-    document.addEventListener('click', function(e) {
-        const pill = e.target.closest('.tag-pill');
-        if (pill) {
-            e.preventDefault();
-            refreshFilters(pill.getAttribute('href'));
-            return;
-        }
-        
-        const resetBtn = e.target.closest('.filter-reset');
-        if (resetBtn) {
-            e.preventDefault();
-            refreshFilters(resetBtn.getAttribute('href'));
-            return;
-        }
-    });
+    // Reset
+    const reset = e.target.closest('.filter-reset');
+    if (reset) {
+      e.preventDefault();
+      refreshPage(reset.getAttribute('href') || window.location.pathname, false);
+    }
+  });
 
-    window.addEventListener('popstate', function() {
-        window.location.reload();
-    });
-});
+  window.addEventListener('popstate', () => window.location.reload());
+})();
 </script>
+
 @endsection

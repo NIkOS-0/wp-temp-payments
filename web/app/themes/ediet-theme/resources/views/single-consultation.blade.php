@@ -155,7 +155,7 @@
     .book-use-text span { font-size: 13px; color: var(--book-text-mid); line-height: 20px; }
     ul.book-toc { list-style: none; padding: 0; margin: 0; }
     ul.book-toc li { margin-bottom: 16px; font-size: 14px; color: var(--book-text-dark); padding-left: 12px; position: relative; }
-    ul.book-toc li::before { content: '•'; position: absolute; left: 0; color: #3B82F6; font-weight: bold; }
+    ul.book-toc li::before { content: '•'; position: absolute; left: 0; color: #16A34A ; font-weight: bold; }
     ul.book-toc li span { display: block; font-size: 13px; color: var(--book-text-mid); margin-top: 4px; }
   
     /* AUTHOR */
@@ -399,7 +399,7 @@
         <div class="book-tab-content" id="tab-reviews">
           <h2 class="book-desc-heading">Отзывы клиентов</h2>
           @if(count($reviews) > 0)
-            @include('blocks.featured_reviews', ['items' => $reviews, 'title' => '', 'subtitle' => ''])
+            @include('blocks.featured_reviews', ['items' => $reviews, 'title' => '', 'subtitle' => '', 'rv_theme' => 'light'])
           @else
             <div class="book-desc-paragraph text-slate-400">Отзывов пока нет. Будьте первыми!</div>
           @endif

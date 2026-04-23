@@ -19,7 +19,7 @@
       --book-radius-btn: 50px;
     }
   
-    .bg-main { background: var(--book-bg); font-family: 'Instrument Sans', 'Inter', sans-serif; color: var(--book-text-dark); min-width: 1160px; }
+    .bg-main { background: var(--book-bg); font-family: 'Inter', sans-serif; color: var(--book-text-dark); min-width: 1160px; }
   
     .book-page {
       max-width: 1160px;
@@ -52,7 +52,7 @@
       border-radius: 20px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
     }
     .book-badge-bestseller {
-      position: absolute; top: 16px; left: 16px; background: rgba(217,217,217,0.7);
+      position: absolute; top: 16px; left: 16px;
       border: 1px solid rgba(255,255,255,0.5); border-radius: 30px; padding: 2px 12px;
       font-family: 'Roboto', sans-serif; font-weight: 600; font-size: 11px; letter-spacing: 1.65px; color: #fff; z-index: 2;
     }
@@ -80,10 +80,7 @@
     /* Info */
     .book-info { flex: 1; position: relative; display: flex; flex-direction: column; gap: 0; }
     .book-tags { display: flex; gap: 8px; margin-bottom: 8px; }
-    .book-tag { padding: 2px 10px; border-radius: 50px; font-weight: 700; font-size: 10.5px; letter-spacing: 0.315px; }
-    .book-tag-pdf { background: #fde8d4; border: 1px solid #F4B491; color: #D87A4A; }
-    .book-tag-verified { background: #DCFCE7; border: 1px solid #BBF7D0; color: #166534; }
-    .book-tag-default { background: #EBE3D2; border: 1px solid rgba(42,26,16,0.15); color: #6a5040; }
+    .book-tag { padding: 2px 10px; border-radius: 50px; font-weight: 700; font-size: 10.5px; letter-spacing: 0.315px; border: 1px solid rgba(0,0,0,0.1); }
   
     .book-product-title {
       font-family: 'Public Sans', sans-serif; font-weight: 700; font-size: 32px; line-height: 37px; letter-spacing: -1.2px; color: #0F172A; margin-bottom: 8px;
@@ -100,14 +97,14 @@
     }
     .book-stat-cell:last-child { border-right: none; }
     .book-stat-value { font-weight: 800; font-size: 22px; line-height: 27px; letter-spacing: -0.66px; color: #2F2F2F; }
-    .book-stat-label { font-size: 10.5px; color: var(--book-text-mid); text-align: center; }
+    .book-stat-label { font-size: 12.5px; color: var(--book-text-mid); text-align: center; }
   
     /* Features */
     .book-features { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
     .book-feature-item { display: flex; align-items: center; gap: 10px; }
     .book-check-circle { width: 22px; height: 22px; background: #DCFCE7; border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .book-check-circle svg { width: 11px; height: 11px; }
-    .book-feature-text { font-weight: 200; font-size: 14px; letter-spacing: -0.4px; color: var(--book-text-dark); }
+    .book-feature-text { font-weight: 300; font-size: 14px; letter-spacing: -0.4px; color: var(--book-text-dark); }
     .book-divider { height: 0.5px; background: #D9D9D9; margin-bottom: 16px; }
   
     /* Price */
@@ -115,14 +112,14 @@
     .book-price-main { font-weight: 600; font-size: 36px; line-height: 44px; letter-spacing: -1.2px; color: #000; }
     .book-price-old { font-size: 18px; text-decoration: line-through; color: var(--book-text-light); }
     .book-price-badge { background: #fde8d4; border: 1px solid #F4B491; border-radius: 50px; padding: 3px 10px; font-weight: 700; font-size: 11px; color: #D87A4A; }
-    .book-delivery-note { font-weight: 200; font-size: 12px; letter-spacing: -0.4px; color: var(--book-text-light); margin-bottom: 16px; }
+    .book-delivery-note { font-weight: 300; font-size: 12px; letter-spacing: -0.4px; color: var(--book-text-dark); margin-bottom: 16px; }
   
     /* CTA */
     .book-cta-row { display: flex; gap: 12px; }
     .book-btn-buy {
       flex: 1; height: 52px; background: #2A1A10; border-radius: var(--book-radius-btn); border: none; color: #fff;
       font-weight: 700; font-size: 15px; letter-spacing: -0.2px; cursor: pointer; transition: opacity 0.15s;
-      font-family: 'Instrument Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
     }
     .book-btn-buy:hover { opacity: 0.85; }
     .book-btn-icon {
@@ -146,21 +143,21 @@
     .book-tab-content.active { display: block; }
   
     .book-desc-heading { font-family: 'Public Sans', sans-serif; font-weight: 700; font-size: 18px; line-height: 27px; letter-spacing: -0.4px; color: var(--book-text-dark); margin-bottom: 16px; }
-    .book-desc-paragraph { font-size: 14px; line-height: 25px; color: var(--book-text-mid); margin-bottom: 16px; }
+    .book-desc-paragraph { font-size: 14px; line-height: 25px; color: #000; margin-bottom: 16px; }
     .book-desc-quote {
-      border-left: 3px solid #E2E8F0; border-radius: 14px; font-style: italic; font-size: 13.5px; line-height: 22px; color: var(--book-text-mid);
+      border-left: 3px solid #E2E8F0; border-radius: 14px; font-style: italic; font-size: 13.5px; line-height: 22px; color: #000;
       margin-bottom: 24px; border: 1px solid rgba(217,217,217,0.3); padding: 10px 20px;
     }
     .book-use-cases { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px;}
     .book-use-case-card { background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 14px; padding: 14px 16px; display: flex; gap: 10px; align-items: flex-start; }
     .book-use-icon { width: 28px; height: 28px; background: #EFF6FF; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .book-use-icon svg { width: 14px; height: 14px; }
-    .book-use-text strong { display: block; font-size: 13px; font-weight: 700; color: var(--book-text-dark); margin-bottom: 2px; }
-    .book-use-text span { font-size: 13px; color: var(--book-text-mid); line-height: 20px; }
+    .book-use-text strong { display: block; font-size: 13px; font-weight: 700; color: #000; margin-bottom: 2px; }
+    .book-use-text span { font-size: 13px; color: #000; line-height: 20px; }
     ul.book-toc { list-style: none; padding: 0; margin: 0; }
-    ul.book-toc li { margin-bottom: 16px; font-size: 14px; color: var(--book-text-dark); padding-left: 12px; position: relative; }
-    ul.book-toc li::before { content: '•'; position: absolute; left: 0; color: #3B82F6; font-weight: bold; }
-    ul.book-toc li span { display: block; font-size: 13px; color: var(--book-text-mid); margin-top: 4px; }
+    ul.book-toc li { margin-bottom: 16px; font-size: 14px; color: #000; padding-left: 12px; position: relative; }
+    ul.book-toc li::before { content: '•'; position: absolute; left: 0; color: #16A34A ; font-weight: bold; }
+    ul.book-toc li span { display: block; font-size: 13px; color: #000; margin-top: 4px; }
   
     /* AUTHOR */
     .book-author-card { background: var(--book-white); border: 1px solid rgba(255,255,255,0.9); box-shadow: var(--book-shadow); border-radius: var(--book-radius-card); display: flex; overflow: hidden; }
@@ -224,7 +221,7 @@
         <div class="book-gallery">
           <div class="book-gallery-main" id="book-gallery-main">
             @if($book['image_badge'])
-              <span class="book-badge-bestseller">{{ $book['image_badge'] }}</span>
+              <span class="book-badge-bestseller" style="background: {{ $book['image_badge_bg'] }}">{{ $book['image_badge'] }}</span>
             @endif
             
             @if(!empty($book['gallery']))
@@ -269,11 +266,10 @@
           <div class="book-tags">
             @foreach($book['top_labels'] as $label)
               @php
-                  $tClass = 'book-tag-default';
-                  if($label['style'] === 'pdf') $tClass = 'book-tag-pdf';
-                  if($label['style'] === 'verified') $tClass = 'book-tag-verified';
+                  $bgColor = $label['bg_color'] ?? '#EBE3D2';
+                  $textColor = $label['text_color'] ?? '#6a5040';
               @endphp
-              <span class="book-tag {{ $tClass }}">{{ $label['text'] }}</span>
+              <span class="book-tag" style="background: {{ $bgColor }}; color: {{ $textColor }}">{{ $label['text'] }}</span>
             @endforeach
           </div>
 
@@ -395,7 +391,7 @@
 
         @if(count($reviews) > 0)
         <div class="book-tab-content" id="tab-reviews">
-           @include('blocks.featured_reviews', ['custom_reviews' => $reviews, 'hide_controls' => true])
+           @include('blocks.featured_reviews', ['custom_reviews' => $reviews, 'hide_controls' => true, 'rv_theme' => 'light'])
         </div>
         @endif
       </section>

@@ -162,3 +162,24 @@ add_action('widgets_init', function () {
         'id' => 'sidebar-footer',
     ] + $config);
 });
+
+/**
+ * Register ACF Options pages under Appearance.
+ */
+add_action('acf/init', function() {
+    if (function_exists('acf_add_options_sub_page')) {
+        acf_add_options_sub_page([
+            'page_title'  => __('Header Settings', 'sage'),
+            'menu_title'  => __('Header', 'sage'),
+            'parent_slug' => 'themes.php',
+            'menu_slug'   => 'theme-header-settings',
+        ]);
+        
+        acf_add_options_sub_page([
+            'page_title'  => __('Footer Settings', 'sage'),
+            'menu_title'  => __('Footer', 'sage'),
+            'parent_slug' => 'themes.php',
+            'menu_slug'   => 'theme-footer-settings',
+        ]);
+    }
+});

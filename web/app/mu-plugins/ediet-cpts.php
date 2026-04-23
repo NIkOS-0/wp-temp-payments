@@ -43,7 +43,7 @@ function ediet_register_cpts() {
         'rewrite' => ['slug' => 'disease', 'with_front' => false]
     ]);
 
-    register_taxonomy('disease_category', ['disease'], [
+    register_taxonomy('disease_category', ['disease', 'consultation', 'course', 'book'], [
         'labels' => ['name' => __('Категории диагнозов', 'ediet')],
         'hierarchical' => true, 'show_in_rest' => true,
     ]);

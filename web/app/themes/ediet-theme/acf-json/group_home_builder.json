@@ -280,10 +280,10 @@
                                 },
                                 {
                                     "key": "field_exp_stat_c",
-                                    "label": "Цвет значения (Tailwind Class)",
+                                    "label": "Цвет значения (HEX)",
                                     "name": "color",
-                                    "type": "text",
-                                    "default_value": "slate-900"
+                                    "type": "color_picker",
+                                    "default_value": "#2A1A10"
                                 }
                             ]
                         }

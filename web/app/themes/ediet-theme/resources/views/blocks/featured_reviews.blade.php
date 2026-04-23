@@ -9,6 +9,7 @@
   }
 
   $bid = $bid ?? uniqid();
+  $rv_theme = $rv_theme ?? 'teal'; // 'teal' (default) or 'light'
 @endphp
 
 <style>
@@ -40,6 +41,38 @@
       var(--rv-bg-3) 100%);
   color: var(--rv-ink);
 }
+
+/* Light theme overrides (for product pages) */
+@if($rv_theme === 'light')
+#rv-{{ $bid }} {
+  --rv-bg-0: #fdfcf9;
+  --rv-bg-1: #F5EFE2;
+  --rv-bg-2: #EBE3D2;
+  --rv-bg-3: #F5EFE2;
+  --rv-deep: #2A1A10;
+  --rv-ink:  #2A1A10;
+  --rv-lime: #F5EFE2;
+  --rv-border: rgba(42,26,16,0.12);
+  background: linear-gradient(180deg, #fdfcf9 0%, #F5EFE2 50%, #fdfcf9 100%);
+  padding: 40px 32px 60px;
+}
+#rv-{{ $bid }} .rv-blob.a { background:radial-gradient(circle,rgba(239,148,91,.18),transparent 65%); }
+#rv-{{ $bid }} .rv-blob.b { background:radial-gradient(circle,rgba(239,148,91,.12),transparent 65%); }
+#rv-{{ $bid }} .rv-blob.c { background:radial-gradient(circle,rgba(47,61,42,.08),transparent 65%); }
+#rv-{{ $bid }} .rv-blob.d { background:radial-gradient(circle,rgba(239,148,91,.10),transparent 65%); }
+#rv-{{ $bid }} .rv-grain { opacity:.03; }
+#rv-{{ $bid }} .rv-arc { display:none; }
+#rv-{{ $bid }} .rv-eyebrow { color:var(--rv-deep); }
+#rv-{{ $bid }} .rv-title { color:var(--rv-ink); }
+#rv-{{ $bid }} .rv-title em { color:#8a7060; }
+#rv-{{ $bid }} .rv-card { border-left-color:#2A1A10; }
+#rv-{{ $bid }} .rv-arrow { border-color:rgba(42,26,16,.18);background:rgba(255,255,255,.6); }
+#rv-{{ $bid }} .rv-arrow:hover { background:#2A1A10;border-color:#2A1A10; }
+#rv-{{ $bid }} .rv-arrow svg { stroke:#2A1A10; }
+#rv-{{ $bid }} .rv-arrow:hover svg { stroke:#F5EFE2; }
+#rv-{{ $bid }} .rv-dot--active { background:#2A1A10 !important; }
+#rv-{{ $bid }} .rv-dot--idle { background:rgba(42,26,16,.25) !important; }
+@endif
 
 /* Blobs */
 #rv-{{ $bid }} .rv-blobs { position:absolute;inset:0;pointer-events:none;z-index:0; }
@@ -82,7 +115,7 @@
 #rv-{{ $bid }} .rv-stage { position:relative;width:100%;height:560px;display:flex;align-items:center;justify-content:center; }
 
 /* Card */
-#rv-{{ $bid }} .rv-card { position:absolute;width:min(100%,920px);display:flex;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.7);border-left:4px solid var(--rv-deep);border-radius:28px;padding:14px;overflow:hidden;box-shadow:0 1px 2px rgba(15,46,39,.04),0 40px 80px -40px rgba(15,46,39,.35);transition:transform .65s cubic-bezier(.2,.8,.2,1),opacity .65s ease,filter .65s ease;will-change:transform,opacity,filter; }
+#rv-{{ $bid }} .rv-card { position:absolute;width:min(100%,920px);display:flex;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.7);border-radius:28px;padding:14px;overflow:hidden;box-shadow:0 1px 2px rgba(15,46,39,.04),0 40px 80px -40px rgba(15,46,39,.35);transition:transform .65s cubic-bezier(.2,.8,.2,1),opacity .65s ease,filter .65s ease;will-change:transform,opacity,filter; }
 #rv-{{ $bid }} .rv-card.is-active { transform:translateX(0) scale(1);opacity:1;filter:blur(0);z-index:20; }
 #rv-{{ $bid }} .rv-card.is-prev { transform:translateX(-42%) scale(.86);opacity:.55;filter:blur(2px);z-index:10;pointer-events:none; }
 #rv-{{ $bid }} .rv-card.is-next { transform:translateX(42%) scale(.86);opacity:.55;filter:blur(2px);z-index:10;pointer-events:none; }
@@ -90,7 +123,7 @@
 
 /* Media panel */
 #rv-{{ $bid }} .rv-media { position:relative;flex:0 0 42%;min-height:420px;border-radius:20px;overflow:hidden;background:linear-gradient(135deg,var(--rv-bg-1),var(--rv-bg-3)); }
-#rv-{{ $bid }} .rv-media img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover; }
+#rv-{{ $bid }} .rv-media > img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover; }
 #rv-{{ $bid }} .rv-media::after { content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 100%,rgba(15,46,39,.35),transparent 60%);pointer-events:none; }
 #rv-{{ $bid }} .rv-placeholder { position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.12) 0 10px,rgba(255,255,255,0) 10px 20px),linear-gradient(135deg,var(--rv-bg-2),var(--rv-deep));display:flex;align-items:center;justify-content:center; }
 #rv-{{ $bid }} .rv-play { position:absolute;inset:0;margin:auto;width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 30px -10px rgba(15,46,39,.55);transition:transform .3s,background .3s;z-index:3; }
@@ -105,23 +138,29 @@
 #rv-{{ $bid }} .rv-body { flex:1;padding:38px 44px;display:flex;flex-direction:column;justify-content:center;position:relative;min-height:420px; }
 #rv-{{ $bid }} .rv-qmark { position:absolute;top:18px;left:28px;font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:120px;color:var(--rv-bg-1);line-height:.8;pointer-events:none;user-select:none; }
 #rv-{{ $bid }} .rv-ba { display:flex;flex-direction:column;gap:20px;position:relative;z-index:2;margin-top:12px; }
-#rv-{{ $bid }} .rv-badge { display:inline-flex;align-items:center;gap:8px;align-self:flex-start;background:rgba(196,227,168,.5);border:1px solid rgba(45,90,79,.2);color:var(--rv-deep);font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:6px 12px;border-radius:9999px;margin-bottom:4px; }
+#rv-{{ $bid }} .rv-badge { display:inline-flex;align-items:center;gap:8px;align-self:flex-start;background:#DCFCE7;border:1px solid rgba(45,90,79,.2);color:var(--rv-deep);font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:6px 12px;border-radius:9999px;margin-bottom:4px; }
 #rv-{{ $bid }} .rv-row-label { display:flex;align-items:center;gap:8px;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;font-weight:600;color:var(--rv-deep);opacity:.7;margin-bottom:8px; }
 #rv-{{ $bid }} .rv-row-label .d { width:6px;height:6px;border-radius:50%;background:var(--rv-deep);opacity:.4; }
 #rv-{{ $bid }} .after-label { opacity:1; }
 #rv-{{ $bid }} .after-label .d { background:var(--rv-gold);opacity:1; }
 #rv-{{ $bid }} .rv-text-before { font-size:14.5px;line-height:1.55;color:rgba(15,46,39,.72);font-style:italic;padding-right:8px; }
-#rv-{{ $bid }} .rv-text-after { font-style:normal;color:var(--rv-ink);font-weight:500;background:rgba(196,227,168,.32);border:1px solid rgba(45,90,79,.12);padding:14px 16px;border-radius:12px;font-size:14.5px;line-height:1.55; }
+#rv-{{ $bid }} .rv-text-after { font-style:normal;color:var(--rv-ink);font-weight:500;background:#DCFCE7;border:1px solid rgba(45,90,79,.12);padding:14px 16px;border-radius:12px;font-size:14.5px;line-height:1.55; }
 #rv-{{ $bid }} .rv-text-plain { font-size:15px;line-height:1.6;color:rgba(15,46,39,.82);position:relative;z-index:2;margin-top:18px;max-width:440px; }
 
-/* Controls */
-#rv-{{ $bid }} .rv-controls { margin-top:48px;display:flex;align-items:center;justify-content:center;gap:20px; }
-#rv-{{ $bid }} .rv-btn { width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.65);backdrop-filter:blur(10px);border:1px solid var(--rv-border);color:var(--rv-ink);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s; }
-#rv-{{ $bid }} .rv-btn:hover { background:var(--rv-ink);color:#F5EFE2;border-color:var(--rv-ink);transform:translateY(-1px); }
-#rv-{{ $bid }} .rv-dots { display:flex;align-items:center;gap:10px;padding:10px 18px;background:rgba(255,255,255,.65);backdrop-filter:blur(10px);border-radius:9999px;border:1px solid var(--rv-border); }
-#rv-{{ $bid }} .rv-dot { width:8px;height:8px;border-radius:50%;background:rgba(15,46,39,.22);border:none;padding:0;cursor:pointer;transition:all .3s; }
-#rv-{{ $bid }} .rv-dot:hover { background:rgba(15,46,39,.45); }
-#rv-{{ $bid }} .rv-dot.is-on { width:30px;border-radius:9999px;background:var(--rv-ink); }
+/* Controls — fp-style */
+#rv-{{ $bid }} .rv-controls { margin-top:48px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:16px; }
+#rv-{{ $bid }} .rv-controls-left { display:flex;align-items:center;gap:12px; }
+#rv-{{ $bid }} .rv-arrow { display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.45);background:rgba(255,255,255,0.25);backdrop-filter:blur(10px);cursor:pointer;transition:all .2s;flex-shrink:0; }
+#rv-{{ $bid }} .rv-arrow:hover { background:rgba(255,255,255,0.9);border-color:rgba(255,255,255,0.9); }
+#rv-{{ $bid }} .rv-arrow svg { transition:inherit; }
+#rv-{{ $bid }} .rv-dots-wrap { display:flex;align-items:center;gap:6px; }
+#rv-{{ $bid }} .rv-dot { display:inline-block;border-radius:50px;border:none;padding:0;cursor:pointer;transition:all .3s; }
+#rv-{{ $bid }} .rv-dot--active { width:20px;height:6px;background:#fff; }
+#rv-{{ $bid }} .rv-dot--idle   { width:6px;height:6px;background:rgba(255,255,255,.38); }
+#rv-{{ $bid }} .rv-counter { font-family:'Playfair Display',Georgia,serif;font-size:1rem;color:rgba(255,255,255,.7);letter-spacing:.04em;white-space:nowrap; }
+#rv-{{ $bid }} .rv-counter strong { color:#fff;font-size:1.2rem; }
+#rv-{{ $bid }} .rv-all-link { display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:9999px;border:1.5px solid rgba(255,255,255,.45);color:#fff;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;background:rgba(255,255,255,.1);backdrop-filter:blur(10px);transition:all .25s; }
+#rv-{{ $bid }} .rv-all-link:hover { background:rgba(255,255,255,.9);color:var(--rv-ink);border-color:rgba(255,255,255,.9); }
 
 /* Video modal — scoped by own ID, not by section */
 #rv-modal-{{ $bid }} { display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;align-items:center;justify-content:center; }
@@ -145,6 +184,7 @@
 
 <section id="rv-{{ $bid }}">
 
+  @if($rv_theme !== 'light')
   {{-- Blobs --}}
   <div class="rv-blobs" aria-hidden="true">
     <div class="rv-blob a"></div>
@@ -155,25 +195,14 @@
 
   {{-- Grain --}}
   <div class="rv-grain" aria-hidden="true"></div>
+  @endif
 
   {{-- Scroll arc --}}
   <div class="rv-arc" id="rv-arc-{{ $bid }}" aria-hidden="true">
-    <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
+    <svg id="rv-svg-{{ $bid }}" viewBox="0 0 1600 900" preserveAspectRatio="none">
       <path id="rv-path-{{ $bid }}" d="M -40 560 Q 360 180, 820 230 T 1660 120"/>
-      <g>
-        <circle class="wp-ring" data-at="0.10" cx="170" cy="430" r="14"/>
-        <circle class="wp"      data-at="0.10" cx="170" cy="430" r="5"/>
-        <circle class="wp-ring" data-at="0.28" cx="430" cy="180" r="10"/>
-        <circle class="wp"      data-at="0.28" cx="430" cy="180" r="4"/>
-        <circle class="wp-ring" data-at="0.46" cx="680" cy="330" r="12"/>
-        <circle class="wp"      data-at="0.46" cx="680" cy="330" r="5"/>
-        <circle class="wp-ring" data-at="0.62" cx="980" cy="130" r="8"/>
-        <circle class="wp"      data-at="0.62" cx="980" cy="130" r="3.5"/>
-        <circle class="wp-ring" data-at="0.78" cx="1210" cy="270" r="13"/>
-        <circle class="wp"      data-at="0.78" cx="1210" cy="270" r="5"/>
-        <circle class="wp-ring" data-at="0.92" cx="1460" cy="70" r="10"/>
-        <circle class="wp"      data-at="0.92" cx="1460" cy="70" r="4"/>
-      </g>
+      {{-- Waypoints injected dynamically by JS via getPointAtLength() --}}
+      <g id="rv-wps-{{ $bid }}"></g>
     </svg>
   </div>
 
@@ -190,10 +219,6 @@
             : 'Истории, которые <em>дают надежду</em>' !!}
         </h2>
       </div>
-      <a href="/reviews" class="rv-link">
-        Смотреть все отзывы
-        <svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
     </header>
     @endif
 
@@ -248,11 +273,14 @@
 
             {{-- Author pill --}}
             <div class="rv-author-pill">
-              <div class="rv-avatar">{{ $initials }}</div>
+              <!--<div class="rv-avatar">{{ $initials }}</div>-->
+              <div class="rv-avatar">
+                <img src="{{ wp_get_upload_dir()['baseurl'] }}/2026/03/e-diet_min_white.png" alt="{{ $author_name }}" loading="lazy">
+              </div>
               <div>
                 <div class="rv-author-name">{{ $author_name }}</div>
                 @if($diagnosis)
-                  <div class="rv-author-diag">Диагноз: {{ $diagnosis }}</div>
+                  <!--<div class="rv-author-diag">Диагноз: {{ $diagnosis }}</div>-->
                 @endif
               </div>
             </div>
@@ -285,13 +313,19 @@
 
     {{-- Controls --}}
     <div class="rv-controls">
-      <button class="rv-btn rv-prev-{{ $bid }}" aria-label="Предыдущий">
-        <svg viewBox="0 0 14 14" fill="none"><path d="M9 2.5L4.5 7 9 11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="rv-dots" id="rv-dots-{{ $bid }}"></div>
-      <button class="rv-btn rv-next-{{ $bid }}" aria-label="Следующий">
-        <svg viewBox="0 0 14 14" fill="none"><path d="M5 2.5L9.5 7 5 11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
+      <div class="rv-controls-left">
+        <button class="rv-arrow rv-prev-{{ $bid }}" aria-label="Предыдущий">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 3L5 8L10 13"/>
+          </svg>
+        </button>
+        <div class="rv-dots-wrap" id="rv-dots-{{ $bid }}"></div>
+        <button class="rv-arrow rv-next-{{ $bid }}" aria-label="Следующий">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 3L11 8L6 13"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
     @else
@@ -325,6 +359,10 @@
   const N = cards.length;
   let current = 0;
 
+  const counterEl = document.getElementById('rv-counter-' + BID);
+  const TOTAL_PAD = String(N).padStart(2, '0');
+  function pad(n) { return String(n + 1).padStart(2, '0'); }
+
   function render() {
     cards.forEach((c, i) => {
       c.classList.remove('is-active','is-prev','is-next','is-hidden');
@@ -334,7 +372,8 @@
       else                                   c.classList.add('is-hidden');
     });
     Array.from(dotsEl.children).forEach((d, i) =>
-      d.classList.toggle('is-on', i === current));
+      d.className = 'rv-dot ' + (i === current ? 'rv-dot--active' : 'rv-dot--idle'));
+    if (counterEl) counterEl.innerHTML = `<strong>${pad(current)}</strong> / ${TOTAL_PAD}`;
   }
 
   function go(i) { current = (i + N) % N; render(); }
@@ -343,7 +382,7 @@
   dotsEl.innerHTML = '';
   cards.forEach((_, i) => {
     const d = document.createElement('button');
-    d.className = 'rv-dot';
+    d.className = 'rv-dot ' + (i === 0 ? 'rv-dot--active' : 'rv-dot--idle');
     d.setAttribute('aria-label', 'Отзыв ' + (i+1));
     d.addEventListener('click', () => go(i));
     dotsEl.appendChild(d);
@@ -401,20 +440,70 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
   /* ── Scroll-driven arc ── */
-  const path = document.getElementById('rv-path-' + BID);
-  const arcEl = document.getElementById('rv-arc-' + BID);
-  if (!path || !arcEl) return;
+  const path   = document.getElementById('rv-path-' + BID);
+  const arcEl  = document.getElementById('rv-arc-' + BID);
+  const wpsG   = document.getElementById('rv-wps-' + BID);
+  if (!path || !arcEl || !wpsG) return;
+
+  const NS = 'http://www.w3.org/2000/svg';
+
+  // Waypoint definitions: progress 0-1 along the path
+  const WP_ATS  = [0.10, 0.22, 0.36, 0.50, 0.65, 0.80, 0.93];
+  const WP_RINNER = [5, 4, 5.5, 4, 5, 4.5, 5];
+  const WP_ROUTER = [13, 10, 14, 10, 12, 11, 13];
 
   let total = 0, maxP = 0;
+  let wpDots = []; // {ring, dot, at}
+
+  function buildWaypoints() {
+    wpsG.innerHTML = '';
+    wpDots = [];
+    if (!total) return;
+
+    WP_ATS.forEach((at, i) => {
+      const pt = path.getPointAtLength(at * total);
+
+      // Outer ring with pulse
+      const ring = document.createElementNS(NS, 'circle');
+      ring.setAttribute('cx', pt.x);
+      ring.setAttribute('cy', pt.y);
+      ring.setAttribute('r',  WP_ROUTER[i]);
+      ring.setAttribute('fill', 'none');
+      ring.setAttribute('stroke', '#EF945B');
+      ring.setAttribute('stroke-width', '1');
+      ring.style.opacity = '0';
+      ring.style.transition = 'opacity .4s ease, transform .5s ease';
+      ring.style.transformOrigin = `${pt.x}px ${pt.y}px`;
+      ring.style.transformBox = 'fill-box';
+      wpsG.appendChild(ring);
+
+      // Inner filled dot
+      const dot = document.createElementNS(NS, 'circle');
+      dot.setAttribute('cx', pt.x);
+      dot.setAttribute('cy', pt.y);
+      dot.setAttribute('r',  WP_RINNER[i]);
+      dot.setAttribute('fill', '#EF945B');
+      dot.style.opacity = '0';
+      dot.style.transform = 'scale(0)';
+      dot.style.transition = 'opacity .35s ease, transform .4s cubic-bezier(.34,1.56,.64,1)';
+      dot.style.transformOrigin = `${pt.x}px ${pt.y}px`;
+      dot.style.transformBox = 'fill-box';
+      wpsG.appendChild(dot);
+
+      wpDots.push({ ring, dot, at });
+    });
+  }
+
   function setLen() {
     total = path.getTotalLength();
     path.style.strokeDasharray = '4 9';
     arcEl.style.setProperty('--arc-len', total);
+    buildWaypoints();
+    onScroll();
   }
+
   setLen();
   window.addEventListener('resize', setLen);
-
-  const wps = Array.from(arcEl.querySelectorAll('.wp, .wp-ring'));
 
   function onScroll() {
     const rect = root.getBoundingClientRect();
@@ -422,14 +511,29 @@
     const raw  = (vh - rect.top) / vh;
     const p    = Math.max(0, Math.min(1, raw));
     if (p > maxP) maxP = p;
+
+    // Draw arc
     path.style.strokeDashoffset = total * (1 - maxP);
-    wps.forEach(el => {
-      const at = parseFloat(el.dataset.at || '0');
-      el.classList.toggle('on', maxP >= at);
+
+    // Reveal each waypoint as draw passes it
+    wpDots.forEach(({ ring, dot, at }) => {
+      const show = maxP >= at;
+      if (show) {
+        ring.style.opacity = '0.55';
+        ring.style.transform = 'scale(1)';
+        dot.style.opacity  = '1';
+        dot.style.transform = 'scale(1)';
+      } else {
+        ring.style.opacity = '0';
+        ring.style.transform = 'scale(0.6)';
+        dot.style.opacity  = '0';
+        dot.style.transform = 'scale(0)';
+      }
     });
   }
 
   onScroll();
   window.addEventListener('scroll', onScroll, {passive:true});
+
 })();
 </script>

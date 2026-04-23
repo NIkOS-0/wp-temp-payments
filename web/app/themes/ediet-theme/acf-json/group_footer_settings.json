@@ -1,0 +1,456 @@
+{
+    "key": "group_footer_settings",
+    "title": "Настройки Футера (Подвал)",
+    "fields": [
+        {
+            "key": "field_footer_tab_brand",
+            "label": "Бренд и подписка",
+            "name": "",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_footer_brand_logo",
+            "label": "Логотип футера (светлый)",
+            "name": "footer_brand_logo",
+            "type": "image",
+            "return_format": "url",
+            "instructions": "Светлая версия логотипа для тёмного фона. Если не загружено — используется текстовый логотип."
+        },
+        {
+            "key": "field_footer_brand_tagline",
+            "label": "Короткое описание под логотипом",
+            "name": "footer_brand_tagline",
+            "type": "textarea",
+            "rows": 3,
+            "default_value": "Персонализированные решения для здорового питания. Научно-обоснованный подход к вашим целям.",
+            "new_lines": ""
+        },
+        {
+            "key": "field_footer_newsletter_enabled",
+            "label": "Показывать форму подписки",
+            "name": "footer_newsletter_enabled",
+            "type": "true_false",
+            "default_value": 1,
+            "ui": 1
+        },
+        {
+            "key": "field_footer_newsletter_title",
+            "label": "Newsletter · Заголовок",
+            "name": "footer_newsletter_title",
+            "type": "text",
+            "default_value": "Подпишитесь на рассылку",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_footer_newsletter_enabled",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_footer_newsletter_subtitle",
+            "label": "Newsletter · Подзаголовок",
+            "name": "footer_newsletter_subtitle",
+            "type": "text",
+            "default_value": "Получайте первыми новости, акции и материалы от наших экспертов.",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_footer_newsletter_enabled",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_footer_newsletter_placeholder",
+            "label": "Newsletter · Placeholder",
+            "name": "footer_newsletter_placeholder",
+            "type": "text",
+            "default_value": "Ваш e-mail",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_footer_newsletter_enabled",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_footer_newsletter_button",
+            "label": "Newsletter · Текст кнопки",
+            "name": "footer_newsletter_button",
+            "type": "text",
+            "default_value": "Подписаться",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_footer_newsletter_enabled",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_footer_tab_columns",
+            "label": "Колонки меню",
+            "name": "",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_footer_columns",
+            "label": "Колонки со ссылками",
+            "name": "footer_columns",
+            "type": "repeater",
+            "instructions": "Каждая колонка — заголовок + готовое меню WordPress (Внешний вид → Меню). Оптимально 3–4 колонки.",
+            "min": 0,
+            "max": 6,
+            "layout": "block",
+            "button_label": "Добавить колонку",
+            "sub_fields": [
+                {
+                    "key": "field_footer_col_title",
+                    "label": "Заголовок колонки",
+                    "name": "title",
+                    "type": "text",
+                    "default_value": "Разделы"
+                },
+                {
+                    "key": "field_footer_col_menu",
+                    "label": "Меню",
+                    "name": "menu",
+                    "type": "select",
+                    "instructions": "Выберите меню из списка. Управление меню: Внешний вид → Меню.",
+                    "choices": [],
+                    "allow_null": 1,
+                    "ui": 1,
+                    "return_format": "value"
+                }
+            ]
+        },
+        {
+            "key": "field_footer_tab_social",
+            "label": "Соцсети и контакты",
+            "name": "",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_footer_social_title",
+            "label": "Заголовок блока соцсетей",
+            "name": "footer_social_title",
+            "type": "text",
+            "default_value": "Мы в соцсетях"
+        },
+        {
+            "key": "field_footer_social_items",
+            "label": "Соцсети",
+            "name": "footer_social_items",
+            "type": "repeater",
+            "layout": "table",
+            "button_label": "Добавить соцсеть",
+            "sub_fields": [
+                {
+                    "key": "field_footer_social_type",
+                    "label": "Тип",
+                    "name": "type",
+                    "type": "select",
+                    "choices": {
+                        "youtube": "YouTube",
+                        "telegram": "Telegram",
+                        "telegram-channel": "Telegram-канал",
+                        "whatsapp": "WhatsApp",
+                        "vk": "ВКонтакте",
+                        "instagram": "Instagram",
+                        "tiktok": "TikTok",
+                        "dzen": "Дзен",
+                        "facebook": "Facebook",
+                        "x": "X (Twitter)",
+                        "youtube-music": "YouTube Music",
+                        "custom": "Другое (загрузить свою иконку)"
+                    },
+                    "default_value": "telegram",
+                    "ui": 1
+                },
+                {
+                    "key": "field_footer_social_label",
+                    "label": "Подпись",
+                    "name": "label",
+                    "type": "text",
+                    "instructions": "Напр.: «Telegram-канал», «@ediet_support»"
+                },
+                {
+                    "key": "field_footer_social_url",
+                    "label": "Ссылка",
+                    "name": "url",
+                    "type": "url"
+                },
+                {
+                    "key": "field_footer_social_custom_icon",
+                    "label": "Своя иконка (SVG/PNG)",
+                    "name": "custom_icon",
+                    "type": "image",
+                    "return_format": "url",
+                    "conditional_logic": [
+                        [
+                            {
+                                "field": "field_footer_social_type",
+                                "operator": "==",
+                                "value": "custom"
+                            }
+                        ]
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "field_footer_contacts_title",
+            "label": "Заголовок блока «Связаться с нами»",
+            "name": "footer_contacts_title",
+            "type": "text",
+            "default_value": "Связаться с нами"
+        },
+        {
+            "key": "field_footer_contacts_items",
+            "label": "Контакты",
+            "name": "footer_contacts_items",
+            "type": "repeater",
+            "layout": "block",
+            "button_label": "Добавить контакт",
+            "sub_fields": [
+                {
+                    "key": "field_footer_contact_type",
+                    "label": "Тип",
+                    "name": "type",
+                    "type": "select",
+                    "choices": {
+                        "whatsapp": "WhatsApp",
+                        "telegram": "Telegram",
+                        "email": "E-mail",
+                        "phone": "Телефон"
+                    },
+                    "default_value": "telegram",
+                    "ui": 1,
+                    "wrapper": {
+                        "width": "25"
+                    }
+                },
+                {
+                    "key": "field_footer_contact_title",
+                    "label": "Заголовок",
+                    "name": "title",
+                    "type": "text",
+                    "instructions": "Напр.: WhatsApp, Telegram, E-mail",
+                    "wrapper": {
+                        "width": "25"
+                    }
+                },
+                {
+                    "key": "field_footer_contact_subtitle",
+                    "label": "Подпись",
+                    "name": "subtitle",
+                    "type": "text",
+                    "instructions": "Напр.: «Ответим в течение часа» или @ediet_support",
+                    "wrapper": {
+                        "width": "25"
+                    }
+                },
+                {
+                    "key": "field_footer_contact_url",
+                    "label": "Ссылка",
+                    "name": "url",
+                    "type": "url",
+                    "instructions": "tg://, https://wa.me/…, mailto:, tel:",
+                    "wrapper": {
+                        "width": "25"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "field_footer_tab_trust",
+            "label": "Доверие и оплата",
+            "name": "",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_footer_trust_title",
+            "label": "Заголовок «Знаки доверия»",
+            "name": "footer_trust_title",
+            "type": "text",
+            "default_value": "Знаки доверия"
+        },
+        {
+            "key": "field_footer_trust_items",
+            "label": "Знаки доверия",
+            "name": "footer_trust_items",
+            "type": "repeater",
+            "layout": "table",
+            "button_label": "Добавить значок",
+            "sub_fields": [
+                {
+                    "key": "field_footer_trust_icon",
+                    "label": "Иконка",
+                    "name": "icon",
+                    "type": "image",
+                    "return_format": "url",
+                    "instructions": "SVG/PNG. Квадратный формат."
+                },
+                {
+                    "key": "field_footer_trust_title_text",
+                    "label": "Заголовок",
+                    "name": "title",
+                    "type": "text",
+                    "instructions": "Напр.: «Сертиф.», «Топ эксперты»"
+                },
+                {
+                    "key": "field_footer_trust_subtitle",
+                    "label": "Подпись",
+                    "name": "subtitle",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "key": "field_footer_payment_title",
+            "label": "Заголовок «Оплата»",
+            "name": "footer_payment_title",
+            "type": "text",
+            "default_value": "Оплата и валюты"
+        },
+        {
+            "key": "field_footer_payment_items",
+            "label": "Способы оплаты",
+            "name": "footer_payment_items",
+            "type": "repeater",
+            "layout": "table",
+            "button_label": "Добавить способ",
+            "sub_fields": [
+                {
+                    "key": "field_footer_payment_label",
+                    "label": "Название",
+                    "name": "label",
+                    "type": "text",
+                    "instructions": "Напр.: Stripe, ЮKassa, СБП, Apple Pay"
+                },
+                {
+                    "key": "field_footer_payment_logo",
+                    "label": "Логотип (опционально)",
+                    "name": "logo",
+                    "type": "image",
+                    "return_format": "url"
+                }
+            ]
+        },
+        {
+            "key": "field_footer_security_note",
+            "label": "Текст «Безопасность платежей»",
+            "name": "footer_security_note",
+            "type": "textarea",
+            "rows": 3,
+            "default_value": "Все платежи защищены протоколом TLS 1.3. Данные карт не хранятся на наших серверах. PCI DSS Level 1 Compliant.",
+            "new_lines": "br"
+        },
+        {
+            "key": "field_footer_tab_legal",
+            "label": "Юридический блок",
+            "name": "",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_footer_requisites_title",
+            "label": "Заголовок блока реквизитов",
+            "name": "footer_requisites_title",
+            "type": "text",
+            "default_value": "Реквизиты"
+        },
+        {
+            "key": "field_footer_requisites",
+            "label": "Реквизиты (WYSIWYG)",
+            "name": "footer_requisites",
+            "type": "wysiwyg",
+            "tabs": "visual",
+            "toolbar": "basic",
+            "media_upload": 0
+        },
+        {
+            "key": "field_footer_bottom_links",
+            "label": "Нижняя полоса · Ссылки",
+            "name": "footer_bottom_links",
+            "type": "repeater",
+            "layout": "table",
+            "button_label": "Добавить ссылку",
+            "sub_fields": [
+                {
+                    "key": "field_footer_bottom_link_label",
+                    "label": "Текст",
+                    "name": "label",
+                    "type": "text"
+                },
+                {
+                    "key": "field_footer_bottom_link_url",
+                    "label": "URL",
+                    "name": "url",
+                    "type": "url"
+                }
+            ]
+        },
+        {
+            "key": "field_footer_copyright",
+            "label": "Копирайт",
+            "name": "footer_copyright",
+            "type": "text",
+            "default_value": "© %year% E-Diet. Все права защищены.",
+            "instructions": "Используйте %year% для автоматической подстановки года."
+        },
+        {
+            "key": "field_footer_lang_enabled",
+            "label": "Показывать переключатель языка (заглушка)",
+            "name": "footer_lang_enabled",
+            "type": "true_false",
+            "default_value": 1,
+            "ui": 1
+        },
+        {
+            "key": "field_footer_lang_label",
+            "label": "Текущий язык (подпись)",
+            "name": "footer_lang_label",
+            "type": "text",
+            "default_value": "RUS",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_footer_lang_enabled",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "options_page",
+                "operator": "==",
+                "value": "theme-footer-settings"
+            }
+        ]
+    ],
+    "menu_order": 1,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true
+}

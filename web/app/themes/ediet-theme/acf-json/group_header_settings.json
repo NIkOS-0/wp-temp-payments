@@ -55,7 +55,7 @@
             {
                 "param": "options_page",
                 "operator": "==",
-                "value": "acf-options"
+                "value": "theme-header-settings"
             }
         ]
     ],

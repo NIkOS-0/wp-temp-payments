@@ -230,7 +230,7 @@
           <!-- Right: all plans -->
           <a href="/products"
              class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-[rgba(42,26,16,0.25)] text-bark-900 text-sm font-semibold hover:bg-bark-900 hover:text-cream-50 hover:border-bark-900 transition-all duration-200">
-            Смотреть все планы
+            Все продукты
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 7h8M8 4l3 3-3 3"/>
             </svg>

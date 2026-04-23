@@ -16,16 +16,20 @@
                     "type": "text"
                 },
                 {
-                    "key": "field_ediet_book_top_label_style",
-                    "label": "Стиль",
-                    "name": "style",
-                    "type": "select",
-                    "choices": {
-                        "default": "По умолчанию (серый/белый)",
-                        "pdf": "Синий (PDF)",
-                        "verified": "Зеленый (Проверено)"
-                    },
-                    "default_value": "default"
+                    "key": "field_ediet_book_top_label_bg_color",
+                    "label": "Цвет фона",
+                    "name": "bg_color",
+                    "type": "color_picker",
+                    "default_value": "#EBE3D2",
+                    "instructions": "HEX-цвет фона ярлыка. По умолчанию серый."
+                },
+                {
+                    "key": "field_ediet_book_top_label_text_color",
+                    "label": "Цвет текста",
+                    "name": "text_color",
+                    "type": "color_picker",
+                    "default_value": "#6a5040",
+                    "instructions": "HEX-цвет текста ярлыка."
                 }
             ]
         },
@@ -35,6 +39,14 @@
             "name": "book_image_badge",
             "type": "text",
             "instructions": "Например: БЕСТСЕЛЛЕР"
+        },
+        {
+            "key": "field_ediet_book_image_badge_bg",
+            "label": "Цвет фона ярлыка на изображении",
+            "name": "book_image_badge_bg",
+            "type": "color_picker",
+            "default_value": "#B8B8B8",
+            "instructions": "HEX-цвет фона ярлыка. По умолчанию серый."
         },
         {
             "key": "field_ediet_book_gallery",
