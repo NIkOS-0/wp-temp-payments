@@ -170,15 +170,95 @@
 #rv-modal-{{ $bid }} .rv-modal-inner video { position:absolute;inset:0;width:100%;height:100%;border:none; }
 #rv-modal-{{ $bid }} .rv-modal-close { position:absolute;top:-46px;right:0;background:transparent;border:none;color:#fff;cursor:pointer;font-size:28px;line-height:1; }
 
+/* ═══════════════════════════════════════
+   MOBILE — полная переработка
+═══════════════════════════════════════ */
 @media (max-width:820px) {
-  #rv-{{ $bid }} { padding:80px 18px 100px; }
-  #rv-{{ $bid }} .rv-stage { height:720px; }
-  #rv-{{ $bid }} .rv-card { flex-direction:column;padding:10px; }
-  #rv-{{ $bid }} .rv-media { flex:0 0 auto;min-height:260px;width:100%; }
-  #rv-{{ $bid }} .rv-body { padding:28px 24px 24px;min-height:auto; }
+
+  /* ── Секция ── */
+  #rv-{{ $bid }} { padding:52px 16px 68px; }
+  #rv-{{ $bid }} .rv-head { margin-bottom:32px; gap:16px; }
+  #rv-{{ $bid }} .rv-title { font-size:clamp(26px,7.5vw,38px); }
+
+  /* ── Stage: убираем fixed height, переходим на natural flow ── */
+  #rv-{{ $bid }} .rv-stage {
+    height:auto !important;
+    min-height:0;
+    display:block;
+    position:relative;
+  }
+
+  /* ── Все карточки скрыты по умолчанию ── */
+  #rv-{{ $bid }} .rv-card {
+    position:relative;
+    display:none;
+    flex-direction:column;
+    padding:0;
+    width:100%;
+    /* сбрасываем desktop-трансформы */
+    transform:none !important;
+    opacity:1 !important;
+    filter:none !important;
+  }
+
+  /* ── Активная карточка — в потоке документа + fade-in ── */
+  #rv-{{ $bid }} .rv-card.is-active {
+    display:flex;
+    animation:rv-mob-in 0.32s ease forwards;
+  }
   #rv-{{ $bid }} .rv-card.is-prev,
-  #rv-{{ $bid }} .rv-card.is-next { display:none; }
-  #rv-{{ $bid }} .rv-qmark { font-size:80px;top:8px;left:16px; }
+  #rv-{{ $bid }} .rv-card.is-next,
+  #rv-{{ $bid }} .rv-card.is-hidden { display:none; }
+
+  /* ── Медиа-панель ── */
+  #rv-{{ $bid }} .rv-media {
+    flex:none;
+    width:100%;
+    height:220px;
+    min-height:0;
+    border-radius:20px 20px 0 0;
+  }
+
+  /* ── Автор-пилюля ── */
+  #rv-{{ $bid }} .rv-author-pill {
+    left:10px; right:10px; bottom:10px;
+    padding:8px 12px; gap:8px;
+    border-radius:12px;
+  }
+  #rv-{{ $bid }} .rv-avatar { width:34px; height:34px; font-size:13px; }
+  #rv-{{ $bid }} .rv-author-name { font-size:12.5px; }
+
+  /* ── Тело карточки ── */
+  #rv-{{ $bid }} .rv-body {
+    padding:22px 18px 22px;
+    min-height:0;
+    border-radius:0 0 20px 20px;
+  }
+  #rv-{{ $bid }} .rv-qmark { font-size:68px; top:6px; left:12px; }
+  #rv-{{ $bid }} .rv-text-plain {
+    font-size:14px; line-height:1.62;
+    margin-top:12px; max-width:100%;
+  }
+  #rv-{{ $bid }} .rv-text-before { font-size:13.5px; }
+  #rv-{{ $bid }} .rv-text-after  { font-size:13.5px; padding:11px 14px; }
+  #rv-{{ $bid }} .rv-ba { gap:14px; }
+  #rv-{{ $bid }} .rv-badge { font-size:10px; padding:5px 10px; }
+
+  /* ── Контролы ── */
+  #rv-{{ $bid }} .rv-controls { margin-top:24px; gap:10px; }
+}
+
+@media (max-width:480px) {
+  #rv-{{ $bid }} { padding:36px 12px 52px; }
+  #rv-{{ $bid }} .rv-head { margin-bottom:20px; }
+  #rv-{{ $bid }} .rv-media { height:180px; }
+  #rv-{{ $bid }} .rv-body { padding:18px 16px; }
+  #rv-{{ $bid }} .rv-text-plain { font-size:13.5px; }
+}
+
+@keyframes rv-mob-in {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
 }
 </style>
 

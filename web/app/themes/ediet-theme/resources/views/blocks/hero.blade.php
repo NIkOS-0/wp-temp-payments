@@ -450,15 +450,21 @@ h1.hero-title-main .accent-dot {
 @keyframes hero-rotate { to { transform: rotate(360deg); } }
 
 @media (max-width: 900px) {
-  .hero { padding: 120px 20px 80px; }
+  .hero { padding: 56px 20px 60px; min-height: 60vh; }
   .hero-badge { display: none; }
   .hero-seal { display: none; }
-  .trust-row { gap: 20px; }
+  .trust-row { gap: 20px; margin-top: 44px; }
+  .eyebrow-row { margin-bottom: 28px; }
   .eyebrow-row .line-decor { width: 32px; }
+  .hero .kicker { font-size: 16px; margin-top: 24px; }
+  .hero-cta { margin-top: 36px; }
 }
 @media (max-width: 600px) {
-  .hero-cta { flex-direction: column; width:100%; }
-  .hero-cta-btn-primary, .hero-cta-btn-secondary { width:100%; justify-content:center; }
+  .hero-cta { flex-direction: column; width: 100%; gap: 10px; }
+  .hero-cta-btn-primary, .hero-cta-btn-secondary { width: 100%; justify-content: center; padding: 16px 24px; font-size: 15px; }
+  .trust-row { gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .trust-item { font-size: 12px; }
+  h1.hero-title-main { font-size: clamp(38px, 11vw, 54px); }
 }
 </style>
 

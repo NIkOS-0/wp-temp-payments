@@ -32,6 +32,15 @@ class SingleCourse extends Composer
             $features = [['text' => 'Доступ к видеоурокам навсегда'], ['text' => 'Практические домашние задания'], ['text' => 'Полное сопровождение куратора']];
         }
 
+        $seats_enabled = (bool) get_field('ps_seats_enabled', $id);
+        $seats_base    = (int)  get_field('ps_seats_base', $id) ?: 0;
+        $seats_current = (int)  get_post_meta($id, '_seats_current', true);
+        // First-time initialisation: copy base to current if current is 0 and seats are enabled
+        if ($seats_enabled && $seats_base > 0 && $seats_current === 0) {
+            $seats_current = $seats_base;
+            update_post_meta($id, '_seats_current', $seats_current);
+        }
+
         return [
             'title'          => get_the_title($id),
             'top_labels'     => get_field('ps_top_labels', $id) ?: [['text' => 'Курс', 'style' => 'pdf']],
@@ -45,6 +54,14 @@ class SingleCourse extends Composer
             'description'    => get_field('ps_description', $id) ?: [],
             'contents'       => get_field('ps_contents', $id) ?: [],
             'gallery'        => get_field('ps_gallery', $id) ?: [],
+            'pricing_tiers'  => get_field('ps_pricing_tiers', $id) ?: [],
+            'seats'          => [
+                'enabled' => $seats_enabled,
+                'base'    => $seats_base,
+                'current' => $seats_current,
+                'period'  => get_field('ps_seats_reset_period', $id) ?: 'never',
+                'pct'     => $seats_base > 0 ? round(($seats_current / $seats_base) * 100) : 100,
+            ],
         ];
     }
 
@@ -80,7 +97,7 @@ class SingleCourse extends Composer
     protected function getRecommendations($post_id)
     {
         $query_args = [
-            'post_type' => ['book', 'service'],
+            'post_type' => ['book', 'consultation'],
             'posts_per_page' => 4,
             'orderby' => 'rand'
         ];
@@ -88,20 +105,25 @@ class SingleCourse extends Composer
         $recs = get_posts($query_args);
         $rec_data = [];
         foreach ($recs as $rec) {
-            $type_label = $rec->post_type === 'service' ? 'Консультация' : 'Книга';
-            $features = get_field('benefits', $rec->ID) ?: [];
-            
+            $type_label = $rec->post_type === 'consultation' ? 'Консультация' : 'Книга';
+            $features   = $rec->post_type === 'book'
+                ? (get_field('book_features', $rec->ID) ?: [])
+                : (get_field('benefits', $rec->ID) ?: []);
+            $delivery   = $rec->post_type === 'book'
+                ? (get_field('book_delivery_note', $rec->ID) ?: '')
+                : (get_field('ps_delivery_method', $rec->ID) ?: '');
+
             $rec_data[] = [
-                'id' => $rec->ID,
-                'title' => get_the_title($rec->ID),
-                'url' => get_permalink($rec->ID),
+                'id'         => $rec->ID,
+                'title'      => get_the_title($rec->ID),
+                'url'        => get_permalink($rec->ID),
                 'type_label' => $type_label,
-                'features' => array_slice($features, 0, 3), // max 3 features
-                'price' => get_field('price', $rec->ID) ?: '',
-                'price_old' => get_field('book_price_old', $rec->ID) ?: get_field('ps_price_old', $rec->ID),
-                'delivery' => get_field('ps_delivery_method', $rec->ID) ?: get_field('book_delivery_note', $rec->ID),
-                'image' => get_the_post_thumbnail_url($rec->ID, 'medium') ?: '',
-                'badge' => get_field('ps_card_badge', $rec->ID) ?: '',
+                'features'   => array_slice($features, 0, 3),
+                'price'      => get_field('price', $rec->ID) ?: '',
+                'price_old'  => get_field('book_price_old', $rec->ID) ?: get_field('ps_price_old', $rec->ID) ?: '',
+                'delivery'   => $delivery,
+                'image'      => get_the_post_thumbnail_url($rec->ID, 'medium') ?: '',
+                'badge'      => get_field('ps_card_badge', $rec->ID) ?: '',
             ];
         }
         return $rec_data;

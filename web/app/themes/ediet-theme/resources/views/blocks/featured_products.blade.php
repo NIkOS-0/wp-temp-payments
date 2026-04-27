@@ -75,6 +75,15 @@
 .fp-dot { display:inline-block; border-radius:50px; border:none; padding:0; cursor:pointer; transition:all .3s; }
 .fp-dot--active { width:20px; height:6px; background:#2A1A10; }
 .fp-dot--idle   { width:6px;  height:6px; background:rgba(42,26,16,0.2); }
+/* Mobile compact shell */
+@media (max-width: 640px) {
+  .fp-shell { padding: 1.5rem 1rem; border-radius: 20px; }
+  .fp-shell .fp-stats-row { overflow-x: auto; flex-wrap: nowrap; -ms-overflow-style: none; scrollbar-width: none; }
+  .fp-shell .fp-stats-row::-webkit-scrollbar { display: none; }
+}
+/* Drag cursor */
+.fp-carousel-drag { cursor: grab; user-select: none; -webkit-user-select: none; }
+.fp-carousel-drag.fp-grabbing { cursor: grabbing; }
 </style>
 
 <!-- ── Ambient canvas ── -->
@@ -112,7 +121,7 @@
             </p>
           </div>
           <!-- Stats -->
-          <div class="flex items-stretch rounded-2xl overflow-hidden border border-[rgba(42,26,16,0.1)] bg-white/60 shrink-0 flex-wrap shadow-sm">
+          <div class="fp-stats-row flex items-stretch rounded-2xl overflow-hidden border border-[rgba(42,26,16,0.1)] bg-white/60 shrink-0 flex-wrap shadow-sm">
             <div class="px-5 py-4 text-center flex-1 min-w-[120px]">
               <span class="block text-2xl font-bold text-bark-900 leading-none mb-1">17</span>
               <span class="text-[11px] font-semibold uppercase tracking-wider text-bark-400">книг</span>
@@ -132,19 +141,17 @@
       <!-- ── Carousel ── -->
       @if($total > 0)
       <div class="relative w-full" id="mpo-wrap-{{ $bid }}">
-        <div class="overflow-hidden -mx-2 px-2 pb-3" id="overflow-{{ $bid }}">
+        <div class="overflow-hidden -mx-2 px-2 pb-3 fp-carousel-drag" id="overflow-{{ $bid }}">
           <div class="flex gap-4 transition-transform duration-500" id="track-{{ $bid }}" style="will-change:transform;">
 
             @foreach($items as $i => $item)
             @php
-              $c_img      = get_the_post_thumbnail_url($item->ID, 'large') ?: '';
-              $c_price    = function_exists('get_field') ? (get_field('price', $item->ID) ?: '') : '';
-              $c_old      = function_exists('get_field') ? (get_field('book_price_old', $item->ID) ?: '') : '';
-              $c_delivery = function_exists('get_field') ? (get_field('book_delivery_note', $item->ID) ?: 'PDF · Доступ навсегда') : '';
-              $c_badge    = function_exists('get_field') ? (get_field('ps_card_badge', $item->ID) ?: '') : '';
-              $c_type     = get_post_type_object($item->post_type)->labels->singular_name ?? 'МПО';
-              $c_benefits = function_exists('get_field') ? (get_field('benefits', $item->ID) ?: []) : [];
-              $c_features = array_map(fn($b) => ['text' => $b['text'] ?? $b['title'] ?? ''], array_slice($c_benefits, 0, 3));
+              $c_benefits = function_exists('get_field')
+                ? ($item->post_type === 'book'
+                    ? (get_field('book_features', $item->ID) ?: [])
+                    : (get_field('benefits', $item->ID) ?: []))
+                : [];
+              $c_features = array_map(fn($b) => ['text' => is_array($b) ? ($b['text'] ?? $b['title'] ?? '') : (is_object($b) ? ($b->name ?? $b->post_title ?? '') : $b)], array_slice($c_benefits, 0, 3));
               if (empty($c_features)) {
                 $c_features = [
                   ['text' => 'Индивидуальное меню питания'],
@@ -152,53 +159,24 @@
                   ['text' => 'Авторские протоколы восстановления'],
                 ];
               }
+              $c_item = [
+                'id'         => $item->ID,
+                'title'      => $item->post_title,
+                'url'        => get_permalink($item->ID),
+                'type_label' => get_post_type_object($item->post_type)->labels->singular_name ?? 'МПО',
+                'image'      => get_the_post_thumbnail_url($item->ID, 'large') ?: '',
+                'badge'      => function_exists('get_field') ? (get_field('ps_card_badge', $item->ID) ?: '') : '',
+                'features'   => $c_features,
+                'price'      => function_exists('get_field') ? (get_field('price', $item->ID) ?: '') : '',
+                'price_old'  => function_exists('get_field') ? (get_field('ps_price_old', $item->ID) ?: get_field('book_price_old', $item->ID) ?: '') : '',
+                'delivery'   => function_exists('get_field') ? (get_field('ps_delivery_method', $item->ID) ?: get_field('book_delivery_note', $item->ID) ?: '') : '',
+              ];
             @endphp
-            <div class="dtc-card dtc-card--carousel opacity-50 scale-[0.96] transition-all duration-300 cursor-pointer"
-                 data-i="{{ $i }}" id="mpo-card-{{ $bid }}-{{ $i }}">
-
-              <div class="dtc-card__img">
-                @if($c_img)
-                  <img src="{{ $c_img }}" alt="{{ esc_attr($item->post_title) }}">
-                @else
-                  <div class="dtc-card__cover">
-                    <div class="dtc-card__cover-title">{!! nl2br(esc_html($item->post_title)) !!}</div>
-                  </div>
-                @endif
-                @if($c_badge)
-                  <span class="dtc-card__badge">{{ $c_badge }}</span>
-                @endif
-                <div class="absolute top-3 right-3 z-20" onclick="event.stopPropagation();">
-                  @include('partials.favorite-btn', ['post_id' => $item->ID, 'class' => '!w-7 !h-7 bg-white/80 backdrop-blur-sm rounded-full shadow-sm'])
-                </div>
-                <a href="{{ get_permalink($item->ID) }}" class="absolute inset-0 z-10" aria-label="{{ $item->post_title }}"></a>
-              </div>
-
-              <div class="dtc-card__tags">
-                <span class="dtc-card__tag dtc-card__tag--plan">{{ $c_type }}</span>
-              </div>
-
-              <div class="dtc-card__body">
-                <h3 class="dtc-card__title">{{ $item->post_title }}</h3>
-                <div class="dtc-card__features">
-                  @foreach($c_features as $f)
-                    <div class="dtc-card__feature">
-                      <div class="dtc-card__check">
-                        <svg viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/></svg>
-                      </div>
-                      {{ $f['text'] }}
-                    </div>
-                  @endforeach
-                </div>
-                <div class="dtc-card__footer">
-                  <div class="dtc-card__price-block">
-                    @if($c_old)<span class="dtc-card__price-old">{{ $c_old }} ₽</span>@endif
-                    @if($c_price)<span class="dtc-card__price">{{ $c_price }} ₽</span>@endif
-                    <span class="dtc-card__delivery">{{ $c_delivery }}</span>
-                  </div>
-                  <a href="{{ get_permalink($item->ID) }}" class="dtc-card__btn" onclick="event.stopPropagation();">Купить</a>
-                </div>
-              </div>
-            </div>
+            @include('partials.dtc-card', [
+              'item'    => $c_item,
+              'variant' => 'dtc-card--carousel opacity-50 scale-[0.96] transition-all duration-300 cursor-pointer',
+              'attrs'   => ['data-i' => $i, 'id' => "mpo-card-{$bid}-{$i}"],
+            ])
             @endforeach
 
           </div>
@@ -308,15 +286,52 @@
 
           cards.forEach((c, i) => {
             c.addEventListener('click', (e) => {
-              if(e.target.tagName.toLowerCase() !== 'a' && i !== current) {
-                goTo(i);
+              if (i !== current) {
                 e.preventDefault();
+                goTo(i);
               }
             });
           });
 
           buildDots();
           goTo(0, true);
+
+          // ── Touch swipe ──
+          const overflowEl = document.getElementById('overflow-{{ $bid }}');
+          let tsX = 0;
+          overflowEl.addEventListener('touchstart', e => {
+            tsX = e.changedTouches[0].clientX;
+          }, {passive: true});
+          overflowEl.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].clientX - tsX;
+            if (Math.abs(dx) > 36) { dx < 0 ? goTo(current + 1) : goTo(current - 1); }
+          }, {passive: true});
+
+          // ── Mouse drag ──
+          let mdX = 0, isDrag = false, hasDragged = false;
+          overflowEl.addEventListener('mousedown', e => {
+            if (e.button !== 0) return;
+            mdX = e.clientX; isDrag = true; hasDragged = false;
+            overflowEl.classList.add('fp-grabbing');
+            e.preventDefault();
+          });
+          overflowEl.addEventListener('mousemove', e => {
+            if (!isDrag) return;
+            if (Math.abs(e.clientX - mdX) > 6) hasDragged = true;
+          });
+          window.addEventListener('mouseup', e => {
+            if (!isDrag) return;
+            isDrag = false;
+            overflowEl.classList.remove('fp-grabbing');
+            const dx = e.clientX - mdX;
+            if (hasDragged && Math.abs(dx) > 36) { dx < 0 ? goTo(current + 1) : goTo(current - 1); }
+          });
+          overflowEl.addEventListener('click', e => {
+            if (hasDragged) { e.preventDefault(); e.stopPropagation(); hasDragged = false; }
+          }, true);
+          overflowEl.addEventListener('mouseleave', () => {
+            if (isDrag) { isDrag = false; overflowEl.classList.remove('fp-grabbing'); }
+          });
         })();
       </script>
 

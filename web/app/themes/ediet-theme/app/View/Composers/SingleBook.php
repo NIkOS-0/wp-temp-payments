@@ -143,19 +143,24 @@ class SingleBook extends Composer
         $rec_data = [];
         foreach ($recs as $rec) {
             $type_label = $rec->post_type === 'course' ? 'Курс' : 'Книга';
-            $features = get_field($rec->post_type === 'book' ? 'book_features' : 'course_features', $rec->ID) ?: [];
-            
+            $features   = $rec->post_type === 'book'
+                ? (get_field('book_features', $rec->ID) ?: [])
+                : (get_field('benefits', $rec->ID) ?: []);
+            $delivery   = $rec->post_type === 'book'
+                ? (get_field('book_delivery_note', $rec->ID) ?: '')
+                : (get_field('ps_delivery_method', $rec->ID) ?: '');
+
             $rec_data[] = [
-                'id' => $rec->ID,
-                'title' => get_the_title($rec->ID),
-                'url' => get_permalink($rec->ID),
+                'id'         => $rec->ID,
+                'title'      => get_the_title($rec->ID),
+                'url'        => get_permalink($rec->ID),
                 'type_label' => $type_label,
-                'features' => array_slice($features, 0, 4), // max 4
-                'price' => get_field('price', $rec->ID) ?: '',
-                'price_old' => get_field('book_price_old', $rec->ID) ?: '',
-                'delivery' => get_field($rec->post_type === 'book' ? 'book_delivery_note' : 'course_delivery_note', $rec->ID) ?: '',
-                'image' => get_the_post_thumbnail_url($rec->ID, 'medium') ?: '',
-                'badge' => get_field('ps_card_badge', $rec->ID) ?: '',
+                'features'   => array_slice($features, 0, 3),
+                'price'      => get_field('price', $rec->ID) ?: '',
+                'price_old'  => get_field('book_price_old', $rec->ID) ?: get_field('ps_price_old', $rec->ID) ?: '',
+                'delivery'   => $delivery,
+                'image'      => get_the_post_thumbnail_url($rec->ID, 'medium') ?: '',
+                'badge'      => get_field('ps_card_badge', $rec->ID) ?: '',
             ];
         }
 

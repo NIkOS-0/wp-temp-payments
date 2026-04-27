@@ -74,7 +74,7 @@
       width: 60px; height: 60px; background: #E0E5EF; border-radius: 10px; display: flex; align-items: center; justify-content: center;
       cursor: pointer; transition: border 0.15s;
     }
-    .book-thumb.active { border: 2px solid #000; }
+    .book-thumb.active { border: 1px solid #2A1A10; }
     .book-thumb svg { width: 28px; height: 28px; opacity: 0.5; }
   
     /* Info */
@@ -202,6 +202,107 @@
     .book-tabs-card { animation-delay: 0.07s; }
     .book-author-card { animation-delay: 0.14s; }
     .book-cards-row { animation-delay: 0.21s; }
+
+    /* ═══════════════════════════════════════
+       MOBILE RESPONSIVE
+    ═══════════════════════════════════════ */
+
+    /* Remove forced desktop min-width */
+    .bg-main { min-width: 0 !important; }
+
+    @media (max-width: 900px) {
+      .book-page { padding: 16px 16px 80px; gap: 16px; }
+
+      /* ── Hero: stack gallery above info ── */
+      .book-hero { flex-direction: column; padding: 20px; gap: 20px; }
+
+      /* ── Gallery full-width ── */
+      .book-gallery { width: 100%; }
+      .book-gallery-main { width: 100%; height: 280px; }
+
+      /* ── Typography ── */
+      .book-product-title { font-size: 22px; line-height: 28px; letter-spacing: -0.6px; }
+      .book-price-main { font-size: 28px; line-height: 36px; }
+      .book-price-old { font-size: 15px; }
+
+      /* ── Stats row compact ── */
+      .book-mini-stats { margin-bottom: 16px; }
+      .book-stat-cell { padding: 10px 12px; }
+      .book-stat-value { font-size: 18px; line-height: 22px; }
+      .book-stat-label { font-size: 11px; }
+
+      /* ── Tabs ── */
+      .book-tabs-card { padding: 10px 16px 0; }
+      .book-tab-nav {
+        overflow-x: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        flex-wrap: nowrap;
+      }
+      .book-tab-nav::-webkit-scrollbar { display: none; }
+      .book-tab-btn { padding: 14px 16px; white-space: nowrap; font-size: 13px; }
+      .book-tab-content { padding: 24px 0; }
+
+      /* ── Use cases 1 column ── */
+      .book-use-cases { grid-template-columns: 1fr; gap: 10px; }
+
+      /* ── Author card: vertical layout ── */
+      .book-author-card { flex-direction: column; }
+      .book-author-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--book-border);
+        padding: 20px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .book-author-avatar-wrap { width: 80px; height: 80px; }
+      .book-author-avatar { width: 80px; height: 80px; border-radius: 20px; }
+      .book-author-avatar svg { width: 40px; height: 40px; }
+      .book-author-verified { width: 24px; height: 24px; font-size: 10px; right: -4px; bottom: -4px; }
+      .book-author-name { font-size: 15px; text-align: left; }
+      .book-author-spec { text-align: left; }
+      .book-author-tags { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; align-items: flex-start; }
+      .book-author-main { padding: 20px; }
+      .book-author-stats { max-width: 100%; }
+      .book-author-heading { font-size: 18px; line-height: 22px; }
+
+      /* ── Cross-sell grid ── */
+      .book-section-heading { font-size: 24px; line-height: 30px; }
+      .book-cards-row { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    }
+
+    @media (max-width: 480px) {
+      .book-page { padding: 12px 12px 72px; }
+      .book-hero { padding: 14px; gap: 16px; }
+      .book-gallery-main { height: 220px; }
+      .book-product-title { font-size: 19px; line-height: 24px; }
+      .book-price-main { font-size: 24px; line-height: 30px; }
+      .book-stat-cell { padding: 8px 8px; }
+      .book-stat-value { font-size: 16px; }
+      .book-stat-label { font-size: 10px; }
+      .book-features { gap: 8px; margin-bottom: 16px; }
+      .book-feature-text { font-size: 13px; }
+      .book-cta-row { gap: 8px; }
+      .book-btn-buy { font-size: 14px; height: 48px; }
+      .book-btn-icon { width: 48px; height: 48px; }
+      .book-tabs-card { padding: 8px 12px 0; }
+      .book-tab-btn { padding: 12px 14px; font-size: 12px; }
+      .book-author-sidebar { flex-direction: column; align-items: center; }
+      .book-author-name { text-align: center; }
+      .book-author-spec { text-align: center; }
+      .book-author-tags { align-items: center; }
+      .book-cards-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .book-cards-row .dtc-card__body { padding: 8px 10px 10px; gap: 5px; }
+      .book-cards-row .dtc-card__title { font-size: 12px; }
+      .book-cards-row .dtc-card__feature { font-size: 11px; }
+      .book-cards-row .dtc-card__footer { padding-top: 7px; gap: 4px; }
+      .book-cards-row .dtc-card__price { font-size: 13px; }
+      .book-cards-row .dtc-card__btn { padding: 6px 10px; font-size: 10px; }
+      .book-cards-row .dtc-card__tags { padding: 8px 10px 0; }
+    }
   </style>
 
   <div class="bg-main">
@@ -532,6 +633,17 @@
       thumbs.forEach((t, i) => {
         t.addEventListener('click', () => setGallery(i));
       });
+
+      // Touch swipe on main gallery image
+      const mainEl = document.getElementById('book-gallery-main');
+      if (mainEl) {
+        let gTsX = 0;
+        mainEl.addEventListener('touchstart', e => { gTsX = e.changedTouches[0].clientX; }, {passive: true});
+        mainEl.addEventListener('touchend', e => {
+          const dx = e.changedTouches[0].clientX - gTsX;
+          if (Math.abs(dx) > 36) { dx < 0 ? setGallery(current + 1) : setGallery(current - 1); }
+        }, {passive: true});
+      }
 
       renderDots();
       setGallery(0);

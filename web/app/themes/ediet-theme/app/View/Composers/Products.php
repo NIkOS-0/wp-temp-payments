@@ -131,9 +131,11 @@ class Products extends Composer
             // ── Features ──────────────────────────────────────────────────
             $features = [];
             if (function_exists('get_field')) {
-                $benefits = get_field('benefits', $post->ID);
-                if (! empty($benefits) && is_array($benefits)) {
-                    $features = array_slice($benefits, 0, 3);
+                $raw = $post->post_type === 'book'
+                    ? get_field('book_features', $post->ID)
+                    : get_field('benefits', $post->ID);
+                if (! empty($raw) && is_array($raw)) {
+                    $features = array_slice($raw, 0, 3);
                 } else {
                     $features = match ($post->post_type) {
                         'consultation' => [['text' => 'Онлайн-встреча'], ['text' => 'Анализ симптомов'], ['text' => 'Персональный план']],
@@ -161,6 +163,7 @@ class Products extends Composer
             $typeLabel = match ($post->post_type) {
                 'consultation' => 'Консультация',
                 'course'       => 'Курс',
+                'book'         => 'Книга',
                 default        => 'МПО',
             };
 
@@ -171,7 +174,7 @@ class Products extends Composer
                 'url'        => get_permalink($post->ID),
                 'image'      => get_the_post_thumbnail_url($post->ID, 'large') ?: '',
                 'price'      => $price,
-                'price_old'  => function_exists('get_field') ? (get_field('book_price_old', $post->ID) ?: '') : '',
+                'price_old'  => function_exists('get_field') ? ($post->post_type === 'book' ? (get_field('book_price_old', $post->ID) ?: '') : (get_field('ps_price_old', $post->ID) ?: '')) : '',
                 'badge'      => function_exists('get_field') ? (get_field('ps_card_badge', $post->ID) ?: '') : '',
                 'delivery'   => function_exists('get_field') ? (get_field('ps_delivery_method', $post->ID) ?: '') : '',
                 'features'   => $features,

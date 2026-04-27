@@ -42,10 +42,7 @@ class ArchiveCourse extends Composer
         }
 
         foreach ($wp_query->posts as $post) {
-            $features = get_field('course_features', $post->ID) ?: [];
-            if (empty($features)) {
-                $features = get_field('benefits', $post->ID) ?: [];
-            }
+            $features = get_field('benefits', $post->ID) ?: [];
             
             $courses[] = [
                 'id'         => $post->ID,
@@ -54,8 +51,8 @@ class ArchiveCourse extends Composer
                 'type_label' => 'Курс',
                 'features'   => array_slice($features, 0, 4),
                 'price'      => get_field('price', $post->ID) ?: '',
-                'price_old'  => get_field('course_price_old', $post->ID) ?: '',
-                'delivery'   => get_field('course_delivery_note', $post->ID) ?: '',
+                'price_old'  => get_field('ps_price_old', $post->ID) ?: '',
+                'delivery'   => get_field('ps_delivery_method', $post->ID) ?: '',
                 'image'      => get_the_post_thumbnail_url($post->ID, 'medium') ?: '',
                 'badge'      => get_field('ps_card_badge', $post->ID) ?: '',
             ];

@@ -551,6 +551,12 @@
     overflow: hidden;
   }
 
+  @media (max-width: 767px) {
+    .dtc-card__features {
+      display: none !important;
+    }
+  }
+
   .dtc-card__features {
     display: flex;
     flex-direction: column;
@@ -712,9 +718,21 @@
   font-size: 11.5px;
   color: #A89F8B;
 }
-.archive-breadcrumb a { color: #A89F8B; text-decoration: none; }
-.archive-breadcrumb .sep { font-size: 12px; }
-.archive-breadcrumb .current { font-weight: 600; color: #2A1A10; font-size: 12px; }
+
+.archive-breadcrumb a {
+  color: #A89F8B;
+  text-decoration: none;
+}
+
+.archive-breadcrumb .sep {
+  font-size: 12px;
+}
+
+.archive-breadcrumb .current {
+  font-weight: 600;
+  color: #2A1A10;
+  font-size: 12px;
+}
 
 .archive-title {
   font-weight: 800;
@@ -731,9 +749,55 @@
   gap: 20px;
 }
 
-@media (max-width: 1024px) { .dtc-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 768px)  { .dtc-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 480px)  { .dtc-grid { grid-template-columns: 1fr; } }
+@media (max-width: 1024px) {
+  .dtc-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dtc-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .dtc-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .dtc-grid .dtc-card__body {
+    padding: 8px 10px 10px;
+    gap: 6px;
+  }
+
+  .dtc-grid .dtc-card__title {
+    font-size: 12.5px;
+  }
+
+  .dtc-grid .dtc-card__feature {
+    font-size: 11px;
+  }
+
+  .dtc-grid .dtc-card__footer {
+    padding-top: 8px;
+    gap: 5px;
+  }
+
+  .dtc-grid .dtc-card__price {
+    font-size: 14px;
+  }
+
+  .dtc-grid .dtc-card__btn {
+    padding: 7px 11px;
+    font-size: 10px;
+  }
+
+  .dtc-grid .dtc-card__tags {
+    padding: 8px 10px 0;
+  }
+}
 
 /* ─── Filter bar ─── */
 .archive-filter-bar {
@@ -797,7 +861,9 @@
   font-weight: 500;
 }
 
-.archive-loading.hidden { display: none; }
+.archive-loading.hidden {
+  display: none;
+}
 
 .archive-loading__spinner {
   width: 20px;
@@ -809,7 +875,9 @@
 }
 
 @keyframes archive-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .archive-end-msg {
@@ -821,8 +889,22 @@
 
 /* ─── Responsive ─── */
 @media (max-width: 768px) {
-  .archive-title { font-size: 32px; }
-  .archive-filter-bar { padding: 8px 12px; overflow-x: auto; max-width: 100%; }
+  .archive-title {
+    font-size: 32px;
+  }
+
+  .archive-filter-bar {
+    padding: 8px 12px;
+    overflow-x: auto;
+    max-width: 100%;
+    flex-wrap: nowrap;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .archive-filter-bar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* ════════════════════════════════════════

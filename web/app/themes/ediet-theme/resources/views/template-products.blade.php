@@ -329,10 +329,14 @@
 
 /* ── Mobile ── */
 @media (max-width: 768px) {
-  #products-grid { grid-template-columns: 1fr !important; }
-  #products-grid > div { grid-column: 1 / -1 !important; }
+  #products-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
 }
 @media (max-width: 640px) {
+  #products-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+  #products-grid > div[style*="grid-column:1 / -1"],
+  #products-grid > div:has(.dtc-card--wide) { grid-column: 1 / -1 !important; }
+}
+@media (max-width: 360px) {
   #products-grid { grid-template-columns: 1fr !important; }
 }
 </style>

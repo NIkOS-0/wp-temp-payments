@@ -410,9 +410,50 @@
   .ediet-footer__blob { animation: none !important; }
 }
 
+/* ── Prevent horizontal overflow ─────────────────────── */
+.ediet-footer { overflow-x: hidden; }
+.ediet-footer__main { overflow-x: hidden; }
+.ediet-footer__bottom { overflow-x: hidden; }
+
+/* Force long words to break ────────────────────────────*/
+.ediet-requisites { word-break: break-word; overflow-wrap: break-word; }
+.ediet-footer__copy { word-break: break-word; overflow-wrap: break-word; }
+.footer-col-menu a { word-break: break-word; }
+
 /* ── Responsive tweaks ────────────────────────────────── */
 @media (max-width: 768px) {
-  .ediet-footer__blob { filter: blur(60px); opacity: 0.4; }
+  .ediet-footer__blob { filter: blur(60px); opacity: 0.3; }
+  .ediet-footer__main { overflow: hidden; }
+}
+
+@media (max-width: 640px) {
+  /* Main section padding */
+  .ediet-footer__main .container-editorial { padding-top: 48px !important; padding-bottom: 24px !important; }
+
+  /* Top grid: reduce gap */
+  .ediet-top-grid { gap: 28px !important; padding-bottom: 32px !important; }
+
+  /* Newsletter: stack input + button vertically */
+  .ediet-newsletter {
+    flex-direction: column;
+    border-radius: 18px;
+    padding: 10px;
+    gap: 8px;
+    max-width: 100%;
+  }
+  .ediet-newsletter input { padding: 12px 16px; width: 100%; border-radius: 9999px; }
+  .ediet-newsletter button { width: 100%; border-radius: 9999px; padding: 13px 22px; }
+
+  /* Columns: single column on very small screens */
+  .ediet-columns-grid { grid-template-columns: 1fr !important; gap: 24px !important; padding: 32px 0 !important; }
+
+  /* Trust: keep 2 cols */
+  .ediet-trust-grid { gap: 10px !important; padding-bottom: 24px !important; }
+
+  /* Bottom strip */
+  .ediet-footer__bottom { padding: 18px 0; }
+  .ediet-footer__bottom .container-editorial { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .ediet-footer__bottom-links { gap: 14px; }
 }
 </style>
 
@@ -568,5 +609,11 @@
   #site-footer .ediet-middle-grid { grid-template-columns: 1fr 1fr 1.1fr !important; }
   #site-footer .ediet-columns-grid { grid-template-columns: repeat(4, 1fr) !important; }
   #site-footer .ediet-trust-grid { grid-template-columns: repeat(4, 1fr) !important; }
+}
+/* ══ Footer: prevent container overflow on narrow phones ══ */
+#site-footer .container-editorial {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 </style>

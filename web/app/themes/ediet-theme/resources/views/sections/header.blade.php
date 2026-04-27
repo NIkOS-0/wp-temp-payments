@@ -403,6 +403,11 @@
   #mobile-menu-btn { display: none; }
 }
 
+/* ── Header spacer — mobile override ── */
+@media (max-width: 900px) {
+  #hdr-spacer { height: 64px !important; }
+}
+
 /* ══════════════════════════════════════════════════════
    MOBILE MENU PANEL — restyled
 ══════════════════════════════════════════════════════ */
@@ -659,7 +664,7 @@
 </header>
 
 {{-- Spacer to account for the fixed header height --}}
-<div style="height:{{ $ticker_enabled ? '169px' : '125px' }};"></div>
+<div id="hdr-spacer" style="height:{{ $ticker_enabled ? '169px' : '125px' }};"></div>
 
 {{-- ════ AUTH MODAL ════ --}}
 @if(!is_user_logged_in())
