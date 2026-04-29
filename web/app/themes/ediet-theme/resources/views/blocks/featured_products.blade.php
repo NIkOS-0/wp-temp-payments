@@ -99,7 +99,49 @@
 
 <!-- ── Ambient canvas ── -->
 <div class="relative overflow-hidden" style="background:linear-gradient(135deg,#f9f3e8 0%,#f0e8d4 50%,#ede0cc 100%);">
-  <!-- Blobs -->
+  <!-- Inset Shadows for Depth -->
+  <div class="absolute inset-0 pointer-events-none z-[20]" style="box-shadow: inset 0 32px 50px -16px rgba(42,26,16,0.08), inset 0 -32px 50px -16px rgba(42,26,16,0.08);"></div>
+  
+  <!-- Abstract Ambient Blobs and Lines (Shimmering) -->
+  <div class="absolute inset-0 w-full h-full pointer-events-none z-0 mix-blend-multiply opacity-60">
+    <svg viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid slice" width="100%" height="100%" class="absolute inset-0 w-full h-full">
+      <defs>
+        <filter id="fpGlobalGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="60" />
+        </filter>
+        <linearGradient id="fpGlobalLineGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#EF945B" stop-opacity="0.8"/>
+          <stop offset="100%" stop-color="#78D2D2" stop-opacity="0.3"/>
+        </linearGradient>
+      </defs>
+      
+      <!-- Shimmering Blobs -->
+      <circle cx="30%" cy="30%" r="350" fill="rgba(120, 210, 210, 0.45)" filter="url(#fpGlobalGlow)" style="animation: fp-blob-float-1 16s ease-in-out infinite alternate;"/>
+      <circle cx="70%" cy="80%" r="400" fill="rgba(239, 148, 91, 0.25)" filter="url(#fpGlobalGlow)" style="animation: fp-blob-float-2 20s ease-in-out infinite alternate-reverse;"/>
+      <circle cx="60%" cy="20%" r="300" fill="rgba(200, 180, 150, 0.25)" filter="url(#fpGlobalGlow)" style="animation: fp-blob-float-1 18s ease-in-out infinite alternate; mix-blend-mode: overlay;"/>
+
+      <!-- Flowing Abstract Lines -->
+      <path d="M -100 600 C 300 800, 500 200, 900 100 S 1100 -50, 1200 200" fill="none" stroke="url(#fpGlobalLineGrad)" stroke-width="2" style="animation: fp-line-sway 24s ease-in-out infinite alternate;"/>
+      <path d="M -200 400 C 200 500, 500 800, 1200 400" fill="none" stroke="rgba(120,210,210,0.4)" stroke-width="2.5" style="animation: fp-line-sway 28s ease-in-out infinite alternate-reverse; opacity: 0.8;"/>
+      <path d="M 0 100 C 400 300, 600 500, 1000 800" fill="none" stroke="rgba(239, 148, 91, 0.4)" stroke-width="1.5" style="animation: fp-line-sway 34s ease-in-out infinite alternate; opacity: 0.5;"/>
+    </svg>
+  </div>
+  <style>
+    @keyframes fp-blob-float-1 {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-60px, 80px) scale(1.15); }
+    }
+    @keyframes fp-blob-float-2 {
+      0%   { transform: translate(0, 0) scale(1.1); }
+      100% { transform: translate(80px, -60px) scale(0.95); }
+    }
+    @keyframes fp-line-sway {
+      0%   { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
+      100% { transform: translateY(-30px) rotate(2deg); opacity: 1; }
+    }
+  </style>
+
+  <!-- Old Blobs -->
   <div class="fp-blob fp-blob-1"></div>
   <div class="fp-blob fp-blob-2"></div>
   <div class="fp-blob fp-blob-3"></div>
@@ -120,30 +162,6 @@
           Доказательная медицина · Биохакинг
         </div>
         <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 relative">
-          <!-- Ambient Abstract Doctor Silhouette -->
-           
-          <!-- <div class="absolute right-[-10px] lg:right-[-20px] bottom-[-30px] lg:bottom-[-20px] w-[240px] lg:w-[300px] h-[300px] lg:h-[380px] pointer-events-none z-0 mix-blend-multiply" style="animation: fp-doc-drift 9s ease-in-out infinite alternate; opacity: 0.85;">
-            <svg viewBox="0 0 200 250" width="100%" height="100%">
-              <defs>
-                <filter id="fpDocBlur" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="1" />
-                </filter>
-              </defs>
-              <g filter="url(#fpDocBlur)">
-                <circle cx="100" cy="55" r="38" fill="rgba(120, 210, 210, 0.65)" />
-                <path d="M25 250 C 25 145, 65 115, 100 115 C 135 115, 175 145, 175 250 Z" fill="rgba(120, 210, 210, 0.5)" />
-                <path d="M 65 120 C 65 185, 135 185, 135 120" fill="none" stroke="rgba(255, 255, 255, 0.7)" stroke-width="6" stroke-linecap="round" />
-                <path d="M 100 170 L 100 220" fill="none" stroke="rgba(255, 255, 255, 0.7)" stroke-width="6" stroke-linecap="round" />
-              </g>
-            </svg>
-          </div> 
-          --> 
-          <style>
-            @keyframes fp-doc-drift {
-              0%   { transform: translateY(15px) translateX(10px) rotate(-4deg) scale(0.95); }
-              100% { transform: translateY(-15px) translateX(-10px) rotate(4deg) scale(1.05); }
-            }
-          </style> 
 
           <div class="max-w-xl fp-reveal relative z-10">
             <h2 class="text-[2.25rem] lg:text-[2.75rem] font-bold leading-[1.15] text-bark-900 font-serif mb-3" style="font-family:'Playfair Display',serif;">

@@ -181,7 +181,9 @@
 
 /* ── CTA button ──────────────────────────────────────── */
 .hdr-btn-contact {
-  background: var(--color-terra-500);
+  background: linear-gradient(125deg, #EF945B 0%, #eeaa7fff 25%, #f8ceb5ff 50%, #eeaa7fff 65%, #EF945B 100%);
+  background-size: 200% 100%;
+  animation: hdr-btn-shimmer 3.5s linear infinite;
   border: none;
   border-radius: 9999px;
   font-family: 'Instrument Sans', 'Inter', sans-serif;
@@ -194,14 +196,17 @@
   cursor: pointer;
   white-space: nowrap;
   display: inline-flex; align-items: center; gap: 6px;
-  transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
   flex-shrink: 0;
   box-shadow: 0 4px 14px rgba(216, 122, 74, 0.28);
 }
+@keyframes hdr-btn-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: 0 0; }
+}
 .hdr-btn-contact:hover {
-  background: var(--color-terra-600);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(216, 122, 74, 0.36);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(216, 122, 74, 0.4);
 }
 .hdr-btn-contact:active { transform: translateY(0); }
 
