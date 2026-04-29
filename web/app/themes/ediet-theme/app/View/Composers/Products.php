@@ -23,16 +23,8 @@ class Products extends Composer
             'currentPage'   => $data['paged'],
             'totalPages'    => $data['total_pages'],
             'perPage'       => self::PER_PAGE,
-            'categories'    => $this->getCategories(),
+            'categories'    => $data['categories'],
         ];
-    }
-
-    protected function getCategories()
-    {
-        return get_terms([
-            'taxonomy'   => 'disease_category',
-            'hide_empty' => false,
-        ]);
     }
 
     protected function getProducts()
@@ -57,63 +49,38 @@ class Products extends Composer
         ];
 
         // Resolve category filter.
-        // Products link to categories in two ways:
-        //   - book/course: via ACF 'related_diseases' field → disease → disease_category
-        //   - consultation: via direct disease_category taxonomy term assignment
         $filterCatSlugs  = [];
-        $filterDiseaseIds = null;
-
         if (!empty($_GET['category'])) {
             $filterCatSlugs = explode(',', sanitize_text_field($_GET['category']));
-
-            // Get IDs of diseases that belong to the selected categories
-            $diseaseIds = get_posts([
-                'post_type'      => 'disease',
-                'posts_per_page' => -1,
-                'fields'         => 'ids',
-                'tax_query'      => [[
-                    'taxonomy' => 'disease_category',
-                    'field'    => 'slug',
-                    'terms'    => $filterCatSlugs,
-                    'operator' => 'IN',
-                ]],
-            ]);
-
-            $filterDiseaseIds = array_map('intval', (array) $diseaseIds);
         }
 
         $query     = new WP_Query($args);
         $raw_posts = $query->posts;
         $results   = [];
+        $category_counts = [];
+        $disease_category_cache = [];
 
         foreach ($raw_posts as $post) {
-
-            // ── Category filter ───────────────────────────────────────────
-            if (!empty($filterCatSlugs)) {
-                $passes = false;
-
-                // 1. Direct taxonomy (works for consultation after tax registration fix)
-                $directTerms = wp_get_post_terms($post->ID, 'disease_category', ['fields' => 'slugs']);
-                if (! is_wp_error($directTerms) && ! empty(array_intersect($directTerms, $filterCatSlugs))) {
-                    $passes = true;
-                }
-
-                // 2. Via related_diseases → disease → category (works for book/course)
-                if (! $passes && $filterDiseaseIds !== null) {
-                    $related = function_exists('get_field') ? (get_field('related_diseases', $post->ID) ?: []) : [];
-                    $relatedIds = array_map(
-                        fn($d) => is_object($d) ? (int) $d->ID : (int) $d,
-                        (array) $related
-                    );
-                    if (! empty(array_intersect($relatedIds, $filterDiseaseIds))) {
-                        $passes = true;
-                    }
-                }
-
-                if (! $passes) {
-                    continue;
-                }
+            
+            // ── Calculate Category Slugs for this post ────────────────────
+            $post_cats = [];
+            // 1. Direct taxonomy
+            $directTerms = wp_get_post_terms($post->ID, 'disease_category', ['fields' => 'slugs']);
+            if (! is_wp_error($directTerms) && is_array($directTerms)) {
+                $post_cats = array_merge($post_cats, $directTerms);
             }
+            // 2. Via related_diseases → disease → category
+            $related = function_exists('get_field') ? (get_field('related_diseases', $post->ID) ?: []) : [];
+            $relatedIds = array_map(fn($d) => is_object($d) ? (int) $d->ID : (int) $d, (array) $related);
+            
+            foreach ($relatedIds as $d_id) {
+                if (!isset($disease_category_cache[$d_id])) {
+                    $d_terms = wp_get_post_terms($d_id, 'disease_category', ['fields' => 'slugs']);
+                    $disease_category_cache[$d_id] = (!is_wp_error($d_terms) && is_array($d_terms)) ? $d_terms : [];
+                }
+                $post_cats = array_merge($post_cats, $disease_category_cache[$d_id]);
+            }
+            $post_cats = array_unique($post_cats);
 
             // ── Price filter ──────────────────────────────────────────────
             $price = function_exists('get_field') ? get_field('price', $post->ID) : 0;
@@ -126,6 +93,17 @@ class Products extends Composer
                 if (in_array('2000_to_5000', $pModes) && $price >= 2000 && $price <= 5000) $passPrice = true;
                 if (in_array('over_5000',    $pModes) && $price > 5000)                    $passPrice = true;
                 if (! $passPrice) continue;
+            }
+
+            // Record counts for ALL categories this post belongs to
+            // This is done after price filters so counts reflect correct numbers!
+            foreach ($post_cats as $slug) {
+                $category_counts[$slug] = ($category_counts[$slug] ?? 0) + 1;
+            }
+
+            // ── Apply Category filter to visual results ───────────────────
+            if (!empty($filterCatSlugs) && empty(array_intersect($post_cats, $filterCatSlugs))) {
+                continue;
             }
 
             // ── Features ──────────────────────────────────────────────────
@@ -203,11 +181,21 @@ class Products extends Composer
         $paged      = max(1, min((int) ($_GET['paged'] ?? 1), $totalPages));
         $items      = array_slice($results, ($paged - 1) * $perPage, $perPage);
 
+        // ── Hydrate Categories ────────────────────────────────────────────
+        $terms = get_terms([
+            'taxonomy'   => 'disease_category',
+            'hide_empty' => false,
+        ]);
+        foreach ($terms as $t) {
+            $t->count = $category_counts[$t->slug] ?? 0;
+        }
+
         return [
             'items'       => $items,
             'total'       => $total,
             'paged'       => $paged,
             'total_pages' => $totalPages,
+            'categories'  => $terms,
         ];
     }
 }

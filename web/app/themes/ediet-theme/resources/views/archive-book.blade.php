@@ -13,6 +13,8 @@
     <nav class="archive-breadcrumb">
       <a href="/">Главная</a>
       <span class="sep">/</span>
+      <a href="/products">Продукты</a>
+      <span class="sep">/</span>
       <span class="current">Книги</span>
     </nav>
 

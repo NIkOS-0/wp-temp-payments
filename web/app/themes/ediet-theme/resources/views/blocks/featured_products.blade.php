@@ -84,6 +84,17 @@
 /* Drag cursor */
 .fp-carousel-drag { cursor: grab; user-select: none; -webkit-user-select: none; }
 .fp-carousel-drag.fp-grabbing { cursor: grabbing; }
+/* Scroll reveal */
+.fp-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
+.fp-reveal.fp-in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
 </style>
 
 <!-- ── Ambient canvas ── -->
@@ -101,15 +112,40 @@
   <div class="fp-grain"></div>
 
   <div class="container-editorial relative z-10 py-20 lg:py-28">
-    <div class="fp-shell">
+    <div class="fp-shell" id="fp-shell-{{ $bid }}">
 
       <!-- ── Header ── -->
       <div class="mb-10 lg:mb-12">
-        <div class="text-xs font-semibold uppercase tracking-[0.18em] text-terra-500 mb-3">
+        <div class="text-xs font-semibold uppercase tracking-[0.18em] text-terra-500 mb-3 fp-reveal">
           Доказательная медицина · Биохакинг
         </div>
-        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-          <div class="max-w-xl">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 relative">
+          <!-- Ambient Abstract Doctor Silhouette -->
+           
+          <!-- <div class="absolute right-[-10px] lg:right-[-20px] bottom-[-30px] lg:bottom-[-20px] w-[240px] lg:w-[300px] h-[300px] lg:h-[380px] pointer-events-none z-0 mix-blend-multiply" style="animation: fp-doc-drift 9s ease-in-out infinite alternate; opacity: 0.85;">
+            <svg viewBox="0 0 200 250" width="100%" height="100%">
+              <defs>
+                <filter id="fpDocBlur" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="1" />
+                </filter>
+              </defs>
+              <g filter="url(#fpDocBlur)">
+                <circle cx="100" cy="55" r="38" fill="rgba(120, 210, 210, 0.65)" />
+                <path d="M25 250 C 25 145, 65 115, 100 115 C 135 115, 175 145, 175 250 Z" fill="rgba(120, 210, 210, 0.5)" />
+                <path d="M 65 120 C 65 185, 135 185, 135 120" fill="none" stroke="rgba(255, 255, 255, 0.7)" stroke-width="6" stroke-linecap="round" />
+                <path d="M 100 170 L 100 220" fill="none" stroke="rgba(255, 255, 255, 0.7)" stroke-width="6" stroke-linecap="round" />
+              </g>
+            </svg>
+          </div> 
+          --> 
+          <style>
+            @keyframes fp-doc-drift {
+              0%   { transform: translateY(15px) translateX(10px) rotate(-4deg) scale(0.95); }
+              100% { transform: translateY(-15px) translateX(-10px) rotate(4deg) scale(1.05); }
+            }
+          </style> 
+
+          <div class="max-w-xl fp-reveal relative z-10">
             <h2 class="text-[2.25rem] lg:text-[2.75rem] font-bold leading-[1.15] text-bark-900 font-serif mb-3" style="font-family:'Playfair Display',serif;">
               {!! !empty($block['title'])
                 ? nl2br(esc_html($block['title']))
@@ -121,7 +157,7 @@
             </p>
           </div>
           <!-- Stats -->
-          <div class="fp-stats-row flex items-stretch rounded-2xl overflow-hidden border border-[rgba(42,26,16,0.1)] bg-white/60 shrink-0 flex-wrap shadow-sm">
+          <div class="relative z-10 fp-stats-row fp-reveal flex items-stretch rounded-2xl overflow-hidden border border-[rgba(42,26,16,0.12)] bg-[rgba(255,255,255,0.7)] backdrop-blur-lg shrink-0 flex-wrap shadow-md">
             <div class="px-5 py-4 text-center flex-1 min-w-[120px]">
               <span class="block text-2xl font-bold text-bark-900 leading-none mb-1">17</span>
               <span class="text-[11px] font-semibold uppercase tracking-wider text-bark-400">книг</span>
@@ -140,7 +176,7 @@
 
       <!-- ── Carousel ── -->
       @if($total > 0)
-      <div class="relative w-full" id="mpo-wrap-{{ $bid }}">
+      <div class="relative w-full fp-reveal" id="mpo-wrap-{{ $bid }}">
         <div class="overflow-hidden -mx-2 px-2 pb-3 fp-carousel-drag" id="overflow-{{ $bid }}">
           <div class="flex gap-4 transition-transform duration-500" id="track-{{ $bid }}" style="will-change:transform;">
 
@@ -332,6 +368,26 @@
           overflowEl.addEventListener('mouseleave', () => {
             if (isDrag) { isDrag = false; overflowEl.classList.remove('fp-grabbing'); }
           });
+
+          // ── Scroll Reveal ──
+          const shellEl = document.getElementById('fp-shell-{{ $bid }}');
+          if (shellEl) {
+            const reveals = shellEl.querySelectorAll('.fp-reveal');
+            const observer = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  reveals.forEach((el, index) => {
+                    setTimeout(() => {
+                      el.classList.add('fp-in-view');
+                    }, index * 100);
+                  });
+                } else {
+                  reveals.forEach(el => el.classList.remove('fp-in-view'));
+                }
+              });
+            }, { threshold: 0.15 });
+            observer.observe(shellEl);
+          }
         })();
       </script>
 

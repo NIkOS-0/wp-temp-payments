@@ -177,3 +177,20 @@ add_filter('acf/load_field/key=field_footer_col_menu', function ($field) {
 
     return $field;
 });
+
+// ── Redirect all Single Diseases to Products Catalog ────────────────────────
+add_action('template_redirect', function () {
+    if (is_singular('disease')) {
+        $post_id = get_queried_object_id();
+        $slug = get_post_field('post_name', $post_id);
+        
+        // Try to get the actual disease_category term for perfectly accurate filtering
+        $terms = wp_get_post_terms($post_id, 'disease_category');
+        if (!is_wp_error($terms) && !empty($terms)) {
+            $slug = $terms[0]->slug;
+        }
+
+        wp_redirect(home_url('/products/?category=' . $slug), 301);
+        exit;
+    }
+});

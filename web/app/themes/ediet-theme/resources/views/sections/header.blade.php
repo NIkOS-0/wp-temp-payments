@@ -685,11 +685,8 @@
 
     {{-- Header --}}
     <div class="px-8 pt-8 pb-5 border-b border-[--border]">
-      <div class="flex items-center gap-3 mb-4">
-        <div class="w-8 h-8 rounded-full bg-bark-900 flex items-center justify-center shrink-0">
-          <span class="text-cream-100 font-black text-sm leading-none">e</span>
-        </div>
-        <span class="font-black text-bark-900 tracking-tight">e-diet</span>
+      <div class="flex items-center gap-3 group mb-4">
+        <img src="/app/uploads/2026/04/sloj-1-1.png" alt="e-diet" class="h-8 w-auto mix-blend-multiply">
       </div>
       <h2 class="text-xl font-bold text-bark-900 tracking-tight mb-1">Войти</h2>
       <p class="text-sm text-bark-500">Введите email — отправим код и ссылку для входа</p>

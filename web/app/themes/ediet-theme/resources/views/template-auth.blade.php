@@ -18,10 +18,7 @@
     {{-- Logo mark --}}
     <div class="flex justify-center mb-10">
       <a href="{{ home_url('/') }}" class="flex items-center gap-3 group">
-        <div class="w-11 h-11 rounded-full bg-bark-900 flex items-center justify-center shadow-md">
-          <span class="text-cream-100 font-black text-lg leading-none">e</span>
-        </div>
-        <span class="text-xl font-black tracking-tighter text-bark-900">e-diet</span>
+        <img src="/app/uploads/2026/04/sloj-1-1.png" alt="e-diet" class="h-16 w-auto mix-blend-multiply">
       </a>
     </div>
 

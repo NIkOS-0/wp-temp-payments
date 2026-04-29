@@ -40,119 +40,100 @@
       }
   }
   
-  // GET RELATED DISEASES for sidebar
-  $other_diseases = get_posts([
-     'post_type' => 'disease',
-     'posts_per_page' => 5,
-     'post__not_in' => [get_the_ID()]
-  ]);
+  // SIDEBAR BANNER
+  $hero_banner = function_exists('get_field') ? get_field('hero_banner_image') : null;
 @endphp
 
 <style>
 /* SCOPED CSS FOR DISEASE HUB */
 .ds-hub {
-  --bg:        #eef2f7;
+  --bg:        #F5EFE2;
   --surface:   #ffffff;
-  --border:    #dde4ef;
-  --border-s:  rgba(221,228,239,0.6);
-  --text:      #0d1526;
-  --sub:       #5b6a82;
-  --muted:     #8fa0bb;
-  --blue:      #2563eb;
-  --blue-l:    #eff6ff;
-  --blue-b:    #bfdbfe;
-  --green:     #15803d;
-  --green-l:   #f0fdf4;
-  --orange:    #c2410c;
-  --orange-l:  #fff7ed;
-  --purple:    #6d28d9;
-  --purple-l:  #f5f3ff;
+  --border:    rgba(42,26,16,0.10);
+  --border-s:  rgba(42,26,16,0.06);
+  --text:      #2A1A10;
+  --sub:       #6a5040;
+  --muted:     #A89F8B;
+  --terra:     #EF945B;
+  --terra-d:   #D87A4A;
+  --terra-l:   #FDFBF7;
   --r:         12px;
-  --r-lg:      18px;
+  --r-lg:      20px;
   --r-xl:      24px;
 }
-.ds-page { max-width: 1240px; margin: 0 auto; padding: 0 40px 100px; color: var(--text); font-family: 'Inter', sans-serif; }
-.ds-breadcrumb { display: flex; align-items: center; gap: 6px; padding: 18px 0 0; font-size: 11.5px; color: var(--muted); }
-.ds-breadcrumb a { color: var(--muted); transition: color 0.15s; }
-.ds-breadcrumb a:hover { color: var(--blue); }
-.ds-breadcrumb .sep { font-size: 10px; }
-.ds-breadcrumb .cur { color: var(--text); font-weight: 500; }
+.ds-page { max-width: 1240px; margin: 0 auto; color: var(--text); font-family: 'Instrument Sans', 'Inter', sans-serif; }
 
-.ds-sec-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
-.ds-sec-title { font-size: 18px; font-weight: 800; letter-spacing: -0.025em; }
-.ds-sec-sub { font-size: 13px; color: var(--sub); margin-top: 2px; }
-.ds-sec-sep { height: 1px; background: var(--border); margin: 36px 0; }
+.ds-sec-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px; }
+.ds-sec-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+.ds-sec-sub { font-size: 14px; color: var(--sub); margin-top: 4px; }
+.ds-sec-sep { height: 1px; background: var(--border); margin: 40px 0; }
 
-.ds-hero { margin-top: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 36px 40px; display: grid; grid-template-columns: 1fr 340px; gap: 40px; align-items: center; position: relative; overflow: hidden; box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset, 0 4px 24px rgba(0,0,0,0.04); }
-.ds-hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--orange) 0%, #f97316 40%, var(--blue) 100%); }
-.ds-hero-bg-icon { position: absolute; right: 360px; top: 50%; transform: translateY(-50%); font-size: 160px; opacity: 0.04; pointer-events: none; user-select: none; line-height: 1; }
-.ds-hero-eyebrow { display: inline-flex; align-items: center; gap: 6px; background: var(--orange-l); border: 1px solid #fed7aa; color: var(--orange); font-size: 10.5px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; padding: 4px 11px; border-radius: 50px; margin-bottom: 14px; }
-.ds-hero-title { font-size: clamp(26px, 3vw, 38px); font-weight: 900; letter-spacing: -0.035em; line-height: 1.08; margin-bottom: 14px; }
-.ds-hero-title em { font-style: italic; color: var(--blue); }
-.ds-hero-desc { font-size: 13.5px; color: var(--sub); line-height: 1.75; max-width: 500px; margin-bottom: 22px; }
-.ds-hero-stats { display: flex; gap: 20px; margin-bottom: 24px; padding: 14px 18px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r); width: fit-content; }
-.ds-h-stat + .ds-h-stat { padding-left: 20px; border-left: 1px solid var(--border); }
-.ds-h-stat-n { font-size: 20px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
-.ds-h-stat-l { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+.ds-hero { margin-top: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 36px 40px; display: grid; grid-template-columns: 1fr 340px; gap: 40px; align-items: center; position: relative; overflow: hidden; box-shadow: 0 4px 24px rgba(42,26,16,0.06); }
+.ds-hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #EF945B 0%, #D87A4A 45%, #EBE3D2 100%); }
+.ds-hero-bg-icon { position: absolute; right: 360px; top: 50%; transform: translateY(-50%); font-size: 160px; opacity: 0.03; pointer-events: none; user-select: none; line-height: 1; filter: grayscale(1); }
+.ds-hero-eyebrow { display: inline-flex; align-items: center; gap: 6px; background: #EBE3D2; border: 1px solid rgba(42,26,16,0.1); color: #6a5040; font-size: 10.5px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; padding: 4px 11px; border-radius: 50px; margin-bottom: 14px; }
+.ds-hero-title { font-family: 'Playfair Display', serif; font-size: clamp(26px, 3.5vw, 42px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 14px; }
+.ds-hero-title em { font-style: italic; color: var(--terra); }
+.ds-hero-desc { font-size: 14.5px; color: var(--sub); line-height: 1.75; max-width: 500px; margin-bottom: 24px; }
+.ds-hero-stats { display: flex; gap: 20px; margin-bottom: 24px; padding: 14px 18px; border: 1.5px solid rgba(42,26,16,0.08); border-radius: var(--r); width: fit-content; background: #faf8f5;}
+.ds-h-stat + .ds-h-stat { padding-left: 20px; border-left: 1.5px solid rgba(42,26,16,0.08); }
+.ds-h-stat-n { font-size: 20px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--text); }
+.ds-h-stat-l { font-size: 11px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em;}
 
-.ds-btn-primary { display: inline-flex; align-items: center; justify-content:center; gap: 7px; background: var(--text); color: #fff; padding: 11px 22px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; transition: background 0.18s; text-decoration:none !important; }
-.ds-btn-primary:hover { background: var(--blue); color:#fff; }
-.ds-btn-ghost { display: inline-flex; align-items: center; gap: 7px; background: var(--surface); color: var(--text); padding: 10px 18px; border-radius: 10px; font-weight: 600; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.18s; }
-.ds-btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+.ds-btn-primary { display: inline-flex; align-items: center; justify-content:center; gap: 7px; background: var(--text); color: #F5EFE2; padding: 12px 24px; border-radius: 50px; font-weight: 600; font-size:14px; border: none; cursor: pointer; transition: opacity 0.18s; text-decoration:none !important; }
+.ds-btn-primary:hover { opacity: 0.85; }
+.ds-btn-ghost { display: inline-flex; align-items: center; gap: 7px; background: transparent; color: var(--text); padding: 11px 24px; border-radius: 50px; font-weight: 600; font-size:14px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.18s; }
+.ds-btn-ghost:hover { border-color: var(--text); }
 
-.ds-hero-right { background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px; display: flex; flex-direction: column; gap: 8px; }
-.ds-subcat-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--border); cursor: pointer; transition: all 0.18s; text-decoration:none !important; color:inherit; }
-.ds-subcat-row:hover { border-color: var(--blue); background: var(--blue-l); }
-.ds-subcat-row:hover .sc-label { color: var(--blue); }
-.ds-sc-icon { font-size: 20px; flex-shrink: 0; }
-.ds-sc-label { font-size: 12.5px; font-weight: 600; }
+.ds-hero-banner { background: #EBE3D2; border: 1px solid var(--border); border-radius: var(--r-lg); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 280px; box-shadow: inset 0 2px 14px rgba(42,26,16,0.03); }
+.hero-mesh { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.hero-blob { position: absolute; border-radius: 50%; filter: blur(50px); will-change: transform; opacity: 0.65; mix-blend-mode: multiply; }
+.hero-blob.a { width: 300px; height: 300px; top: -100px; right: -50px; background: rgba(239, 148, 91, 0.4); animation: hero-dr-a 14s ease-in-out infinite alternate; }
+.hero-blob.b { width: 280px; height: 280px; bottom: -80px; left: -80px; background: rgba(139, 167, 127, 0.35); animation: hero-dr-b 18s ease-in-out infinite alternate-reverse; }
+@keyframes hero-dr-a { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-30px, 40px) scale(1.1); } }
+@keyframes hero-dr-b { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, -30px) scale(1.15); } }
 
-/* Grid MPO */
-.ds-mpo-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 21px; }
-.ds-mpo-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-lg); overflow: hidden; cursor: pointer; transition: transform 0.25s, box-shadow 0.25s ease; display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0,0,0,0.04); text-decoration:none !important; color:inherit; }
-.ds-mpo-card:hover { transform: translateY(-5px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); border-color: rgba(200,210,230,0.8); }
-.ds-mpo-cover { height: 160px; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; padding: 14px 16px; position: relative; overflow: hidden; }
-.ds-mpo-cover::after { content: ''; position: absolute; inset: 0; background: linear-gradient(160deg, transparent 30%, rgba(0,0,0,0.35) 100%); }
-.ds-mpo-cover-title { position: relative; z-index: 2; font-size: 17px; font-weight: 800; color: #fff; line-height: 1.18; }
-.ds-mpo-body { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; }
-.ds-mpo-desc { font-size: 12px; color: var(--sub); line-height: 1.55; margin-bottom: 12px; }
-.ds-mpo-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); margin-top:auto; }
+/* Grid MPO (Book Card) */
+.ds-mpo-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+@media (max-width: 900px) { .ds-mpo-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+@media (max-width: 600px) { .ds-mpo-grid { grid-template-columns: 1fr !important; } }
 
-/* Book Product Card from Single Book */
-.book-product-card { background: var(--surface); border: 0.5px solid #B1B5C4; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.2s; text-decoration: none; color: inherit; height: 100%; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-.book-product-card:hover { box-shadow: 0 8px 24px rgba(100,120,180,0.18); transform: translateY(-5px); border-color: rgba(200,210,230,0.8); }
-.book-card-img { height: 260px; background: rgba(112,152,223,0.41); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.book-card-img-overlay { position: absolute; inset: 0; background: rgba(151,151,151,0.2); box-shadow: inset 0 0 15px rgba(0,0,0,0.25); }
-.book-card-book { width: 130px; height: 182px; background: linear-gradient(144.46deg, #5BB8E8 0%, #3A9BD5 100%); box-shadow: -6px 6px 18px rgba(0,0,0,0.25), 3px 0 0 rgba(0,0,0,0.1); border-radius: 4px 10px 10px 4px; position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 14px 12px; }
+.book-product-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.2s, transform 0.2s; text-decoration: none; color: inherit; height: 100%; box-shadow: 0 4px 12px rgba(42,26,16,0.03); }
+.book-product-card:hover { box-shadow: 0 12px 30px rgba(42,26,16,0.08); transform: translateY(-4px); border-color: rgba(42,26,16,0.22); }
+.book-card-img { height: 260px; background: #EBE3D2; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+.book-card-img-overlay { position: absolute; inset: 0; background: rgba(42,26,16,0.04); }
+.book-card-book { width: 130px; height: 182px; background: linear-gradient(144.46deg, #EF945B 0%, #D87A4A 100%); box-shadow: -6px 6px 18px rgba(42,26,16,0.15), 3px 0 0 rgba(0,0,0,0.05); border-radius: 4px 10px 10px 4px; position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 14px 12px; }
 .book-card-book::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 9px; background: rgba(0,0,0,0.15); border-radius: 4px 0 0 4px; }
-.book-card-book-title { font-weight: 700; font-size: 12px; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.2); padding-left: 10px; line-height: 1.3; }
+.book-card-book-title { font-weight: 700; font-size: 13px; font-family:'Playfair Display',serif; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.2); padding-left: 10px; line-height: 1.25; }
 .book-card-body { padding: 0 20px 16px; display: flex; flex-direction: column; flex: 1; }
-.book-card-features { display: flex; flex-direction: column; gap: 6px; padding: 12px 0; flex: 1; }
-.book-card-feature { display: flex; align-items: center; gap: 8px; font-weight: 200; font-size: 13px; color: #000; }
-.book-card-check { width: 18px; height: 18px; background: #DCFCE7; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.book-card-features { display: flex; flex-direction: column; gap: 6px; padding: 14px 0; flex: 1; }
+.book-card-feature { display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 13px; color: var(--sub); }
+.book-card-check { width: 18px; height: 18px; background: rgba(239, 148, 91, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .book-card-check svg { width: 9px; height: 9px; }
-.book-card-footer { border-top: 0.5px solid #D9D9D9; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;}
-.book-card-price { font-weight: 600; font-size: 20px; letter-spacing: -0.4px; color: #000; }
-.book-card-delivery { font-weight: 200; font-size: 12px; color: var(--sub); margin-top: 2px; }
-.book-btn-card-buy { background: #000; color: #fff; border: none; border-radius: 10px; padding: 11.5px 18px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12.5px; cursor: pointer; transition: opacity 0.15s; }
+.book-card-footer { border-top: 1px solid rgba(42,26,16,0.08); padding-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px;}
+.book-card-price { font-weight: 700; font-size: 20px; letter-spacing: -0.02em; color: var(--text); }
+.book-card-delivery { font-weight: 400; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.book-btn-card-buy { background: var(--text); color: #F5EFE2; border: none; border-radius: 50px; padding: 10px 18px; font-family: 'Instrument Sans', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; transition: opacity 0.15s; }
 
 /* Consult / Clinics */
-.ds-consult-row { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
-.ds-consult-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-lg); padding: 18px; display: flex; flex-direction: column; gap: 11px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
-.ds-cc-avatar { width: 44px; height: 44px; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px; overflow:hidden; }
+.ds-consult-row { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+.ds-consult-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 11px; box-shadow: 0 4px 12px rgba(42,26,16,0.03); transition: transform 0.2s, box-shadow 0.2s;}
+.ds-consult-card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(42,26,16,0.06); border-color: rgba(42,26,16,0.15); }
+.ds-cc-avatar { width: 44px; height: 44px; border-radius: 12px; background: #EBE3D2; display: flex; align-items: center; justify-content: center; font-size: 20px; overflow:hidden; }
 
 /* Lead Magnet */
-.ds-lead-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 30px 34px; display: grid; grid-template-columns: 1fr 280px; gap: 36px; align-items: center; position: relative; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.03); }
+.ds-lead-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 32px 36px; display: grid; grid-template-columns: 1fr 280px; gap: 36px; align-items: center; position: relative; overflow: hidden; box-shadow: 0 4px 24px rgba(42,26,16,0.04); }
 </style>
 
-<div class="ds-hub bg-[#F8F9FA] min-h-screen">
-  <div class="ds-page">
+<div class="ds-hub" style="background:var(--bg);min-height:100vh;">
+  <div class="ds-page py-8 pb-24">
     
     <!-- ── BREADCRUMB ── -->
-    <div class="ds-breadcrumb">
-      <a href="/">Главная</a><span class="sep">›</span>
-      <span class="cur">{{ get_the_title() }}</span>
-    </div>
+    <nav class="flex items-center gap-1.5 text-xs mb-8" style="color:var(--muted);">
+      <a href="/" style="color:var(--muted);" class="hover:text-terra-500 transition-colors duration-150">Главная</a>
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.5;"><path d="M3.5 1.5L6.5 5L3.5 8.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span style="color:var(--text);font-weight:500;">{{ get_the_title() }}</span>
+    </nav>
     
     <!-- ── HERO ── -->
     <div class="ds-hero">
@@ -186,27 +167,32 @@
           @if($btn1)
              <a href="{{ $btn1['url'] }}" target="{{ $btn1['target'] }}" class="ds-btn-primary">{{ $btn1['title'] }}</a>
           @else
-             <a href="#mpo-catalog" class="ds-btn-primary">📋 Смотреть планы МПО</a>
+             <a href="#mpo-catalog" class="ds-btn-primary">Смотреть продукты</a>
           @endif
 
           @if($btn2)
              <a href="{{ $btn2['url'] }}" target="{{ $btn2['target'] }}" class="ds-btn-ghost">{{ $btn2['title'] }}</a>
           @else
-             <button class="ds-btn-ghost" onclick="alert('Форма записи в разработке')">💬 Консультация</button>
+             <button class="ds-btn-ghost" onclick="alert('Форма записи в разработке')">Консультация</button>
           @endif
         </div>
       </div>
       
-      <div class="ds-hero-right">
-        <div class="text-[11px] font-bold tracking-widest uppercase text-[#8fa0bb] mb-1">Связанные Диагнозы</div>
-        @foreach($other_diseases as $od)
-          <a href="{{ get_permalink($od->ID) }}" class="ds-subcat-row">
-            <span class="ds-sc-icon">{{ function_exists('get_field') ? (get_field('hero_icon', $od->ID) ?: '🧬') : '🧬' }}</span>
-            <div>
-              <div class="ds-sc-label">{{ $od->post_title }}</div>
-            </div>
-          </a>
-        @endforeach
+      <div class="ds-hero-banner">
+        <!-- Floating blobs ambient background -->
+        <div class="hero-mesh">
+          <div class="hero-blob a"></div>
+          <div class="hero-blob b"></div>
+        </div>
+        
+        @if(!empty($hero_banner))
+           <img src="{{ is_array($hero_banner) ? $hero_banner['url'] : $hero_banner }}" class="relative z-10 w-full h-full object-contain p-4" alt="Banner">
+        @else
+           <div class="relative z-10 m-4 flex flex-col items-center justify-center h-full text-center border-2 border-dashed border-[rgba(42,26,16,0.1)] rounded-2xl w-[calc(100%-32px)]">
+             <div class="text-[20px] mb-2 opacity-40">🖼️</div>
+             <p style="color:#A89F8B; font-weight:600; font-size: 12.5px;">Место для баннера<br><span style="font-weight:400; font-size:11px;">(загрузите в ACF)</span></p>
+           </div>
+        @endif
       </div>
     </div>
     
@@ -249,10 +235,10 @@
               <div class="book-card-features">
                 @if(!empty($features))
                   @foreach(array_slice($features, 0, 4) as $f)
-                    <div class="book-card-feature"><div class="book-card-check"><svg viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/></svg></div>{{ is_array($f) ? ($f['text'] ?? $f['title'] ?? 'Полезный материал') : 'Полезный материал' }}</div>
+                      <div class="book-card-feature"><div class="book-card-check"><svg viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#D87A4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>{{ is_array($f) ? ($f['text'] ?? $f['title'] ?? 'Полезный материал') : 'Полезный материал' }}</div>
                   @endforeach
                 @else
-                  <div class="book-card-feature"><div class="book-card-check"><svg viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/></svg></div>Полезный материал</div>
+                  <div class="book-card-feature"><div class="book-card-check"><svg viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#D87A4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>Полезный материал</div>
                 @endif
               </div>
               <div class="book-card-footer">
@@ -278,8 +264,8 @@
           </a>
          @endforeach
        @else
-         <div class="col-span-3 p-8 border-2 border-dashed border-slate-300 rounded-2xl text-center">
-            <p class="text-slate-500 font-bold">Для этого диагноза пока нет доступных планов МПО.</p>
+         <div class="col-span-3 p-8 border-2 border-dashed rounded-2xl text-center" style="border-color:rgba(42,26,16,0.12);">
+            <p style="color:#A89F8B; font-weight:700;">Для этого диагноза пока нет доступных планов МПО.</p>
          </div>
        @endif
     </div>
@@ -312,14 +298,14 @@
                 <div class="text-[11px] text-blue-600 font-medium">{{ $spec }}</div>
               </div>
             </div>
-            <div class="flex items-center justify-between pt-2 border-t border-slate-100 mt-1">
-              <div class="text-[15px] font-black">4 900 ₽</div>
-              <button class="bg-slate-900 text-white rounded-lg px-3 py-1.5 text-xs font-bold hover:bg-blue-600 transition-colors">Записаться</button>
+            <div class="flex items-center justify-between pt-3 border-t mt-1" style="border-color: rgba(42,26,16,0.08);">
+              <div class="text-[17px] text-[#2A1A10] font-bold">4 900 ₽</div>
+              <button class="ds-btn-primary !px-4 !py-2 !text-[12px]">Записаться</button>
             </div>
           </div>
         @endforeach
       @else
-        <div class="col-span-3 p-6 bg-white border border-slate-200 rounded-xl text-center text-slate-500 text-sm">Врачи временно не прикреплены к этому диагнозу.</div>
+        <div class="col-span-3 p-6 bg-white border rounded-xl text-center text-[14px]" style="border-color:rgba(42,26,16,0.1); color:var(--muted);">Врачи временно не прикреплены к этому диагнозу.</div>
       @endif
     </div>
     
@@ -333,12 +319,12 @@
         @foreach($clinics as $clinic)
           <div class="ds-consult-card">
             <div class="flex items-center gap-2">
-              <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-lg shrink-0">🏥</div>
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0" style="background:#EBE3D2;">🏥</div>
               <div>
-                <div class="text-sm font-bold leading-tight">{{ $clinic->post_title }}</div>
+                <div class="text-[14px] font-bold leading-tight" style="font-family:'Playfair Display',serif; color:var(--text);">{{ $clinic->post_title }}</div>
               </div>
             </div>
-            <a href="{{ get_permalink($clinic->ID) }}" class="mt-2 block w-full text-center bg-slate-50 border border-slate-200 rounded-lg py-2 text-xs font-bold hover:border-blue-500 hover:text-blue-600 transition-colors">Перейти в карточку →</a>
+            <a href="{{ get_permalink($clinic->ID) }}" class="mt-2 block w-full text-center border rounded-[50px] py-2 text-[12px] font-semibold transition-colors" style="border-color:rgba(42,26,16,0.1); color:var(--sub);" onmouseover="this.style.color='#EF945B'; this.style.borderColor='#EF945B'" onmouseout="this.style.color='var(--sub)'; this.style.borderColor='rgba(42,26,16,0.1)'">Перейти в карточку →</a>
           </div>
         @endforeach
       </div>
@@ -348,16 +334,16 @@
     @if(!empty($lead_magnet))
       <div class="ds-sec-sep"></div>
       <div class="ds-lead-block">
-        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-[200px] h-[200px] bg-green-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div>
-          <div class="text-[10.5px] font-bold tracking-widest uppercase text-green-700 mb-2">🎁 Бесплатно</div>
-          <div class="text-lg font-extrabold tracking-tight mb-2">Гайд по самодиагностике и анализам</div>
-          <p class="text-[13px] text-slate-500 leading-relaxed">Скачайте бесплатный справочник, который поможет вам разобраться с базовыми показателями без медицинского образования.</p>
+        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-[240px] h-[240px] rounded-full blur-3xl pointer-events-none" style="background:rgba(239,148,91,0.08);"></div>
+        <div class="relative z-10">
+          <div class="text-[11px] font-bold tracking-widest uppercase mb-2" style="color:var(--terra-d);">🎁 Бесплатно</div>
+          <div class="text-xl font-bold tracking-tight mb-2" style="font-family:'Playfair Display',serif; color:var(--text); line-height:1.2;">Гайд по самодиагностике и анализам</div>
+          <p class="text-[14px] leading-relaxed" style="color:var(--sub);">Скачайте бесплатный справочник, который поможет вам разобраться с базовыми показателями без медицинского образования.</p>
         </div>
-        <div class="flex flex-col gap-2">
-          <input type="email" placeholder="Ваш e-mail" class="px-3 py-2.5 border-2 border-slate-200 rounded-lg text-sm outline-none focus:border-blue-500 transition-colors">
-          <button class="bg-green-600 hover:bg-green-700 text-white rounded-lg px-4 py-2.5 text-sm font-bold transition-colors">📥 Получить гайд</button>
-          <div class="text-[10px] text-center text-slate-400">Только польза, никакого спама</div>
+        <div class="flex flex-col gap-2 relative z-10">
+          <input type="email" placeholder="Ваш e-mail" class="px-4 py-3 border-2 rounded-[50px] text-[13.5px] outline-none transition-colors" style="border-color:rgba(42,26,16,0.1); background:#faf8f5;" onfocus="this.style.borderColor='#EF945B'" onblur="this.style.borderColor='rgba(42,26,16,0.1)'">
+          <button class="ds-btn-primary w-full">📥 Получить гайд</button>
+          <div class="text-[11px] text-center mt-1" style="color:var(--muted);">Только польза, никакого спама</div>
         </div>
       </div>
     @endif

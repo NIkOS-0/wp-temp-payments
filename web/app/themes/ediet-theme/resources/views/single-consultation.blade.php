@@ -15,6 +15,11 @@
   $title_words = preg_split('/\s+/', $title_raw);
   $title_last  = array_pop($title_words);
   $title_lead  = implode(' ', $title_words);
+
+  $c1 = get_field('hero_scrim_color_1', $post_id) ?: 'rgba(245,239,226,.96)';
+  $c2 = get_field('hero_scrim_color_2', $post_id) ?: 'rgba(245,239,226,.78)';
+  $c3 = get_field('hero_scrim_color_3', $post_id) ?: 'rgba(245,239,226,.42)';
+  $c4 = get_field('hero_scrim_color_4', $post_id) ?: 'rgba(245,239,226,.18)';
 @endphp
 
 <style>
@@ -22,16 +27,27 @@
    CONSULTATION LANDING — lp-* namespace
    Aesthetic: aligned with homepage hero
 ════════════════════════════════════════════ */
-.lp-page { background: var(--color-canvas); font-family: 'Inter', sans-serif; }
+.bg-main { background: #F5EFE2; font-family: 'Inter', sans-serif; color: var(--color-bark-900); min-width: 1160px; }
+.lp-page {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 24px 20px 108px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
 /* ── Hero: full-bleed background image with cream mesh + scrim ── */
 .lp-hero {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  padding: 120px 0 96px;
+  padding: 100px 40px 80px;
   min-height: 560px;
   background: var(--color-canvas);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.88);
+  box-shadow: 0px 5px 20px rgba(42,26,16,0.08);
 }
 .lp-hero__bg {
   position: absolute; inset: 0; z-index: 0;
@@ -39,9 +55,6 @@
 }
 .lp-hero__scrim {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  background:
-    linear-gradient(95deg, rgba(245,239,226,.96) 0%, rgba(245,239,226,.78) 38%, rgba(245,239,226,.42) 70%, rgba(245,239,226,.18) 100%),
-    linear-gradient(180deg, rgba(245,239,226,.45) 0%, rgba(245,239,226,0) 30%, rgba(245,239,226,.55) 100%);
 }
 .lp-hero__mesh { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
 .lp-hero__blob {
@@ -159,11 +172,17 @@
 .lp-stat__label { font-size: 11.5px; color: var(--color-bark-500); line-height: 1.45; max-width: 110px; }
 
 /* ── Sections ── */
-.lp-s  { padding: 88px 0; }
-.lp-sm { padding: 56px 0; }
+.lp-s  { padding: 60px 40px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.88); box-shadow: 0px 5px 20px rgba(42,26,16,0.08); }
+.lp-sm { padding: 40px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.88); box-shadow: 0px 5px 20px rgba(42,26,16,0.08); }
 .lp-s--canvas { background: var(--color-canvas); }
 .lp-s--white  { background: #fff; }
 .lp-s--warm   { background: var(--color-cream-100); }
+.lp-s--author { 
+  background: radial-gradient(ellipse at top left, #3A2418 0%, #2A1A10 55%, #1e1209 100%); 
+  color: var(--color-cream-100);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0px 5px 20px rgba(0,0,0,0.15);
+}
 
 .lp-section-eyebrow {
   display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
@@ -208,7 +227,7 @@
 }
 .lp-tab-pane { display: none; }
 .lp-tab-pane.active { display: block; }
-.lp-desc { font-size: 15.5px; line-height: 1.85; color: var(--color-bark-700); max-width: 780px; }
+.lp-desc { font-size: 15.5px; line-height: 1.85; color: var(--color-bark-700); }
 .lp-desc p  { margin-bottom: 16px; }
 .lp-desc h2, .lp-desc h3 {
   font-family: var(--font-serif), serif;
@@ -231,6 +250,24 @@
 }
 .lp-use-case:hover { border-color: var(--color-border-strong); transform: translateY(-2px); }
 .lp-use-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
+
+/* ── Tabs (book-style) ── */
+.cns-tabs-card {
+  background: #fff;
+  border: 1px solid rgba(255,255,255,0.88);
+  box-shadow: 0px 5px 20px rgba(42,26,16,0.08);
+  border-radius: 24px;
+  padding: 12px 40px 0;
+}
+.cns-tab-nav { display: flex; border-bottom: 1px solid #E5E7EB; }
+.cns-tab-btn {
+  padding: 20px 28px; font-weight: 600; font-size: 14px; letter-spacing: -0.3px; color: var(--color-bark-400);
+  background: none; border: none; cursor: pointer; position: relative; transition: color 0.15s; white-space: nowrap;
+}
+.cns-tab-btn.active { color: var(--color-bark-900); }
+.cns-tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--color-bark-900); border-radius: 2px 2px 0 0; }
+.cns-tab-content { padding: 36px 0 40px; display: none; }
+.cns-tab-content.active { display: block; }
 
 /* ── Pricing tiers ── */
 .lp-tiers {
@@ -411,22 +448,31 @@
 .lp-channel svg { width: 18px; height: 18px; flex-shrink: 0; }
 
 /* ── Author ── */
+.lp-s--author .lp-section-eyebrow span { color: var(--color-terra-400); }
+.lp-s--author .lp-section-eyebrow .line-decor { background: rgba(245,239,226,.25); }
+.lp-s--author .lp-section-title, .lp-s--author .lp-section-title em { color: var(--color-cream-100); }
 .lp-author { display: flex; gap: 40px; align-items: flex-start; }
 .lp-author__photo {
+  width: 180px; display: flex; flex-direction: column; align-items: center; gap: 16px; flex-shrink: 0;
+}
+.lp-author__photo-img {
   width: 144px; height: 144px; border-radius: 32px;
-  border: 1px solid var(--color-border); overflow: hidden; flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.1); overflow: hidden;
   background: var(--color-cream-200); display: flex; align-items: center; justify-content: center;
 }
-.lp-author__photo img { width: 100%; height: 100%; object-fit: cover; }
-.lp-author__photo svg { width: 56px; height: 56px; opacity: .25; }
+.lp-author__photo-img img { width: 100%; height: 100%; object-fit: cover; }
+.lp-author__photo-img svg { width: 56px; height: 56px; opacity: .25; }
 .lp-author__info { flex: 1; }
 .lp-author__name {
   font-family: var(--font-serif), serif;
   font-size: 26px; font-weight: 600; letter-spacing: -.5px;
   color: var(--color-bark-900); margin-bottom: 2px;
 }
+.lp-s--author .lp-author__name { color: var(--color-cream-100); }
 .lp-author__spec { font-size: 13.5px; color: var(--color-bark-500); margin-bottom: 18px; }
+.lp-s--author .lp-author__spec { color: rgba(245,239,226,0.7); }
 .lp-author__bio { font-size: 14.5px; line-height: 1.75; color: var(--color-bark-700); margin-bottom: 16px; }
+.lp-s--author .lp-author__bio { color: rgba(245,239,226,0.85); }
 .lp-author__quote {
   border: 1px solid var(--color-border); border-radius: 14px;
   padding: 16px 22px;
@@ -435,9 +481,20 @@
   color: var(--color-bark-600); line-height: 1.65; margin-bottom: 16px;
   background: rgba(255,255,255,.5);
 }
+.lp-s--author .lp-author__quote {
+  background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: rgba(245, 239, 226, 0.85);
+}
+.lp-s--author .lp-stats {
+  background: rgba(245, 239, 226, 0.05); border-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(4px); box-shadow: none;
+}
+.lp-s--author .lp-stat { border-right-color: rgba(255, 255, 255, 0.1); }
+.lp-s--author .lp-stat__value { color: var(--color-cream-100); }
+.lp-s--author .lp-stat__label { color: rgba(245, 239, 226, 0.7); }
 
 /* ── Responsive ── */
 @media (max-width: 900px) {
+  .bg-main { min-width: 0 !important; }
+  .lp-page { padding: 16px 16px 80px; gap: 16px; }
   .lp-pricing-wrap { flex-direction: column; }
   .lp-pricing-aside { min-width: unset; width: 100%; }
   .lp-tiers { grid-template-columns: 1fr; gap: 16px; }
@@ -447,86 +504,266 @@
   .lp-channels-panel { padding: 28px 24px; }
 }
 @media (max-width: 768px) {
-  .lp-hero { padding: 80px 0 64px; min-height: 460px; }
+  .lp-hero { padding: 80px 20px 64px; min-height: 460px; }
   .lp-hero__title { font-size: clamp(1.9rem, 7.5vw, 3rem); }
   .lp-hero__scrim {
-    background: linear-gradient(180deg, rgba(245,239,226,.92) 0%, rgba(245,239,226,.86) 60%, rgba(245,239,226,.65) 100%);
+    background: linear-gradient(180deg, rgba(245,239,226,.92) 0%, rgba(245,239,226,.86) 60%, rgba(245,239,226,.65) 100%) !important;
   }
   .lp-stat { padding: 20px 12px; }
   .lp-stat__value { font-size: 26px; }
   .lp-use-cases { grid-template-columns: 1fr; }
-  .lp-s { padding: 60px 0; }
-  .lp-author { flex-direction: column; gap: 20px; }
-  .lp-author__photo { width: 104px; height: 104px; border-radius: 22px; }
+  .lp-s { padding: 40px 20px; }
+  .lp-sm { padding: 32px 20px; }
+  .lp-author { flex-direction: column; gap: 20px; align-items: center; text-align: center; }
+  .lp-author__name { margin-left: auto; margin-right: auto; justify-content: center; display: flex; width: 100%; }
+  .lp-author__photo { width: auto; }
+  .lp-author__photo-img { width: 104px; height: 104px; border-radius: 22px; }
   .lp-tab-btn { padding: 12px 14px; font-size: 13px; }
 }
 @media (max-width: 480px) {
+  .lp-page { padding: 12px 12px 72px; }
+  .lp-hero { padding: 60px 16px 40px; }
+  .lp-s { padding: 32px 16px; }
   .lp-stats { flex-wrap: wrap; }
-  .lp-stat { flex: 0 0 50%; border-bottom: 1px solid var(--color-border); }
+  .lp-stat { flex: 0 0 50%; border-bottom: 1px solid rgba(255,255,255,0.1); }
   .lp-stat:nth-child(even) { border-right: none; }
   .lp-channels { gap: 8px; }
   .lp-tier { padding: 28px 22px 24px; }
   .lp-tier__price { font-size: 38px; }
 }
+
+/* ── Scroll-reveal ── */
+.lp-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .55s cubic-bezier(.22,1,.36,1), transform .55s cubic-bezier(.22,1,.36,1);
+}
+.lp-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+.lp-reveal-delay-1 { transition-delay: .08s; }
+.lp-reveal-delay-2 { transition-delay: .16s; }
+.lp-reveal-delay-3 { transition-delay: .24s; }
+
+/* ── Count-up shimmer on values ── */
+.lp-stat__value.counting {
+  background: linear-gradient(90deg, var(--color-bark-900) 40%, var(--color-terra-500) 50%, var(--color-bark-900) 60%);
+  background-size: 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: lp-shimmer-count .9s ease-out forwards;
+}
+@keyframes lp-shimmer-count {
+  from { background-position: 100% 0; }
+  to   { background-position: -100% 0; }
+}
+
+/* ── CTA button pulse ring ── */
+.btn-dark.btn-lg {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+}
+.btn-dark.btn-lg::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50px;
+  background: transparent;
+  border: 2px solid var(--color-terra-400);
+  opacity: 0;
+  animation: lp-pulse-ring 2.8s ease-out 1.2s infinite;
+  pointer-events: none;
+}
+@keyframes lp-pulse-ring {
+  0%   { transform: scale(1);   opacity: .55; }
+  70%  { transform: scale(1.1); opacity: 0;   }
+  100% { transform: scale(1.1); opacity: 0;   }
+}
+
+/* ── Hero floating particles canvas ── */
+#lp-particles {
+  position: absolute; inset: 0; z-index: 2;
+  pointer-events: none; overflow: hidden;
+}
+#lp-particles span {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  background: var(--color-terra-400);
+  opacity: 0;
+  animation: lp-float-particle linear infinite;
+}
+@keyframes lp-float-particle {
+  0%   { transform: translateY(0)   scale(1);   opacity: 0; }
+  10%  { opacity: .18; }
+  90%  { opacity: .10; }
+  100% { transform: translateY(-120px) scale(.7); opacity: 0; }
+}
+
+/* ── Tier card spotlight glow on hover ── */
+.lp-tier {
+  overflow: visible;
+}
+.lp-tier::after {
+  content: '';
+  position: absolute; top: -60px; left: -60px;
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(239,148,91,.18) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+  transform: translate(var(--mx,0), var(--my,0));
+}
+.lp-tier:hover::after { opacity: 1; }
+
+/* ── Use-case card lift ── */
+.lp-use-case {
+  transition: border-color .2s, transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s;
+}
+.lp-use-case:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(42,26,16,.10);
+}
+
+/* ── Section eyebrow line grow ── */
+.lp-section-eyebrow .line-decor {
+  transition: width .5s ease;
+}
+.is-visible .lp-section-eyebrow .line-decor { width: 60px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-reveal, .lp-reveal.is-visible { opacity: 1; transform: none; transition: none; }
+  .btn-dark.btn-lg::before, #lp-particles span, .lp-bg-blob { animation: none !important; }
+}
+
+/* ── Background aurora blobs ── */
+.lp-bg-blobs {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.lp-bg-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  mix-blend-mode: multiply;
+  will-change: transform;
+}
+.lp-bg-blob--1 {
+  width: 700px; height: 700px;
+  top: -200px; right: -180px;
+  background: radial-gradient(circle, rgba(239,148,91,.28) 0%, transparent 70%);
+  animation: lpBlob1 28s ease-in-out infinite alternate;
+}
+.lp-bg-blob--2 {
+  width: 600px; height: 600px;
+  bottom: 0; left: -160px;
+  background: radial-gradient(circle, rgba(120,210,210,.22) 0%, transparent 70%);
+  animation: lpBlob2 34s ease-in-out infinite alternate;
+}
+.lp-bg-blob--3 {
+  width: 480px; height: 480px;
+  top: 35%; left: 30%;
+  background: radial-gradient(circle, rgba(201,168,76,.18) 0%, transparent 70%);
+  animation: lpBlob3 22s ease-in-out infinite alternate;
+}
+.lp-bg-blob--4 {
+  width: 380px; height: 380px;
+  top: 60%; right: 5%;
+  background: radial-gradient(circle, rgba(180,140,220,.15) 0%, transparent 70%);
+  animation: lpBlob4 40s ease-in-out infinite alternate;
+}
+@keyframes lpBlob1 {
+  0%   { transform: translate(0,0) scale(1); }
+  50%  { transform: translate(-80px, 120px) scale(1.12); }
+  100% { transform: translate(60px, 40px) scale(.95); }
+}
+@keyframes lpBlob2 {
+  0%   { transform: translate(0,0) scale(1); }
+  40%  { transform: translate(100px,-80px) scale(1.08); }
+  100% { transform: translate(40px, 60px) scale(1.15); }
+}
+@keyframes lpBlob3 {
+  0%   { transform: translate(0,0) scale(1); }
+  60%  { transform: translate(-60px, 80px) scale(.9); }
+  100% { transform: translate(80px,-40px) scale(1.1); }
+}
+@keyframes lpBlob4 {
+  0%   { transform: translate(0,0) scale(1); }
+  50%  { transform: translate(-100px,-60px) scale(1.2); }
+  100% { transform: translate(50px, 80px) scale(.9); }
+}
 </style>
 
-<div class="lp-page">
+<div class="bg-main" style="position:relative;">
+<div class="lp-bg-blobs" aria-hidden="true">
+  <div class="lp-bg-blob lp-bg-blob--1"></div>
+  <div class="lp-bg-blob lp-bg-blob--2"></div>
+  <div class="lp-bg-blob lp-bg-blob--3"></div>
+  <div class="lp-bg-blob lp-bg-blob--4"></div>
+</div>
+<div class="lp-page" style="position:relative;z-index:1;">
 
   {{-- ════════════════ 1. HERO ════════════════ --}}
   <section class="lp-hero">
     @if($hero_img)
       <div class="lp-hero__bg" style="background-image:url('{{ $hero_img }}');"></div>
     @endif
-    <div class="lp-hero__scrim"></div>
+    <div class="lp-hero__scrim" style="background: linear-gradient(95deg, {{ $c1 }} 0%, {{ $c2 }} 38%, {{ $c3 }} 70%, {{ $c4 }} 100%), linear-gradient(180deg, rgba(245,239,226,.45) 0%, rgba(245,239,226,0) 30%, rgba(245,239,226,.55) 100%);"></div>
+    <div id="lp-particles" aria-hidden="true"></div>
     <div class="lp-hero__mesh">
       <div class="lp-hero__blob a"></div>
       <div class="lp-hero__blob b"></div>
     </div>
     <div class="lp-hero__grain"></div>
 
-    <div class="container-editorial">
-      <div class="lp-hero__inner">
-        <div class="lp-hero__body">
+    <div class="lp-hero__inner">
+      <div class="lp-hero__body">
 
-          <div class="lp-hero__eyebrow">
-            <div class="line-decor"></div>
-            <svg class="leaf" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <path d="M10 1 C 4 6, 4 14, 10 19 C 16 14, 16 6, 10 1 Z M10 5 L10 17" stroke="currentColor" stroke-width="1" fill="none"/>
-            </svg>
-            <span class="text-decor">Индивидуальная консультация</span>
+        <div class="lp-hero__eyebrow">
+          <div class="line-decor"></div>
+          <svg class="leaf" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M10 1 C 4 6, 4 14, 10 19 C 16 14, 16 6, 10 1 Z M10 5 L10 17" stroke="currentColor" stroke-width="1" fill="none"/>
+          </svg>
+          <span class="text-decor">Индивидуальная консультация</span>
+        </div>
+
+        @if(!empty($service['top_labels']))
+          <div class="lp-hero__labels">
+            @foreach($service['top_labels'] as $lbl)
+              <span class="lp-hero__label"
+                    style="background: {{ $lbl['bg_color'] }}; color: {{ $lbl['text_color'] }};">
+                {{ $lbl['text'] }}
+              </span>
+            @endforeach
           </div>
+        @endif
 
-          @if(!empty($service['top_labels']))
-            <div class="lp-hero__labels">
-              @foreach($service['top_labels'] as $lbl)
-                <span class="lp-hero__label"
-                      style="background: {{ $lbl['bg_color'] }}; color: {{ $lbl['text_color'] }};">
-                  {{ $lbl['text'] }}
-                </span>
-              @endforeach
-            </div>
+        <h1 class="lp-hero__title">
+          @if($title_lead !== '')
+            {{ $title_lead }} <em>{{ $title_last }}</em>
+          @else
+            {{ $title_last }}
           @endif
+        </h1>
 
-          <h1 class="lp-hero__title">
-            @if($title_lead !== '')
-              {{ $title_lead }} <em>{{ $title_last }}</em>
-            @else
-              {{ $title_last }}
-            @endif
-          </h1>
+        @if($service['subtitle'])
+          <p class="lp-hero__sub">{!! $service['subtitle'] !!}</p>
+        @endif
 
-          @if($service['subtitle'])
-            <p class="lp-hero__sub">{!! $service['subtitle'] !!}</p>
+        <div class="lp-hero__cta">
+          @if(is_user_logged_in())
+            <button class="btn-dark btn-lg" onclick="window.location.href='{{ $buy_url }}#tarify'">Записаться на консультацию</button>
+          @else
+            <button class="btn-dark btn-lg" onclick="window.edietOpenBuyModal('{{ $buy_url }}')">Записаться на консультацию</button>
           @endif
-
-          <div class="lp-hero__cta">
-            @if(is_user_logged_in())
-              <button class="btn-dark btn-lg" onclick="window.location.href='{{ $buy_url }}#tarify'">Записаться на консультацию</button>
-            @else
-              <button class="btn-dark btn-lg" onclick="window.edietOpenBuyModal('{{ $buy_url }}')">Записаться на консультацию</button>
-            @endif
-            @include('partials.favorite-btn', ['post_id' => $post_id, 'class' => '!w-12 !h-12 !rounded-full bg-white/70 backdrop-blur'])
-          </div>
+          @include('partials.favorite-btn', ['post_id' => $post_id, 'class' => '!w-12 !h-12 !rounded-full bg-white/70 backdrop-blur'])
         </div>
       </div>
     </div>
@@ -535,23 +772,20 @@
   {{-- ════════════════ 2. STATS ════════════════ --}}
   @if(!empty($service['stats']))
   <section class="lp-sm lp-s--canvas">
-    <div class="container-editorial">
-      <div class="lp-stats">
-        @foreach($service['stats'] as $st)
-          <div class="lp-stat">
-            <span class="lp-stat__value">{{ $st['number'] }}</span>
-            <span class="lp-stat__label">{{ $st['label'] }}</span>
-          </div>
-        @endforeach
-      </div>
+    <div class="lp-stats">
+      @foreach($service['stats'] as $st)
+        <div class="lp-stat">
+          <span class="lp-stat__value">{{ $st['number'] }}</span>
+          <span class="lp-stat__label">{{ $st['label'] }}</span>
+        </div>
+      @endforeach
     </div>
   </section>
   @endif
 
   {{-- ════════════════ 2.5 AUTHOR (after stats) ════════════════ --}}
   @if($author)
-  <section class="lp-s lp-s--warm">
-    <div class="container-editorial">
+  <section class="lp-s lp-s--author">
       <div class="lp-section-eyebrow">
         <div class="line-decor"></div>
         <span>Специалист</span>
@@ -560,18 +794,36 @@
 
       <div class="lp-author">
         <div class="lp-author__photo">
-          @if($author['avatar_url'])
-            <img src="{{ $author['avatar_url'] }}" alt="{{ $author['name'] }}">
-          @else
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="1.5"/></svg>
+          <div class="lp-author__photo-img">
+            @php
+               $author_post_id = get_page_by_title($author['name'], OBJECT, 'expert') ? get_page_by_title($author['name'], OBJECT, 'expert')->ID : null;
+               $acf_avatar = $author_post_id ? get_field('doc_avatar', $author_post_id) ?: get_field('avatar', $author_post_id) : null;
+               if(is_array($acf_avatar)) $acf_avatar = $acf_avatar['sizes']['medium'] ?? $acf_avatar['url'];
+               $final_avatar = $acf_avatar ?: $author['avatar_url'];
+            @endphp
+            @if($final_avatar)
+              <img src="{{ $final_avatar }}" alt="{{ $author['name'] }}">
+            @else
+              <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="1.5"/></svg>
+            @endif
+          </div>
+          
+          @if(!empty($author['tags']))
+            <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
+              @foreach(array_slice($author['tags'], 0, 5) as $tag)
+                <span class="badge-cream" style="background: rgba(245,239,226,0.1); border: 1px solid rgba(245,239,226,0.2); color: var(--color-cream-100); border-radius: 50px; padding: 4px 12px; font-size: 11px;">
+                  {{ is_array($tag) ? ($tag['text'] ?? ($tag['name'] ?? '')) : $tag }}
+                </span>
+              @endforeach
+            </div>
           @endif
         </div>
 
         <div class="lp-author__info">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;" class="lp-author__name-wrap">
             <div class="lp-author__name">{{ $author['name'] }}</div>
             @if($author['verified'])
-              <span class="badge-green">✓ Верифицирован</span>
+              <span class="badge-green" style="background:#DCFCE7; color:#15803D; font-size:11px; padding:2px 8px; border-radius:4px; font-weight:700;">✓ Верифицирован</span>
             @endif
           </div>
           <div class="lp-author__spec">{{ $author['spec'] }}</div>
@@ -594,81 +846,64 @@
           @if($author['quote'])
             <div class="lp-author__quote">«{{ $author['quote'] }}»</div>
           @endif
-
-          @if(!empty($author['tags']))
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              @foreach(array_slice($author['tags'], 0, 5) as $tag)
-                <span class="badge-cream">{{ $tag['text'] ?? $tag['name'] ?? $tag }}</span>
-              @endforeach
-            </div>
-          @endif
         </div>
       </div>
-    </div>
   </section>
   @endif
 
   {{-- ════════════════ 3. DESCRIPTION + REVIEWS ════════════════ --}}
-  <section class="lp-s lp-s--white">
-    <div class="container-editorial">
-
-      <div class="lp-section-eyebrow">
-        <div class="line-decor"></div>
-        <span>Подробнее</span>
-      </div>
-      <h2 class="lp-section-title">Что вас ждёт <em>на встрече</em></h2>
-      <p class="lp-section-lead">Описание, отзывы и реальные истории клиентов, которые уже прошли консультацию.</p>
-
-      <div class="lp-tab-nav" style="margin-top:32px;">
-        <button class="lp-tab-btn active" data-group="{{ $bid }}" data-pane="lp-desc-{{ $bid }}">О консультации</button>
-        <button class="lp-tab-btn" data-group="{{ $bid }}" data-pane="lp-reviews-{{ $bid }}">
+  <div class="cns-tabs-card">
+    <div class="cns-tab-nav">
+      <button class="cns-tab-btn active" data-cns-target="cns-desc-{{ $bid }}">О консультации</button>
+      @if(count($reviews) > 0)
+        <button class="cns-tab-btn" data-cns-target="cns-reviews-{{ $bid }}">
           Отзывы
           <span style="background:rgba(42,26,16,.07);padding:2px 8px;border-radius:20px;font-size:11px;margin-left:6px;">{{ count($reviews) }}</span>
         </button>
-      </div>
+      @endif
+    </div>
 
-      <div id="lp-desc-{{ $bid }}" class="lp-tab-pane active">
-        <div class="lp-desc">
-          @if(empty($service['description']))
-            <p>Индивидуальная консультация поможет вам разобраться в вашем питании, получить персональный план и поддержку специалиста.</p>
-          @else
-            @foreach($service['description'] as $block)
-              @if($block['acf_fc_layout'] === 'text')
-                {!! $block['content'] !!}
-              @elseif($block['acf_fc_layout'] === 'quote')
-                <div class="lp-quote">{{ $block['text'] }}</div>
-              @elseif($block['acf_fc_layout'] === 'use_cases')
-                <div class="lp-use-cases">
-                  @foreach($block['items'] as $uc)
-                    <div class="lp-use-case">
-                      <div class="lp-use-icon">✨</div>
-                      <div>
-                        <div style="font-weight:700;font-size:14px;color:var(--color-bark-900);margin-bottom:4px;">{{ $uc['title'] }}</div>
-                        <div style="font-size:13px;color:var(--color-bark-600);line-height:1.5;">{{ $uc['desc'] }}</div>
-                      </div>
-                    </div>
-                  @endforeach
-                </div>
-              @endif
-            @endforeach
-          @endif
-        </div>
-      </div>
-
-      <div id="lp-reviews-{{ $bid }}" class="lp-tab-pane">
-        @if(count($reviews) > 0)
-          @include('blocks.featured_reviews', ['custom_reviews' => $reviews, 'title' => '', 'subtitle' => '', 'rv_theme' => 'light'])
+    <div class="cns-tab-content active" id="cns-desc-{{ $bid }}">
+      <div class="lp-desc">
+        @if(empty($service['description']))
+          <p>Индивидуальная консультация поможет вам разобраться в вашем питании, получить персональный план и поддержку специалиста.</p>
         @else
-          <p style="color:var(--color-bark-400);font-size:14px;padding:20px 0;">Отзывов пока нет. Будьте первыми!</p>
+          @foreach($service['description'] as $block)
+            @if($block['acf_fc_layout'] === 'text')
+              {!! $block['content'] !!}
+            @elseif($block['acf_fc_layout'] === 'quote')
+              <div class="lp-quote">{{ $block['text'] }}</div>
+            @elseif($block['acf_fc_layout'] === 'use_cases')
+              <div class="lp-use-cases">
+                @foreach($block['items'] as $uc)
+                  <div class="lp-use-case">
+                    <div class="lp-use-icon">✨</div>
+                    <div>
+                      <div style="font-weight:700;font-size:14px;color:var(--color-bark-900);margin-bottom:4px;">{{ $uc['title'] }}</div>
+                      <div style="font-size:13px;color:var(--color-bark-600);line-height:1.5;">{{ $uc['desc'] }}</div>
+                    </div>
+                  </div>
+                @endforeach
+              </div>
+            @endif
+          @endforeach
         @endif
       </div>
-
     </div>
-  </section>
+
+    @if(count($reviews) > 0)
+    <div class="cns-tab-content" id="cns-reviews-{{ $bid }}">
+      @include('blocks.featured_reviews', ['custom_reviews' => $reviews, 'hide_controls' => true, 'rv_theme' => 'light'])
+    </div>
+    @else
+    <div class="cns-tab-content" id="cns-reviews-{{ $bid }}" style="display:none;">
+      <p style="color:var(--color-bark-400);font-size:14px;">Отзывов пока нет. Будьте первыми!</p>
+    </div>
+    @endif
+  </div>
 
   {{-- ════════════════ 4. PRICING ════════════════ --}}
   <section class="lp-s lp-s--canvas" id="tarify">
-    <div class="container-editorial">
 
       <div class="lp-section-eyebrow">
         <div class="line-decor"></div>
@@ -864,13 +1099,11 @@
           </div>
         </div>
       </div>
-    </div>
   </section>
 
   {{-- ════════════════ 6. CROSS-SELLS ════════════════ --}}
   @if(count($cross_sells) > 0)
   <section class="lp-s lp-s--canvas">
-    <div class="container-editorial">
       <div class="lp-section-eyebrow">
         <div class="line-decor"></div>
         <span>Полезное рядом</span>
@@ -881,29 +1114,128 @@
           @include('partials.dtc-card', ['item' => $cs])
         @endforeach
       </div>
-    </div>
   </section>
   @endif
 
 </div>
+</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+
+  /* ── Tab switching: lp-tab-btn ── */
   document.querySelectorAll('.lp-tab-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var pane = btn.dataset.pane;
-      btn.closest('.lp-tab-nav').querySelectorAll('.lp-tab-btn').forEach(function (b) {
-        b.classList.remove('active');
-      });
+      btn.closest('.lp-tab-nav').querySelectorAll('.lp-tab-btn').forEach(function (b) { b.classList.remove('active'); });
       btn.classList.add('active');
       var section = btn.closest('section') || document;
-      section.querySelectorAll('.lp-tab-pane').forEach(function (p) {
-        p.classList.remove('active');
-      });
+      section.querySelectorAll('.lp-tab-pane').forEach(function (p) { p.classList.remove('active'); });
       var target = document.getElementById(pane);
       if (target) target.classList.add('active');
     });
   });
+
+  /* ── Tab switching: cns-tab-btn ── */
+  document.querySelectorAll('.cns-tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var targetId = btn.dataset.cnsTarget;
+      var card = btn.closest('.cns-tabs-card');
+      card.querySelectorAll('.cns-tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      card.querySelectorAll('.cns-tab-content').forEach(function (c) { c.classList.remove('active'); });
+      btn.classList.add('active');
+      var target = document.getElementById(targetId);
+      if (target) target.classList.add('active');
+    });
+  });
+
+  /* ── Scroll-reveal ── */
+  var revealEls = document.querySelectorAll('.lp-hero, .lp-sm, .lp-s, .cns-tabs-card, .cns-tabs-card');
+  var seen = new WeakSet();
+  var revealObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting && !seen.has(entry.target)) {
+        seen.add(entry.target);
+        entry.target.classList.add('lp-reveal', 'is-visible');
+        // stagger children
+        entry.target.querySelectorAll('.lp-tier, .lp-stat, .lp-use-case, .lp-channel, .lp-author__photo, .lp-author__info').forEach(function (child, i) {
+          child.classList.add('lp-reveal');
+          setTimeout(function () { child.classList.add('is-visible'); }, 60 + i * 60);
+        });
+      }
+    });
+  }, { threshold: 0.08 });
+  revealEls.forEach(function (el) { revealObserver.observe(el); });
+
+  /* ── Count-up animation for stat values ── */
+  function countUp(el) {
+    var raw = el.textContent.replace(/[^\d]/g, '');
+    var target = parseInt(raw, 10);
+    if (!raw || isNaN(target)) return;
+    var suffix = el.textContent.replace(/[\d]/g, '');
+    var start = 0;
+    var duration = 900;
+    var startTime = null;
+    el.classList.add('counting');
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      var progress = Math.min((ts - startTime) / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(start + (target - start) * eased) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+      else { el.classList.remove('counting'); el.textContent = target + suffix; }
+    }
+    requestAnimationFrame(step);
+  }
+  var statObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.lp-stat__value').forEach(countUp);
+        statObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('.lp-stats').forEach(function (el) { statObserver.observe(el); });
+
+  /* ── Hero floating particles ── */
+  var pWrap = document.getElementById('lp-particles');
+  if (pWrap) {
+    var colors = ['rgba(239,148,91,.35)', 'rgba(201,168,76,.3)', 'rgba(120,210,210,.25)', 'rgba(239,148,91,.2)'];
+    for (var i = 0; i < 18; i++) {
+      (function () {
+        var s = document.createElement('span');
+        var size = 4 + Math.random() * 10;
+        var left = 5 + Math.random() * 90;
+        var bottom = -size;
+        var dur = 6 + Math.random() * 10;
+        var delay = Math.random() * 12;
+        var color = colors[Math.floor(Math.random() * colors.length)];
+        s.style.cssText = [
+          'width:' + size + 'px',
+          'height:' + size + 'px',
+          'left:' + left + '%',
+          'bottom:' + bottom + 'px',
+          'background:' + color,
+          'animation-duration:' + dur + 's',
+          'animation-delay:' + delay + 's',
+          'filter:blur(' + (size * .25) + 'px)'
+        ].join(';');
+        pWrap.appendChild(s);
+      }());
+    }
+  }
+
+  /* ── Tier card spotlight glow follow cursor ── */
+  document.querySelectorAll('.lp-tier').forEach(function (card) {
+    card.addEventListener('mousemove', function (e) {
+      var rect = card.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      card.style.setProperty('--mx', (x - 90) + 'px');
+      card.style.setProperty('--my', (y - 90) + 'px');
+    });
+  });
+
 });
 </script>
 

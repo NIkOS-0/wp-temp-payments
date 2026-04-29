@@ -260,6 +260,41 @@
   from { opacity:0; transform:translateY(12px); }
   to   { opacity:1; transform:translateY(0); }
 }
+
+/* Scroll Reveal */
+.rv-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
+.rv-reveal.rv-in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Waypoints Pulse */
+.rv-wp-ring {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.rv-wp-ring.is-drawn {
+  opacity: 1;
+  animation: rv-wp-pulse 1.8s ease-out infinite;
+}
+.rv-wp-dot {
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.rv-wp-dot.is-drawn {
+  opacity: 1;
+  transform: scale(1);
+}
+@keyframes rv-wp-pulse {
+  0% { transform: scale(1); opacity: 0.6; stroke-width: 1.5px; }
+  100% { transform: scale(2.8); opacity: 0; stroke-width: 0.5px; }
+}
 </style>
 
 <section id="rv-{{ $bid }}">
@@ -291,7 +326,7 @@
     {{-- Header --}}
     @if(empty($hide_controls))
     <header class="rv-head">
-      <div>
+      <div class="rv-reveal">
         <div class="rv-eyebrow"><span class="dot"></span> Реальные пациенты · 2019–2026</div>
         <h2 class="rv-title">
           {!! !empty($block['title'])
@@ -305,7 +340,7 @@
     @if(count($revs) > 0)
 
     {{-- Slider Stage --}}
-    <div class="rv-stage" id="rv-stage-{{ $bid }}">
+    <div class="rv-stage rv-reveal" id="rv-stage-{{ $bid }}">
       @foreach($revs as $i => $rev)
         @php
           $type        = get_field('type', $rev->ID) ?: 'text';
@@ -392,7 +427,7 @@
     </div>
 
     {{-- Controls --}}
-    <div class="rv-controls">
+    <div class="rv-controls rv-reveal">
       <div class="rv-controls-left">
         <button class="rv-arrow rv-prev-{{ $bid }}" aria-label="Предыдущий">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -519,7 +554,7 @@
   modal?.addEventListener('click', e => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-  /* ── Scroll-driven arc ── */
+  /* ── Scroll Reveal & Arc ── */
   const path   = document.getElementById('rv-path-' + BID);
   const arcEl  = document.getElementById('rv-arc-' + BID);
   const wpsG   = document.getElementById('rv-wps-' + BID);
@@ -527,13 +562,12 @@
 
   const NS = 'http://www.w3.org/2000/svg';
 
-  // Waypoint definitions: progress 0-1 along the path
   const WP_ATS  = [0.10, 0.22, 0.36, 0.50, 0.65, 0.80, 0.93];
   const WP_RINNER = [5, 4, 5.5, 4, 5, 4.5, 5];
   const WP_ROUTER = [13, 10, 14, 10, 12, 11, 13];
 
-  let total = 0, maxP = 0;
-  let wpDots = []; // {ring, dot, at}
+  let total = 0, timeouts = [];
+  let wpDots = [];
 
   function buildWaypoints() {
     wpsG.innerHTML = '';
@@ -543,31 +577,28 @@
     WP_ATS.forEach((at, i) => {
       const pt = path.getPointAtLength(at * total);
 
-      // Outer ring with pulse
+      // Outer pulsing ring
       const ring = document.createElementNS(NS, 'circle');
       ring.setAttribute('cx', pt.x);
       ring.setAttribute('cy', pt.y);
-      ring.setAttribute('r',  WP_ROUTER[i]);
+      ring.setAttribute('r',  WP_ROUTER[i] - 1.5);
       ring.setAttribute('fill', 'none');
       ring.setAttribute('stroke', '#EF945B');
-      ring.setAttribute('stroke-width', '1');
-      ring.style.opacity = '0';
-      ring.style.transition = 'opacity .4s ease, transform .5s ease';
-      ring.style.transformOrigin = `${pt.x}px ${pt.y}px`;
+      ring.setAttribute('stroke-width', '1.5');
+      ring.style.transformOrigin = 'center';
       ring.style.transformBox = 'fill-box';
+      ring.classList.add('rv-wp-ring');
       wpsG.appendChild(ring);
 
-      // Inner filled dot
+      // Inner dot
       const dot = document.createElementNS(NS, 'circle');
       dot.setAttribute('cx', pt.x);
       dot.setAttribute('cy', pt.y);
       dot.setAttribute('r',  WP_RINNER[i]);
       dot.setAttribute('fill', '#EF945B');
-      dot.style.opacity = '0';
-      dot.style.transform = 'scale(0)';
-      dot.style.transition = 'opacity .35s ease, transform .4s cubic-bezier(.34,1.56,.64,1)';
-      dot.style.transformOrigin = `${pt.x}px ${pt.y}px`;
+      dot.style.transformOrigin = 'center';
       dot.style.transformBox = 'fill-box';
+      dot.classList.add('rv-wp-dot');
       wpsG.appendChild(dot);
 
       wpDots.push({ ring, dot, at });
@@ -577,43 +608,55 @@
   function setLen() {
     total = path.getTotalLength();
     path.style.strokeDasharray = '4 9';
-    arcEl.style.setProperty('--arc-len', total);
+    path.style.strokeDashoffset = total;
     buildWaypoints();
-    onScroll();
   }
 
   setLen();
   window.addEventListener('resize', setLen);
 
-  function onScroll() {
-    const rect = root.getBoundingClientRect();
-    const vh   = window.innerHeight;
-    const raw  = (vh - rect.top) / vh;
-    const p    = Math.max(0, Math.min(1, raw));
-    if (p > maxP) maxP = p;
+  const reveals = root.querySelectorAll('.rv-reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Draw line
+        path.style.transition = 'stroke-dashoffset 2.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+        path.style.strokeDashoffset = 0;
 
-    // Draw arc
-    path.style.strokeDashoffset = total * (1 - maxP);
+        // Waypoints show via timeouts matching draw duration
+        wpDots.forEach(({ ring, dot, at }) => {
+           let tId = setTimeout(() => {
+             ring.classList.add('is-drawn');
+             dot.classList.add('is-drawn');
+           }, at * 2300);
+           timeouts.push(tId);
+        });
 
-    // Reveal each waypoint as draw passes it
-    wpDots.forEach(({ ring, dot, at }) => {
-      const show = maxP >= at;
-      if (show) {
-        ring.style.opacity = '0.55';
-        ring.style.transform = 'scale(1)';
-        dot.style.opacity  = '1';
-        dot.style.transform = 'scale(1)';
+        // Content blocks reveal
+        reveals.forEach((el, i) => {
+           let tId = setTimeout(() => el.classList.add('rv-in-view'), i * 150);
+           timeouts.push(tId);
+        });
+
       } else {
-        ring.style.opacity = '0';
-        ring.style.transform = 'scale(0.6)';
-        dot.style.opacity  = '0';
-        dot.style.transform = 'scale(0)';
+        // Revert 
+        path.style.transition = 'stroke-dashoffset 1s ease-out';
+        path.style.strokeDashoffset = total;
+        
+        timeouts.forEach(t => clearTimeout(t));
+        timeouts = [];
+
+        wpDots.forEach(({ ring, dot }) => {
+          ring.classList.remove('is-drawn');
+          dot.classList.remove('is-drawn');
+        });
+
+        reveals.forEach(el => el.classList.remove('rv-in-view'));
       }
     });
-  }
+  }, { threshold: 0.15 });
 
-  onScroll();
-  window.addEventListener('scroll', onScroll, {passive:true});
+  observer.observe(root);
 
 })();
 </script>

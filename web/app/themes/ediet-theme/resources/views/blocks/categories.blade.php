@@ -1,6 +1,90 @@
 <section class="section-dark py-24 relative" style="background: var(--color-onyx-900); overflow: clip;">
-  <!-- Ambient background glow -->
-  <div class="absolute top-0 right-1/4 w-[600px] h-[600px] bg-onyx-800 rounded-full blur-[120px] opacity-30 pointer-events-none"></div>
+  <style>
+    @media (min-width: 1024px) {
+      @keyframes wheel-desktop-spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes wheel-desktop-counter-spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(-360deg); }
+      }
+      .wheel-spin {
+        animation: wheel-desktop-spin 400s linear infinite;
+        transform-origin: 200px 200px;
+      }
+      .wheel-counter-spin {
+        animation: wheel-desktop-counter-spin 400s linear infinite;
+      }
+    }
+    .wheel-outer-pulse-svg {
+      animation: wheel-pulse-svg-outer 2.5s ease-out infinite;
+      transform-origin: 200px 200px;
+      fill: rgba(239, 148, 91, 0.05);
+      stroke: rgba(239, 148, 91, 0.4);
+      stroke-width: 1.5;
+    }
+    @keyframes wheel-pulse-svg-outer {
+      0% { transform: scale(0.98); opacity: 0.6; stroke-width: 1.5; }
+      100% { transform: scale(1.08); opacity: 0; stroke-width: 0.5; }
+    }
+    .wheel-segment-init {
+      opacity: 0;
+      transform: scale(0.85);
+      transform-origin: 200px 200px;
+    }
+
+    /* Floating background blobs */
+    .cat-mesh {
+      position: absolute; inset: 0; z-index: 0;
+      pointer-events: none; overflow: hidden;
+    }
+    .cat-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      will-change: transform;
+      opacity: 0.8;
+    }
+    .cat-blob.a {
+      width: 700px; height: 700px;
+      top: -200px; right: -10%;
+      background: rgba(239, 148, 91, 0.15); /* terra */
+      animation: cat-drift-a 22s ease-in-out infinite alternate;
+    }
+    .cat-blob.b {
+      width: 800px; height: 800px;
+      bottom: -300px; left: -15%;
+      background: rgba(139, 167, 127, 0.12); /* moss */
+      animation: cat-drift-b 28s ease-in-out infinite alternate-reverse;
+    }
+    .cat-blob.c {
+      width: 500px; height: 500px;
+      top: 30%; left: 20%;
+      background: rgba(245, 239, 226, 0.05); /* cream */
+      animation: cat-drift-c 34s ease-in-out infinite alternate;
+      mix-blend-mode: overlay;
+    }
+    @keyframes cat-drift-a {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-100px, 150px) scale(1.15); }
+    }
+    @keyframes cat-drift-b {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(120px, -100px) scale(1.1); }
+    }
+    @keyframes cat-drift-c {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(80px, 80px) scale(1.25); }
+    }
+  </style>
+
+  <!-- Dynamic Ambient Background -->
+  <div class="cat-mesh">
+    <div class="cat-blob a"></div>
+    <div class="cat-blob b"></div>
+    <div class="cat-blob c"></div>
+  </div>
 
   <div class="container-editorial relative z-10">
     <div class="text-xs font-semibold uppercase tracking-[0.18em] text-terra-500 mb-2">
@@ -17,8 +101,8 @@
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-12 lg:gap-24 items-center mt-10 lg:mt-16">
       
       <!-- Left: Wheel Interactive SVG -->
-      <div id="wheel-container" class="relative w-full aspect-square max-w-[480px] lg:max-w-[640px] xl:max-w-[720px] mx-auto">
-        <svg class="w-full h-full overflow-visible" viewBox="0 0 400 400" id="wheelSvg">
+      <div id="wheel-container" class="relative w-full aspect-square max-w-[480px] lg:max-w-[640px] xl:max-w-[720px] mx-auto z-10">
+        <svg class="w-full h-full overflow-visible relative z-10" viewBox="0 0 400 400" id="wheelSvg">
           <defs>
             <!-- Global SVG Glow Filter -->
             <filter id="wglow" x="-20%" y="-20%" width="140%" height="140%">
@@ -29,6 +113,9 @@
               </feMerge>
             </filter>
           </defs>
+
+          <!-- Outer Pulse Effect -->
+          <circle cx="200" cy="200" r="195" class="wheel-outer-pulse-svg pointer-events-none hidden" id="wheelHaloSvg" />
           
           <!-- Dynamic Segments Injected Here -->
           <g id="wheel-segments" class="origin-center"></g>
@@ -92,15 +179,17 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   // Fixed 10 segments to maintain layout consistency (36 degrees each)
-  const N = Math.max(10, cats.length);
+  const N = Math.max(5, cats.length);
 
   const CX = 200, CY = 200;
-  const R_IN = 80, R_OUT = 180;
+  const R_IN = 72, R_OUT = 195;
   const GAP = 0.035; 
   const SLICE = (2 * Math.PI) / N;
 
   const segmentsGroup = document.getElementById('wheel-segments');
   const labelsGroup = document.getElementById('wheel-labels');
+  
+  const elementsToAnimate = [];
   
   // UI Panels
   const wTitle = document.getElementById('wTitle');
@@ -186,9 +275,9 @@ document.addEventListener('DOMContentLoaded', () => {
     path.setAttribute('stroke-width', '1.5');
     path.style.transition = 'all 0.4s cubic-bezier(0.3, 0.8, 0.3, 1)';
     path.style.transformOrigin = '200px 200px';
+    path.setAttribute('class', cat ? 'cursor-pointer wheel-segment-init' : 'wheel-segment-init');
 
     if (cat) {
-      path.setAttribute('class', 'cursor-pointer');
 
       function lightUp() {
         path.setAttribute('d', createPath(startA, endA, 8)); 
@@ -225,15 +314,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const lx = CX + labelR * Math.cos(midA);
       const ly = CY + labelR * Math.sin(midA);
       
-      // Rotate Text perpendicular to the arc (parallel to the radius line)
-      let rot = midA * (180/Math.PI);
-      if (rot > 90 && rot < 270) {
-         rot += 180;
-      }
-      
       text.setAttribute('x', lx);
       text.setAttribute('y', ly);
-      text.setAttribute('transform', `rotate(${rot}, ${lx}, ${ly})`);
+      text.style.transformOrigin = 'center';
+      text.style.transformBox = 'fill-box';
       text.setAttribute('text-anchor', 'middle');
       text.setAttribute('dominant-baseline', 'middle');
       text.setAttribute('fill', `rgba(255,255,255, 0.7)`); // slightly brighter inside
@@ -257,18 +341,56 @@ document.addEventListener('DOMContentLoaded', () => {
           text.textContent = cat.short.toUpperCase();
       }
 
-      // Tie text brightness to path hover
+      const textGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      textGroup.setAttribute('class', 'wheel-segment-init');
+      textGroup.style.transition = 'all 0.4s cubic-bezier(0.3, 0.8, 0.3, 1)';
+      textGroup.appendChild(text);
+      labelsGroup.appendChild(textGroup);
+
+      // Tie text brightness and position to path hover
+      const hoverOx = Math.cos(midA) * 8;
+      const hoverOy = Math.sin(midA) * 8;
+
       path.addEventListener('mouseenter', () => {
          text.setAttribute('fill', `rgba(255,255,255, 1)`);
          text.style.filter = "drop-shadow(0px 2px 4px rgba(0,0,0,0.5))";
+         textGroup.style.transform = `scale(1) translate(${hoverOx}px, ${hoverOy}px)`;
       });
       path.addEventListener('mouseleave', () => {
          text.setAttribute('fill', `rgba(255,255,255, 0.7)`);
          text.style.filter = "none";
+         textGroup.style.transform = `scale(1) translate(0px, 0px)`;
       });
 
-      labelsGroup.appendChild(text);
+      elementsToAnimate.push({ el: textGroup, delay: i * 120 + 300 });
     }
+
+    elementsToAnimate.push({ el: path, delay: i * 120 + 300 });
   }
+
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      elementsToAnimate.forEach(item => {
+        setTimeout(() => {
+          item.el.style.opacity = '1';
+          item.el.style.transform = 'scale(1)';
+        }, item.delay);
+      });
+
+      setTimeout(() => {
+        segmentsGroup.classList.add('wheel-spin');
+        labelsGroup.classList.add('wheel-spin');
+        labelsGroup.querySelectorAll('text').forEach(t => t.classList.add('wheel-counter-spin'));
+        
+        const halo = document.getElementById('wheelHaloSvg');
+        if(halo) halo.classList.remove('hidden');
+      }, N * 120 + 1000);
+
+      observer.disconnect();
+    }
+  }, { threshold: 0.25 });
+
+  observer.observe(document.getElementById('wheel-container'));
+
 });
 </script>
